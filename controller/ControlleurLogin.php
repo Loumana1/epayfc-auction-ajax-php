@@ -18,7 +18,7 @@ class ControlleurLogin extends Controller {
         $password = $_POST["password"] ?? "";
         $errors = [];
         if ($mail === "" || $password === "") {
-            $errors[] = "erreur : le Mail et mot de passe sont requis";
+            $errors[] = "Mail and Password are required.";
         }
 
         $user = User::get_user_by_mail($mail);
@@ -28,7 +28,7 @@ class ControlleurLogin extends Controller {
         }
 
         if (empty($errors) && !$user->check_password($password)) {
-            $errors[] = "Erreur : Mot de passe incorrect.";
+            $errors[] = "Incorrect Password.";
         }
 
         if (!empty($errors)) {
