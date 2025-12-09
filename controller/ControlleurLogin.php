@@ -7,7 +7,7 @@ require_once "model/User.php";
 class ControlleurLogin extends Controller {
 
     public function index() : void {
-        (new View("login"))->show ([
+        (new View("Login"))->show ([
             "mail" => "",
             "errors" => []
         ]);
