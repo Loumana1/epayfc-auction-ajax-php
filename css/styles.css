@@ -1,0 +1,60 @@
+:root{
+--letters: #2F64BFff;
+--body: #0E162Bff;
+--item: #26262Aff;
+--foothead: #1F283Bff;
+
+}
+.cart{
+    align-items: center;
+    display: flex;
+}
+h1 {
+    color: var(--letters);
+    font-size: 20px ;
+    font-family: Arial, Helvetica, sans-serif ;
+
+
+}
+h2 {
+    color: var(--letters);
+    font-size: 20px ;
+    font-family : sans-serif ;
+}
+
+
+body {
+    background-color: var(--body);
+    color: white;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+header {
+
+    background-color: var(--foothead);
+    padding: 4px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+
+}
+
+main {
+    flex: 1;
+    padding: 20px;
+}
+
+footer {
+    background-color:var(--foothead);
+    padding: 30px;
+    text-align: center;
+}
+.nav-item{
+    color: grey;
+    margin: 50px;
+    text-decoration: none;
+    flex-direction: column;
+}
