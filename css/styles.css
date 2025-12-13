@@ -1,0 +1,93 @@
+:root {
+--Background-grey: #27272Aff;
+--Background-blue: #0E172Aff;
+--naBarv-blue: #1E293Bff;
+--Button-light-green: #16AD79ff;
+--Button-light-grey:  rgb(95, 95, 99);
+
+--text-white: #F8F9FAff;
+--text-blue: #4899F7ff;
+--text-grey: #6C757Dff;
+}
+
+body {
+    background-color: var(--Background-blue);
+    color: white;
+    min-height: 140vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    background-color: var(--naBarv-blue);
+    padding: 20px;
+    text-align: center;
+}
+
+
+
+.content-wrapper {
+    display: flex;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+    flex: 1;
+}
+
+.main-content {
+    flex: 2;
+}
+
+.sidebar {
+    flex: 1;
+}
+
+
+.main-item-image {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+
+.tag {
+    height: 10px;
+    border-radius: 4px;
+    font-size: 1em;
+
+}
+
+.auction-sale-tag {
+    background-color:var(--Button-light-grey);
+}
+
+.direct-sale-tag {
+    background-color: var(--Button-light-green);
+}
+
+
+.seller-section {
+    background-color: var(--Background-grey);
+    border-radius: 8px;
+}
+
+
+
+.main-footer {
+    background-color:var(--naBarv-blue);
+    padding: 15px;
+    margin-top: auto;
+    
+}
+
+.footer-nav {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+
+
+
