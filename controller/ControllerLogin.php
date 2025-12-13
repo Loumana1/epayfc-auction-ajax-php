@@ -4,10 +4,10 @@ require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once "model/User.php";
 
-class ControlleurLogin extends Controller {
+class ControllerLogin extends Controller {
 
     public function index() : void {
-        (new View("Login"))->show ([
+        (new View("login"))->show ([
             "mail" => "",
             "errors" => []
         ]);

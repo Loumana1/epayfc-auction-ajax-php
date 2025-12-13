@@ -1,16 +1,19 @@
-<?php
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
 
-    <link rel="stylesheet" href="/view/css/login.css">
+    <link rel="stylesheet" href="/prwb_2526_c04/css/login.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
 <body>
+    <div>
+        <h1 class="bi bi-cart4"
+            style = "text-align:center;"> EPayFC
+        </h1>
+    </div>
 
 <div class="card">
 
@@ -25,12 +28,12 @@
         </div>
     <?php endif; ?>
 
-    <form action="login/login" method="post">
+    <form method="post" action="login/login" >
 
         <input type="text"
                name="mail"
                placeholder="Mail"
-               value="<?= htmlspecialchars($mail) ?>">
+               value="<?= $mail ?>">
 
         <input type="password"
                name="password"

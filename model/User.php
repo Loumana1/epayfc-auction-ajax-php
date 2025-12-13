@@ -4,17 +4,17 @@ require_once "framework/Model.php";
 
 class User extends Model {
 
-     private string $mail;
+     private string $email;
     private string $hashed_password;
 
-    public function __construct(string $mail, string $hashed_password) {
-        $this->mail = $mail;
+    public function __construct(string $email, string $hashed_password) {
+        $this->email = $email;
         $this->hashed_password = $hashed_password;
     }
 
 
-     public function get_mail(): string {
-        return $this->mail;
+     public function get_email(): string {
+        return $this->email;
     }
 
   
@@ -22,14 +22,14 @@ class User extends Model {
         return password_verify($password, $this->hashed_password);
     }
 
-    public static function get_user_by_mail(string $mail): ?User {
-        $query = self::execute("SELECT * FROM user WHERE mail = :mail", ["mail" => $mail]);
+    public static function get_user_by_mail(string $email): ?User {
+        $query = self::execute("SELECT * FROM users WHERE email = :email", ["email" => $email]);
         $row = $query->fetch();
 
         if (!$row) {
             return null;
         }
-        return new User($row["mail"], $row["hashed_password"]);
+        return new User($row["email"], $row["hashed_password"]);
     }
 
     private static function validate_password(string $password): array {
