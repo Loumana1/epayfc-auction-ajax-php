@@ -12,16 +12,20 @@
 
 body {
     background-color: var(--Background-blue);
-    color: white;
-    min-height: 140vh;
-    display: flex;
+    color:var(--text-white);
     flex-direction: column;
+    min-height: 100vh;
+    padding-bottom: 80px;
+    margin: 0;
+    padding: 0;
 }
 
 header {
     background-color: var(--naBarv-blue);
-    padding: 20px;
+ 
+    align-items: center;
     text-align: center;
+    height: 60px;
 }
 
 
@@ -39,10 +43,12 @@ header {
     flex: 2;
 }
 
-.sidebar {
+.sidebar-content {
     flex: 1;
 }
 
+
+/*------------------ Bloc main image------------------*/
 
 .main-item-image {
     width: 100%;
@@ -50,6 +56,17 @@ header {
     border-radius: 8px;
 }
 
+/* --------------- Buttun Type de vent -------*/
+
+
+.item-details-section{
+    background-color: var(--Background-grey);
+}
+
+.item-description {
+    margin: 10px 0;
+    line-height: 1.6;
+}
 
 .tag {
     height: 10px;
@@ -67,27 +84,84 @@ header {
 }
 
 
+
+
+ /* --------------- Images -------*/
+ .additional-images-section {
+    margin-top: 20px;
+}
+
+.additional-images-section h3 {
+    margin-bottom: 15px;
+}
+
+.thumbnail-gallery {
+    display: flex;
+    flex-direction: row; 
+    gap: 10px; 
+    flex-wrap: wrap; 
+    align-items: center; 
+}
+
+.thumbnail-gallery img {
+    width: 150px;
+    height: 150px; 
+    object-fit: cover; 
+    border: 2px solid transparent;
+}
+
+
+/*------------------ Bloc seller info------------------*/
 .seller-section {
     background-color: var(--Background-grey);
     border-radius: 8px;
 }
 
-
-
-.main-footer {
-    background-color:var(--naBarv-blue);
-    padding: 15px;
-    margin-top: auto;
-    
+.seller-pic{
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
-.footer-nav {
+.seller-pic.placeholder {
+    background-color: var(--Button-light-grey);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+}
+
+
+
+
+.navBar {
+    height: 40px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color:var(--naBarv-blue);
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 30px;
-    flex-wrap: wrap;
+    flex-wrap: wrap; 
+    padding: 15px;
 }
 
+.navBar a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    margin: 0 80px; 
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
 
-
-
+.navBar a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}

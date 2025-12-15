@@ -12,6 +12,13 @@
     <header>
         <h1>Item open</h1>
     </header>
+    <!--------------------------------------->
+<!-- A faire
+   -Creer les class et id pour chaque div ou presque
+ - Bien delimiter et colorer  (css) toutes les section avant php
+      
+--> 
+<!----------------------------------------> 
 
     <div class="content-wrapper">
     
@@ -35,10 +42,10 @@
 
 
                     <!-- Bloc item description section -->
-            <section >
+            <section class="item-details-section" >
                         <h2><?= htmlspecialchars($item->get_Title()) ?></h2>
 
-                <p><?= htmlspecialchars($item->get_Description() ?? 'No description') ?></p>
+                <p class="item-description"><?= htmlspecialchars($item->get_Description() ?? 'No description') ?></p>
                         
 
 
@@ -73,10 +80,10 @@
 
                <!-- bloc images additionnel -->
             <?php if (count($pictures) > 1): ?>
-            <section>
+            <section class="additional-images-section">
                 <h3>Additional Images</h3>
 
-                <div>
+                <div class="thumbnail-gallery">
 
                     <?php foreach ($pictures as $index => $picture): ?>
 
@@ -101,10 +108,20 @@
 <!--------------------------------------->
 <!-- Sidebar -->
  <!---------------------------------------->
-        <aside class="sidebar">
+        <aside class="sidebar-content">
          
                 
                 <!-- info Seller -->
+
+                
+                     <!--------------------------------------->
+                    <!-- A faire
+                    -Placehorde rond, qd pas d'image
+
+                    --> 
+                    <!----------------------------------------> 
+
+
             <?php if ($seller): ?>
             <section class="seller-section">
                 <h4>Seller</h4>
@@ -112,13 +129,13 @@
                     <?php if ($seller->picture_path): ?>
                         <img src="<?= $web_root . str_replace('.jpg',
                          '_thumbnail.jpg', $seller->picture_path) ?>" 
-                             >
+                             class="seller-pic">
                     <?php else: ?>
-                        <div > no pic</div>
+                        <div  class="seller-pic placeholder"> no pic</div>
                     <?php endif; ?>
-                    <div >
-                        <p ><?= htmlspecialchars($seller->pseudo) ?></p>
-                        <p >Member</p>
+                    <div>
+                        <p><?= htmlspecialchars($seller->pseudo) ?></p>
+                     <!--   <p >Member</p>-->
                     </div>
                 </div>
             </section>
@@ -127,32 +144,30 @@
         </aside>
     </div>
 
-
-    <footer class="main-footer">
-
-        <nav class="footer-nav">
+    <nav class="navBar">
 
 
-                <a href="browse_items" >
-                    <span >🔍</span>
-                    <span>Browse</span>
-                </a>
-            
-                    <a>
-                        <span >🏠</span>
-                        <span>My Items</span>
-                    </a>
-                <a>
-                    <span >➕</span>
-                    <span>Add Offer</span>
-                </a>
-                    <a>
-                        <span>👤</span>
-                        <span>Profile</span>
-                    </a>
+<a href="browse_items" >
+    <span >🔍</span>
+    <span>Browse</span>
+</a>
 
-        </nav>
-    </footer>
+    <a>
+        <span >🏠</span>
+        <span>My Items</span>
+    </a>
+<a>
+    <span >➕</span>
+    <span>Add Offer</span>
+</a>
+    <a>
+        <span>👤</span>
+        <span>Profile</span>
+    </a>
+
+</nav>
+
+
 
 
 </body>

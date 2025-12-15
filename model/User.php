@@ -11,6 +11,7 @@ class User {
     public $email;
     public $role;
     public $picture_path;
+    public $hashed_password;
     public $iban;
 
     public function __construct(
