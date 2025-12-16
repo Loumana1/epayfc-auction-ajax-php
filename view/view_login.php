@@ -45,9 +45,10 @@
     </form>
 
     <p style="margin-top:15px; text-align:center;">
-        New here ? <a href="user/register">Click here to subscribe !</a>
+         <a href="user/register">New here ? Click here to subscribe !</a>
     </p>
 
+    <h3 style="margin-top:15px; text-align:center;"> For Debug Purpose </h3>
 </div>
 
 </body>
