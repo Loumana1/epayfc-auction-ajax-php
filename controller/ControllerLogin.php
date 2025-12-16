@@ -16,33 +16,35 @@ class ControllerLogin extends Controller {
     public function login(): void {
         $mail = $_POST["mail"] ?? "";
         $password = $_POST["password"] ?? "";
-        $errors = [];
+     
+
         if ($mail === "" || $password === "") {
-            $errors[] = "Mail and Password are required.";
+            (new View("login"))->show([
+                "mail" => $mail,
+                "errors" => ["Mail and Password are required."]
+            ]);
+            return;
         }
 
         $user = User::get_user_by_mail($mail);
-
         if (!$user) {
-            $errors[] = "Unknown user.";
-        }
-
-        if (empty($errors) && !$user->check_password($password)) {
-            $errors[] = "Incorrect Password.";
-        }
-
-        if (!empty($errors)) {
-
             (new View("login"))->show([
                 "mail" => $mail,
-                "errors" => $errors
+                "errors" => ["Unknown user."]
             ]);
+            return;
+        }
 
-            return; 
+        if (!$user->check_password($password)) {
+            (new View("login"))->show([
+                "mail" => $mail,
+                "errors" => ["Incorrect Pasword."]
+            ]);
+            return;
         }
 
          $this->log_user($user);
-         $this->redirect("home"); 
+         $this->redirect("browse_items"); 
          // encore a definir pour la redirection 
     
     }
