@@ -10,10 +10,11 @@ class ControllerOpenItem extends Controller {
     public function index(): void {
 
         // Debug
+        /*
         echo "<pre>DEBUG _GET: ";
        print_r($_GET);
         echo "</pre>";
-        
+        */
         $itemId = $_GET['param1'] ?? null;
 
         // Verifier id item recu en url 
@@ -40,6 +41,8 @@ class ControllerOpenItem extends Controller {
         }
 
 
+        //Est que le USer doit etre logged pour voir lesitems ? 
+        $currentUser = $this->get_user_or_false();
 
         
         //  item pics
@@ -49,13 +52,26 @@ class ControllerOpenItem extends Controller {
         // venduer seller info
         $seller = ModelItems::get_User_By_Id($item->get_is_owner());
 
+               // verifier si Enchere tjrs ouvert
+        $now = AppTime::get_current_datetime();
+        $endAt = $item->get_End_At();
+        
+        if ($endAt) { 
+            $endAtDateTime = new DateTime($endAt);
+            $nowDateTime = new DateTime($now);
+            $isOpen = $endAtDateTime > $nowDateTime && !$item->buy_now_reached;
+        } else {
+            $isOpen = false;
+        }
 
 //toute les donnés a utiliser dans la vue 
     $data = [
         'item' => $item,
         'pictures' => $pictures,
         'seller' => $seller,
- 
+        'isOpen' => $isOpen,
+        'currentUser' => $currentUser
+  
     ];
 
 

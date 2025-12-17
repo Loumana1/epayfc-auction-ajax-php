@@ -1,21 +1,24 @@
 :root {
---Background-grey: #27272Aff;
+--Background-grey: rgb(48, 48, 48);
 --Background-blue: #0E172Aff;
 --naBarv-blue: #1E293Bff;
 --Button-light-green: #16AD79ff;
 --Button-light-grey:  rgb(95, 95, 99);
+--Button-light-blue:  #4899F7ff; 
 
 --text-white: #F8F9FAff;
 --text-blue: #4899F7ff;
---text-grey: #6C757Dff;
+--text-grey: rgb(172, 172, 172);
+--text-green:rgb(1, 198, 129); 
 }
 
 body {
     background-color: var(--Background-blue);
+    font-family: Arial, Helvetica, sans-serif;
     color:var(--text-white);
     flex-direction: column;
-    min-height: 100vh;
-    padding-bottom: 80px;
+    min-height: 111vh;
+   margin-bottom: 50vh;
     margin: 0;
     padding: 0;
 }
@@ -56,7 +59,14 @@ header {
     border-radius: 8px;
 }
 
-/* --------------- Buttun Type de vent -------*/
+/* --------------- Bloc Description et Type de vent -------*/
+
+
+.item-details-section h2 {
+    margin: 0 0 10px 0;
+    font-size: 1.8em;
+}
+
 
 
 .item-details-section{
@@ -64,14 +74,27 @@ header {
 }
 
 .item-description {
+    color: var(--text-grey);
     margin: 10px 0;
     line-height: 1.6;
 }
+.item-dates {
+    color: var(--text-grey);
+} 
+
+.button-type-of-sale{
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
 
 .tag {
-    height: 10px;
+
+    padding: 5px 12px;
     border-radius: 4px;
-    font-size: 1em;
+    font-size: 0.9em;
+    font-weight: bold;
 
 }
 
@@ -80,19 +103,18 @@ header {
 }
 
 .direct-sale-tag {
-    background-color: var(--Button-light-green);
+    background-color: var(--Button-light-blue);
 }
 
-
-
-
- /* --------------- Images -------*/
+ /* --------------- Images  Additionnels --------------*/
  .additional-images-section {
     margin-top: 20px;
 }
 
 .additional-images-section h3 {
+    color: var(--text-grey); 
     margin-bottom: 15px;
+    font-weight: 200;
 }
 
 .thumbnail-gallery {
@@ -111,30 +133,95 @@ header {
 }
 
 
+
+/*--------------------Bloc Pricing -----------------*/
+
+.pricing-section {
+    background-color: var(--Background-grey);           
+    border-radius: 12px;
+    padding: 20px 24px;
+}
+
+.price-value,
+.price-value-current-bid {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+.price-value-current-bid {
+    color: var(--text-green);
+}
+
+.pricing-section .btn {
+    font-size: 15px;
+    width: 100%;
+    padding: 10px 0;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    text-align: center;
+}
+
+
+.pricing-section .btn-place-bid {
+    margin-top: 4px;
+    margin-bottom: 2%;
+    border: none;
+    background: var(--Button-light-green);
+    color: var(--text-white);
+}
+
+.pricing-section .btn-buy-now {
+    border: 1px solid var(--text-blue);
+    background: transparent;
+    color: var(--text-blue);
+}
+
+.pricing-section .btn-place-bid:hover {
+    background: #2f8c62;
+}
+.pricing-section .btn-buy-now:hover {
+    background: rgba(150, 198, 238, 0.1);
+}
+
 /*------------------ Bloc seller info------------------*/
 .seller-section {
     background-color: var(--Background-grey);
     border-radius: 8px;
+    color: var(--text-grey);
+    padding: 16px 20px;
+    margin-top: 16px;
+}
+
+.seller-info {
+    display: flex;             
+    align-items: center;     
+    gap: 16px;                 
 }
 
 .seller-pic{
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     object-fit: cover;
 }
 
 .seller-pic.placeholder {
-    background-color: var(--Button-light-grey);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5em;
+    background-color: var(--Button-light-grey)
+}
+
+.seller-name {
+    margin: 0;
+    font-weight: bold;
+    color: var(--text-white);
 }
 
 
-
-
+.seller-status {
+    margin: 2px 0 0 0;
+    font-size: 0.9rem;
+    color: var(--text-grey);
+}
+/*------------------------Navigation bar--------------------*/
 .navBar {
     height: 40px;
     position: fixed;

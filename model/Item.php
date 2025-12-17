@@ -84,11 +84,18 @@ class Item {
 public function get_Created_At() : string {  
     return $this->created_at;
 }
+public function get_Buy_Now_Price() :?float{
+    return $this->buy_now_price;
+}
 
 
+public function get_Max_Bid(): ?float {
+    return $this ->max_bid;
+}
 
-
-    //V_items 
+public function get_Starting_Bid(): float {
+ return $this -> starting_bid; 
+}
 
     public function get_End_At(): ?string { 
         return $this->end_at;

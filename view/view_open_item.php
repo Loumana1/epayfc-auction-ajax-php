@@ -40,7 +40,6 @@
                         <?php endif; ?>
             </section>
 
-
                     <!-- Bloc item description section -->
             <section class="item-details-section" >
                         <h2><?= htmlspecialchars($item->get_Title()) ?></h2>
@@ -50,8 +49,8 @@
 
 
 
-                        <!--button type de vents section -status tag  -->
-                    <div>
+                        <!--button type de vents section -->
+                    <div class="button-type-of-sale">
 
                         <?php if ($item->get_Is_Auction()): ?>
                                 <span class="tag auction-sale-tag">Auction</span>
@@ -65,7 +64,7 @@
                     </div>
 
             
-                        <div>
+                        <div class="item-dates">
 
                             <p><strong>Start:</strong> <?= date('d/m/Y H:i:s', 
                             strtotime($item->get_Created_At())) ?></p>
@@ -81,7 +80,7 @@
                <!-- bloc images additionnel -->
             <?php if (count($pictures) > 1): ?>
             <section class="additional-images-section">
-                <h3>Additional Images</h3>
+                <h3 class="additional-images-tittle">Additional Images</h3>
 
                 <div class="thumbnail-gallery">
 
@@ -95,8 +94,6 @@
                        
                          >
              <?php endforeach; ?>    
-
-
                 </div>
             </section>
             <?php endif; ?>
@@ -109,14 +106,69 @@
 <!-- Sidebar -->
  <!---------------------------------------->
         <aside class="sidebar-content">
+
+
+<!----- Box Pricing section ------------->
+
+ <section class="pricing-section">
+        <h3 class="pricing-title">Pricing</h3>
+
+                <!--- Prix ----->
+                <?php if ($item->has_bids ): ?>
+
+                    <div class="price-row">
+                        <label class="price-label" >Current Bid</label>
+                    <p class="price-value-current-bid">€ <?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
+                    </div>
+                <?php elseif($item->get_Is_Auction()): ?>
+
+
+                    <div  class="price-row">
+                        <label class="price-label">Starting Bid</label>
+                        <p class="price-value-current-bid">€ <?= number_format($item->get_Starting_Bid(), 2, ',', '.') ?></p>
+                    </div>
+                <?php endif; ?>
+
+                <?php if ($item->get_Buy_Now_Price()): ?>
+                    <div class="price-row">
+                        <label class="price-label">Buy Now</label>
+                        <p class="price-value">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
+                    </div>
+                <?php endif; ?>
+
+
+                <!-- Formulmaire  BId-->
+                 <!-- if ($isOpen && !$isOwner && $currentUser)-->
+                <?php if ($isOpen && $item->get_Is_Auction()): ?>
+                
+                        <form class="bid-form" >
+
+                            <div class="bid-input-group">
+                                <span >€</span>
+                                <input type="number" required>
+
+                            </div>
+                            <button type="submit" class="btn-place-bid">Place Bid</button>
+                        </form>
+          <?php endif; ?>
+                              <?php if ($item->get_Buy_Now_Price()): ?>
+                    
+                            <button type="submit" class="btn-buy-now">
+                                Buy Now at € <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?>
+                            </button>
+                       
+                    <?php endif; ?>
+</section>
+
+
          
                 
-                <!-- info Seller -->
+                <!-- Box info Seller -->
 
                 
                      <!--------------------------------------->
                     <!-- A faire
-                    -Placehorde rond, qd pas d'image
+                    
 
                     --> 
                     <!----------------------------------------> 
@@ -124,20 +176,22 @@
 
             <?php if ($seller): ?>
             <section class="seller-section">
-                <h4>Seller</h4>
-                <div >
+                <h3>Seller Information</h3>
+                <div class="seller-info" >
                     <?php if ($seller->picture_path): ?>
                         <img src="<?= $web_root . str_replace('.jpg',
                          '_thumbnail.jpg', $seller->picture_path) ?>" 
                              class="seller-pic">
                     <?php else: ?>
-                        <div  class="seller-pic placeholder"> no pic</div>
+                        <div  class="seller-pic placeholder"> </div>
                     <?php endif; ?>
-                    <div>
-                        <p><?= htmlspecialchars($seller->pseudo) ?></p>
-                     <!--   <p >Member</p>-->
+                    <div  class="seller-details">
+                        <h2 class="seller-name"><?= htmlspecialchars($seller->pseudo) ?></h2>
+                        <p class="seller-status">Member</p>
+                        
                     </div>
                 </div>
+
             </section>
             <?php endif; ?>
 

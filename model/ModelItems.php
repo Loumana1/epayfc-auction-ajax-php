@@ -9,7 +9,7 @@ class ModelItems extends Model {
 
 
     //Choper info de l'item courant
-    public static function get_Item_By_Id(int $itemId): Item|false{   // à  remplace array par Item|false une fois que il aura la classe items
+    public static function get_Item_By_Id(int $itemId): Item|false{ 
         $query = self::execute("SELECT * FROM v_items_status WHERE id = :id", ['id' => $itemId]);
         $data = $query->fetch();
         if ($data === false) { // a remplacer $query->rowCount() == 0 ( lorsque il y aura class Items)
@@ -66,7 +66,7 @@ class ModelItems extends Model {
     return $query->fetchAll();//retourne un array de pics
     }
 
- 
+
 
 
 

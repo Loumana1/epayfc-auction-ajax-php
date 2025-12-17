@@ -1,5 +1,4 @@
 
-
 <?php
 class User {
     //Je prends tt les proprotes pour moment 
