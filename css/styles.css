@@ -1,3 +1,49 @@
+body {
+        background-color: #1a2433;
+         font-family: Arial, sans-serif;
+         color: white;
+        }
+
+.card {
+      width: 350px;
+      margin: 80px auto;
+      background: #2e3645;
+    padding: 30px;
+      border-radius: 10px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 12px;
+            border-radius: 6px;
+            border: none;
+        }
+
+        .btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-login {
+            background-color: #4a90e2;
+            color: white;
+        }
+
+        .error {
+            background: #c0392b;
+            color: white;
+            padding: 8px;
+            margin-top: 15px;
+            border-radius: 6px;
+        }
+
+        a { color: #4aa3ff; }
+  
 :root{
 --letters: #2F64BFff;
 --body: #0E162Bff;
@@ -57,4 +103,42 @@ footer {
     margin: 50px;
     text-decoration: none;
     flex-direction: column;
+    
+}
+
+.participating, .available {
+    margin-bottom: 100px;
+}
+
+
+.item-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+.item-card {
+    flex: 0 0 calc(50% - 5px);
+    background-color: var(--item);
+    border-radius: 8px;
+    overflow: hidden;
+    height: 130px;
+    border: 1px solid #3c4558;
+}
+
+.item-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.no-pic {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 0.8rem;
+    color: gray;
 }

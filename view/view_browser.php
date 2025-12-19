@@ -14,28 +14,49 @@
         <span class="cart">🛒</span>
    </header> 
     
-    <main>
-        
-        <div class="participating">
-                    <h2>items I'm Participating in  
-
-                </h2>
-                    <div class="item">
-
+<main>
+    <div class="participating">
+        <h2>Items I'm Participating in</h2>
+        <div class="item-list"> 
+            <?php if (!empty($participating_items)): ?>
+                <?php foreach ($participating_items as $item): ?>
+                    <div class="item-card"> 
+                        <a href="item/open/<?= $item['id'] ?>">
+                            <?php if ($item['pic_path']): ?>
+                                <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" class="item-image">
+                            <?php else: ?>
+                                <div class="no-pic">No Pic</div>
+                            <?php endif; ?>
+                        </a>
                     </div>
-                </div>
-
-                <div class="available">
-                <h2>Other Available Items 
-
-                </h2>
-                <div class="item">
-
-                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No active bids yet.</p>
+            <?php endif; ?>
         </div>
-    
-    </main>
+    </div>
 
+    <div class="available">
+        <h2>Other Available Items</h2> 
+        <div class="item-list">
+            <?php if (!empty($available_items)): ?>
+                <?php foreach ($available_items as $item): ?>
+                    <div class="item-card">
+                        <a href="item/open/<?= $item['id'] ?>">
+                            <?php if ($item['pic_path']): ?>
+                                <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" class="item-image">
+                            <?php else: ?>
+                                <div class="no-pic">No Pic</div>
+                            <?php endif; ?>
+                        </a>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>No other items available.</p>
+            <?php endif; ?>
+        </div>
+    </div>
+</main>
 
     <footer> <div class ="footer">
     <nav class="footer-nav">
