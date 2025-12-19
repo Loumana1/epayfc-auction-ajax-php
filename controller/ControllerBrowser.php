@@ -10,7 +10,7 @@ require_once 'model/ItemPicture.php';
 class ControllerBrowser extends Controller {
 
     public function index(): void {
-        $userId = 1; // apres corrige
+        $userId = 4 ; // apres corrige
         $now = AppTime::get_current_datetime();
 
         $participating_items_raw = ModelItems::get_Item_Participating($userId,$now);
@@ -24,8 +24,6 @@ class ControllerBrowser extends Controller {
                 continue;
 
             $mainPicture = ItemPicture::get_main_picture($item->id);
-            // OPTIMIZATION: We do not fetch all pictures anymore as requested
-            // $pictures = ModelItems::get_Item_Pictures($item->id);
 
             // Récupérer le pseudo du vendeur
             $sellerPseudo = ModelItems::get_User_Pseudo_By_Id($item->is_owner);
@@ -34,7 +32,7 @@ class ControllerBrowser extends Controller {
                 'id' => $item->id,
                 'title' => $item->title,
                 'pic_path' => $mainPicture?->picture_path,
-                'picture_count' => 0, // Set to 0 to avoid view errors, actual count not needed
+                'picture_count' => 0, // Set to 0 to avoid view errors
                 'seller_pseudo' => $sellerPseudo,
                 'buy_now_price' => $item->buy_now_price,
                 'starting_bid' => $item->starting_bid,
@@ -58,8 +56,6 @@ class ControllerBrowser extends Controller {
                 continue;
 
             $mainPicture = ItemPicture::get_main_picture($item->id);
-            // OPTIMIZATION: We do not fetch all pictures anymore as requested
-            // $pictures = ModelItems::get_Item_Pictures($item->id);
 
             // Récupérer le pseudo du vendeur
             $sellerPseudo = ModelItems::get_User_Pseudo_By_Id($item->is_owner);
@@ -68,7 +64,7 @@ class ControllerBrowser extends Controller {
                 'id' => $item->id,
                 'title' => $item->title,
                 'pic_path' => $mainPicture?->picture_path,
-                'picture_count' => 0, // Set to 0 to avoid view errors, actual count not needed
+                'picture_count' => 0, // Set to 0 to avoid view errors
                 'seller_pseudo' => $sellerPseudo,
                 'buy_now_price' => $item->buy_now_price,
                 'starting_bid' => $item->starting_bid,

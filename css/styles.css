@@ -109,7 +109,19 @@ footer {
 .participating, .available {
     margin-bottom: 100px;
 }
+.item-info {
+    padding: 15px;
+}
 
+.item-title {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .item-list {
     display: flex;
