@@ -24,7 +24,8 @@ class ControllerOpenItem extends Controller {
         if (!$itemId || !is_numeric($itemId)) {
             // pour tester
             //remplacer ^par show browser
-            die("ERREUR: Pas d'ID d'item fourni. param1 reçu: " );
+            throw new Exception("ERREUR: Pas d'ID d'item fourni" );
+
         }
         
         $itemId = (int)$itemId;
@@ -37,11 +38,10 @@ class ControllerOpenItem extends Controller {
         if ($item === false) {
             // pour tester
             //remplacer ^par show browser
-            die("ERREUR: Item avec ID $itemId n'existe pas ");
+              throw new Exception("ERREUR: Item avec ID $itemId n'existe pas");
         }
 
 
-        //Est que le USer doit etre logged pour voir lesitems ? 
         $currentUser = $this->get_user_or_false();
 
         
@@ -50,7 +50,7 @@ class ControllerOpenItem extends Controller {
         
         
         // venduer seller info
-        $seller = ModelItems::get_User_By_Id($item->get_is_owner());
+        $seller = User::get_User_By_Id($item->get_is_owner());
 
                // verifier si Enchere tjrs ouvert
         $now = AppTime::get_current_datetime();
@@ -63,7 +63,6 @@ class ControllerOpenItem extends Controller {
         } else {
             $isOpen = false;
         }
-
 //toute les donnés a utiliser dans la vue 
     $data = [
         'item' => $item,

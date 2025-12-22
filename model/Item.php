@@ -1,5 +1,5 @@
 <?php
-class Item {
+class Item extends Model{
 
     public $id;
     public $title;

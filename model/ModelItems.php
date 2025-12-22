@@ -12,7 +12,7 @@ class ModelItems extends Model {
     public static function get_Item_By_Id(int $itemId): Item|false{ 
         $query = self::execute("SELECT * FROM v_items_status WHERE id = :id", ['id' => $itemId]);
         $data = $query->fetch();
-        if ($data === false) { // a remplacer $query->rowCount() == 0 ( lorsque il y aura class Items)
+        if ($data === false) { 
             return false;
         } else {
             return new Item(
@@ -41,22 +41,6 @@ class ModelItems extends Model {
 
 
 
-       // choper info de l'utilisateur courant
-       public static function get_User_By_Id(int $userId): User|false { // remplace array par User|false une fois que il aura la classe users
-        $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
-        $data = $query->fetch();// un seul résultat au maximum
-        if ($data === false) { // a remplacer $query->rowCount() == 0
-            return false;
-        } else {
-            return new User($data["id"],
-             $data["full_name"],
-              $data["pseudo"],
-               $data["email"],
-                $data["role"], 
-                $data["picture_path"], 
-                $data["iban"]);
-        }
-    }
 
 //images
     public static function get_Item_Pictures(int $itemId): array {

@@ -1,6 +1,6 @@
 
 <?php
-class User {
+class User extends Model {
     //Je prends tt les proprotes pour moment 
     //Verifier ce que les autres ont mis dans leur Model User 
     // faudra merge rapidement pour que ca soit pas un bouzouf
@@ -36,11 +36,35 @@ class User {
         return $this->id;
     }
 
+           // choper info de l'utilisateur courant
+           public static function get_User_By_Id(int $userId): User|false {
+            $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
+            $data = $query->fetch();
+            if ($data === false) { 
+                return false;
+            } else {
+                return new User($data["id"],
+                 $data["full_name"],
+                  $data["pseudo"],
+                   $data["email"],
+                    $data["role"], 
+                    $data["picture_path"], 
+                    $data["iban"]);
+            }
+        }
+
     public function get_Pseudo(): string {
         return $this->pseudo;
     }
 
+public function get_Thumbnail_Path(): ?string {
+    if (!$this->picture_path) {
+        return null;
+    }
+    return str_replace('.jpg', '_thumbnail.jpg', $this->picture_path);
+}
 
-
-
+public function has_Picture(): bool {
+    return !empty($this->picture_path);
+}
 }

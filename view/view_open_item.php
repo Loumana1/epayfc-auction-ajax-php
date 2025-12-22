@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title><?= htmlspecialchars($item->get_Title()) ?> - Item Details</title>
+    <title><?= $item->get_Title() ?> - Item Details</title>
     <base href="<?= $web_root ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
@@ -31,8 +31,8 @@
             <section>
 
                         <?php if (!empty($pictures)): ?>
-                    <img   src="<?= $web_root . $pictures[0]['picture_path'] ?>" 
-                            alt="<?=  htmlspecialchars($item->get_Title()) ?>"
+                    <img   src="<?= $pictures[0]['picture_path'] ?>" 
+                            alt="<?=  $item->get_Title() ?>"
 
                             class="main-item-image">
                         <?php else: ?>
@@ -42,9 +42,9 @@
 
                     <!-- Bloc item description section -->
             <section class="item-details-section" >
-                        <h2><?= htmlspecialchars($item->get_Title()) ?></h2>
+                        <h2><?= $item->get_Title() ?></h2>
 
-                <p class="item-description"><?= htmlspecialchars($item->get_Description() ?? 'No description') ?></p>
+                <p class="item-description"><?= $item->get_Description() ?? 'No description' ?></p>
                         
 
 
@@ -179,14 +179,14 @@
                 <h3>Seller Information</h3>
                 <div class="seller-info" >
                     <?php if ($seller->picture_path): ?>
-                        <img src="<?= $web_root . str_replace('.jpg',
-                         '_thumbnail.jpg', $seller->picture_path) ?>" 
+                        <img src="<?= $seller->get_Thumbnail_Path() ?>" 
                              class="seller-pic">
                     <?php else: ?>
                         <div  class="seller-pic placeholder"> </div>
                     <?php endif; ?>
+
                     <div  class="seller-details">
-                        <h2 class="seller-name"><?= htmlspecialchars($seller->pseudo) ?></h2>
+                        <h2 class="seller-name"><?= $seller->pseudo ?></h2>
                         <p class="seller-status">Member</p>
                         
                     </div>
