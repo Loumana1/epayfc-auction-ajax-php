@@ -51,8 +51,42 @@ class ModelItems extends Model {
     }
 
 
+    //Bids 
+public static function get_Item_Bids(int $itemId): array {
+    $query = self::execute(
+        "SELECT b.*, u.pseudo, u.picture_path
+         FROM bids b
+         JOIN users u ON b.owner = u.id
+         WHERE b.item = :item_id
+         ORDER BY b.amount DESC, b.created_at DESC",
+        ['item_id' => $itemId]
+    );
+    return $query->fetchAll();
+}
 
+public static function has_User_Bid_On_Item(int $userId, int $itemId): bool {
+    $query = self::execute(
+        "SELECT COUNT(*) 
+        FROM bids
+         WHERE owner = :user_id AND item = :item_id",
+        ['user_id' => $userId, 'item_id' => $itemId]
+    );
+    $count = $query->fetchColumn();
+    return $count > 0;
+}
 
+public static function is_User_Highest_Bidder(int $userId, int $itemId): bool {
+    $query = self::execute(
+        "SELECT owner
+         FROM bids
+         WHERE item = :item_id
+            ORDER BY amount DESC, created_at DESC
+         LIMIT 1",
+        ['item_id' => $itemId]
+    );
+    $highestBidderId = $query->fetchColumn();
+    return $highestBidderId !== false && (int)$highestBidderId === $userId;
+}
 
 
 }

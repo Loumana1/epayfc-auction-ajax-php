@@ -67,4 +67,10 @@ public function get_Thumbnail_Path(): ?string {
 public function has_Picture(): bool {
     return !empty($this->picture_path);
 }
+
+public function get_user_or_false () {
+
+    return null;
+
+}
 }

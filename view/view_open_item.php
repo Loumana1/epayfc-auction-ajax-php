@@ -97,6 +97,47 @@
                 </div>
             </section>
             <?php endif; ?>
+  
+
+
+
+
+
+
+        <!-------Box  Bid History  --------->
+<section class="bid-history-section">
+    <div class="bid-section-header">
+        <h3>Bid History</h3>
+        <?php if (!empty($bids)): ?>
+            <span class="bid-count-tag"><?= count($bids) ?> entries</span>
+        <?php endif; ?>
+    </div>
+    
+    <?php if (!empty($bids)): ?>
+        <div class="bid-list">
+
+            <?php foreach ($bids as $bid): ?>
+                <div class="bid-row">
+
+                    <div class="bid-info">
+                    <span class="bidder-name"><?=$bid['pseudo'] ?></span>
+
+                    <span class="bid-date"><?= date('d/m/Y H:i:s', strtotime($bid['created_at'])) ?></span>
+                    </div>
+
+                    <span class="bid-amount">€ <?= number_format($bid['amount'], 2, ',', '.') ?></span>
+                </div>
+            <?php endforeach; ?>
+
+        </div>
+    <?php else: ?>
+        <p>No bids </p>
+    <?php endif; ?>
+</section>
+
+
+
+
         </main>
 
 
@@ -178,7 +219,7 @@
             <section class="seller-section">
                 <h3>Seller Information</h3>
                 <div class="seller-info" >
-                    <?php if ($seller->picture_path): ?>
+                    <?php if ($seller->has_Picture()): ?>
                         <img src="<?= $seller->get_Thumbnail_Path() ?>" 
                              class="seller-pic">
                     <?php else: ?>
@@ -192,7 +233,7 @@
                     </div>
                 </div>
 
-            </section>
+            </section> 
             <?php endif; ?>
 
         </aside>

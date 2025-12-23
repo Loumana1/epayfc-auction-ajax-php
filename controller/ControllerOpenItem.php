@@ -41,13 +41,16 @@ class ControllerOpenItem extends Controller {
               throw new Exception("ERREUR: Item avec ID $itemId n'existe pas");
         }
 
-
-        $currentUser = $this->get_user_or_false();
-
+    $currentUser = $this->get_user_or_false();
+$currentUserId = $currentUser ? $currentUser->get_Id() : null;
+$isOwner = $currentUserId && $item->get_is_Owner() == $currentUserId;
         
         //  item pics
         $pictures = ModelItems::get_Item_Pictures($itemId);
         
+      
+        $bids = ModelItems::get_Item_Bids($itemId); 
+
         
         // venduer seller info
         $seller = User::get_User_By_Id($item->get_is_owner());
@@ -63,13 +66,35 @@ class ControllerOpenItem extends Controller {
         } else {
             $isOpen = false;
         }
+
+            // Verifier statut des enchere pour l'utilistuer courant 
+            $UserBidStatus = false; 
+            $isHighestBidder = false;
+            if ($currentUserId) {
+                $UserBidStatus = ModelItems::has_User_Bid_On_Item($currentUserId, $itemId);
+                $isHighestBidder = ModelItems::is_User_Highest_Bidder($currentUserId, $itemId);
+            }
+
+$minBidAmount = $item->get_Max_Bid()
+    ? $item->get_Max_Bid() + 0.01  //  enchère doit être plus grand
+    : ($item->get_Starting_Bid() ?: 0);
+
+
+
+
 //toute les donnés a utiliser dans la vue 
     $data = [
         'item' => $item,
         'pictures' => $pictures,
         'seller' => $seller,
         'isOpen' => $isOpen,
-        'currentUser' => $currentUser
+        'currentUser' => $currentUser,
+            'UserBidStatus' => $UserBidStatus,
+        'isHighestBidder' => $isHighestBidder,
+         'now'=>$now,
+          'minBidAmount' => $minBidAmount,
+          'bids' => $bids,
+          'isOwner' => $isOwner
   
     ];
 

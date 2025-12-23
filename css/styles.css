@@ -1,14 +1,15 @@
 :root {
---Background-grey: rgb(48, 48, 48);
+--Background-grey: rgb(37, 36, 36);
 --Background-blue: #0E172Aff;
 --naBarv-blue: #1E293Bff;
 --Button-light-green: #16AD79ff;
 --Button-light-grey:  rgb(95, 95, 99);
 --Button-light-blue:  #4899F7ff; 
+--Button-Wight :#dbd8d8;
 
 --text-white: #F8F9FAff;
 --text-blue: #4899F7ff;
---text-grey: rgb(172, 172, 172);
+--text-grey: rgb(149, 154, 173);
 --text-green:rgb(1, 198, 129); 
 }
 
@@ -17,9 +18,8 @@ body {
     font-family: Arial, Helvetica, sans-serif;
     color:var(--text-white);
     flex-direction: column;
-    min-height: 111vh;
-   margin-bottom: 50vh;
-    margin: 0;
+    min-height: 110vh;
+    margin-bottom: 20vh;
     padding: 0;
 }
 
@@ -70,6 +70,7 @@ width: 100%;
 
 
 .item-details-section{
+    padding: 20px;
     background-color: var(--Background-grey);
 }
 
@@ -114,7 +115,7 @@ width: 100%;
 .additional-images-section h3 {
     color: var(--text-grey); 
     margin-bottom: 15px;
-    font-weight: 200;
+    font-weight: bold;
 }
 
 .thumbnail-gallery {
@@ -221,6 +222,90 @@ width: 100%;
     font-size: 0.9rem;
     color: var(--text-grey);
 }
+
+
+/* ------------BID HISTORY SECTION ------------- */
+.bid-history-section {
+    background-color: var(--Background-grey);
+  border-radius: 8px; 
+    margin-top: 30px;
+    padding: 20px;
+}
+
+.bid-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.bid-section-header h3 {
+    margin: 0;
+    color: var(--text-grey);
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.bid-count-tag{
+
+
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    font-weight: bold;
+
+
+
+    background-color:var(--Button-Wight);
+    color: rgb(0, 0, 0);
+
+}
+
+.bid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0; 
+}
+
+.bid-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+}
+
+.bid-row:last-child {
+    border-bottom: none;
+}
+
+.bid-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.bidder-name {
+    font-weight: bold;
+    color: var(--text-white);
+    font-size: 1em;
+}
+
+.bid-date {
+    color: var(--text-grey);
+    font-size: 0.9em;
+    font-weight: normal;
+}
+
+.bid-amount {
+    font-weight: bold;
+    color: var(--text-green);
+    font-size: 1em;
+}
+
+
+
+
+
 /*------------------------Navigation bar--------------------*/
 .navBar {
     height: 40px;
