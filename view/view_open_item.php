@@ -41,7 +41,7 @@
             </section>
 
                     <!-- Bloc item description section -->
-            <section class="item-details-section" >
+            <section class="section item-details-section">
                         <h2><?= $item->get_Title() ?></h2>
 
                 <p class="item-description"><?= $item->get_Description() ?? 'No description' ?></p>
@@ -79,8 +79,8 @@
 
                <!-- bloc images additionnel -->
             <?php if (count($pictures) > 1): ?>
-            <section class="additional-images-section">
-                <h3 class="additional-images-tittle">Additional Images</h3>
+            <section class="section additional-images-section">
+                <h3 class="section-title">Additional Images</h3>
 
                 <div class="thumbnail-gallery">
 
@@ -105,9 +105,9 @@
 
 
         <!-------Box  Bid History  --------->
-<section class="bid-history-section">
+<section class="section bid-history-section">
     <div class="bid-section-header">
-        <h3>Bid History</h3>
+        <h3 class="section-title">Bid History</h3>
         <?php if (!empty($bids)): ?>
             <span class="bid-count-tag"><?= count($bids) ?> entries</span>
         <?php endif; ?>
@@ -151,8 +151,8 @@
 
 <!----- Box Pricing section ------------->
 
- <section class="pricing-section">
-        <h3 class="pricing-title">Pricing</h3>
+ <section class="section pricing-section">
+        <h3 class="section-title pricing-title">Pricing</h3>
 
                 <!--- Prix ----->
                 <?php if ($item->has_bids ): ?>
@@ -161,7 +161,7 @@
                         <label class="price-label" >Current Bid</label>
                     <p class="price-value-current-bid">€ <?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
                     </div>
-                <?php elseif($item->get_Is_Auction()): ?>
+                <?php else: ?>
 
 
                     <div  class="price-row">
@@ -170,7 +170,9 @@
                     </div>
                 <?php endif; ?>
 
-                <?php if ($item->get_Buy_Now_Price()): ?>
+          
+
+                <?php if ($item->get_Buy_Now_Price() ): ?>
                     <div class="price-row">
                         <label class="price-label">Buy Now</label>
                         <p class="price-value">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
@@ -178,27 +180,52 @@
                 <?php endif; ?>
 
 
-                <!-- Formulmaire  BId-->
-                 <!-- if ($isOpen && !$isOwner && $currentUser)-->
-                <?php if ($isOpen && $item->get_Is_Auction()): ?>
+                <!-- Button place bid , Formulmaire -->
+
+                <?php if ($isOpen && $item->get_Is_Auction() && $currentUser && !$isOwner): ?>
                 
                         <form class="bid-form" >
 
                             <div class="bid-input-group">
                                 <span >€</span>
-                                <input type="number" required>
+                                <input type="number"
+                                min="<?= $minBidAmount ?>" 
+                                 required>
 
                             </div>
                             <button type="submit" class="btn-place-bid">Place Bid</button>
                         </form>
+
+                        <?php elseif($isOpen) : ?>
+
+                             <!-- Si l'utilisateur n'est pas connecté et vente dispo-->
+                        <button type="button" class="btn-place-bid">log in to place a bid or buy now.</button>
+
+                        <?php else: ?>
+
+                            <span class="tag auction-sale-tag">Sale finished. item not available</span>
+
           <?php endif; ?>
-                              <?php if ($item->get_Buy_Now_Price()): ?>
+
+
+                <!---Button Buy now---->
+                              <?php if ($item->get_Buy_Now_Price()&& $isOpen && !$item->buy_now_reached && $currentUser && !$isOwner): ?>
                     
                             <button type="submit" class="btn-buy-now">
                                 Buy Now at € <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?>
                             </button>
                        
                     <?php endif; ?>
+
+
+                    
+                        <!-- si l'utilisateur est le proprietaire -->
+    <?php if ($isOwner && $isOpen): ?>
+
+        <p class="owner-message">You cannot bid on your own item.</p>
+    <?php endif; ?>
+
+
 </section>
 
 
@@ -206,18 +233,10 @@
                 
                 <!-- Box info Seller -->
 
-                
-                     <!--------------------------------------->
-                    <!-- A faire
-                    
-
-                    --> 
-                    <!----------------------------------------> 
-
 
             <?php if ($seller): ?>
-            <section class="seller-section">
-                <h3>Seller Information</h3>
+            <section class="section seller-section">
+                <h3 class="section-title">Seller Information</h3>
                 <div class="seller-info" >
                     <?php if ($seller->has_Picture()): ?>
                         <img src="<?= $seller->get_Thumbnail_Path() ?>" 

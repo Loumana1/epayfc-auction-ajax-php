@@ -111,6 +111,10 @@ public function get_Starting_Bid(): float {
     public function get_Not_Purchased_Direct_Sale(): bool {
         return $this->not_purchased_direct_sale;
     }
+
+    public function get_buy_now_reached(): bool{
+        return $this->buy_now_reached;
+    }
 //-------------------------------------// 
 
     public function is_Open(): bool {

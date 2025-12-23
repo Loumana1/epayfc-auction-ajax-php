@@ -16,7 +16,8 @@
 body {
     background-color: var(--Background-blue);
     font-family: Arial, Helvetica, sans-serif;
-    color:var(--text-white);
+    color: var(--text-white);
+    font-size: 1rem; /* Base: 16px */
     flex-direction: column;
     min-height: 110vh;
     margin-bottom: 20vh;
@@ -25,10 +26,36 @@ body {
 
 header {
     background-color: var(--naBarv-blue);
- 
     align-items: center;
     text-align: center;
     height: 60px;
+}
+
+
+
+/* Classe global que je reutilse  */
+.section {
+    padding: 20px;
+    background-color: var(--Background-grey);
+    border-radius: 8px;
+}
+
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin: 0 0 15px 0;
+}
+
+.text-primary {
+    color: var(--text-white);
+    font-size: 1rem; 
+}
+
+.text-secondary {
+    color: var(--text-grey);
+    font-size: 0.875rem; 
 }
 
 
@@ -61,26 +88,25 @@ width: 100%;
 
 /* --------------- Bloc Description et Type de vent -------*/
 
-
-.item-details-section h2 {
-    margin: 0 0 10px 0;
-    font-size: 1.8em;
+.item-details-section {
+    /* Utilise  .section de base */
 }
 
-
-
-.item-details-section{
-    padding: 20px;
-    background-color: var(--Background-grey);
+.item-details-section h2 {
+    font-size: 1.5rem; 
+    color: var(--text-white);
+    margin: 0 0 15px 0;
 }
 
 .item-description {
     color: var(--text-grey);
+    font-size: 1rem;
     margin: 10px 0;
     line-height: 1.6;
 }
 .item-dates {
     color: var(--text-grey);
+    font-size: 0.875rem;
 } 
 
 .button-type-of-sale{
@@ -94,9 +120,8 @@ width: 100%;
 
     padding: 5px 12px;
     border-radius: 4px;
-    font-size: 0.9em;
+    font-size: 0.875rem;
     font-weight: bold;
-
 }
 
 .auction-sale-tag {
@@ -110,12 +135,14 @@ width: 100%;
  /* --------------- Images  Additionnels --------------*/
  .additional-images-section {
     margin-top: 20px;
+    padding: 20px;
 }
 
 .additional-images-section h3 {
-    color: var(--text-grey); 
-    margin-bottom: 15px;
-    font-weight: bold;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-grey);
+    margin: 0 0 15px 0;
 }
 
 .thumbnail-gallery {
@@ -138,65 +165,136 @@ width: 100%;
 /*--------------------Bloc Pricing -----------------*/
 
 .pricing-section {
-    background-color: var(--Background-grey);           
-    border-radius: 12px;
-    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.pricing-title {
+    /* Utilise .section-title */
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.price-label {
+    color: var(--text-white);
+    font-size: 1rem;
+    font-weight: normal;
+    margin: 0;
 }
 
 .price-value,
 .price-value-current-bid {
     font-weight: 600;
-    font-size: 1.05rem;
+    font-size: 1rem;
+    margin: 0;
+    text-align: right;
 }
 .price-value-current-bid {
     color: var(--text-green);
 }
 
-.pricing-section .btn {
-    font-size: 15px;
-    width: 100%;
-    padding: 10px 0;
-    border-radius: 6px;
-    font-weight: 600;
-    cursor: pointer;
-    text-align: center;
+
+
+
+.btn-place-bid, .starting-bid, .buy-now-price {
+    display: flex;
+    flex-direction: column;
+
+
 }
 
-
-.pricing-section .btn-place-bid {
-    margin-top: 4px;
-    margin-bottom: 2%;
-    border: none;
-    background: var(--Button-light-green);
-    color: var(--text-white);
-}
-
-.pricing-section .btn-buy-now {
+.btn-buy-now {
     border: 1px solid var(--text-blue);
     background: transparent;
     color: var(--text-blue);
 }
 
-.pricing-section .btn-place-bid:hover {
+.btn-place-bid:hover {
     background: #2f8c62;
 }
-.pricing-section .btn-buy-now:hover {
+.btn-buy-now:hover {
     background: rgba(150, 198, 238, 0.1);
+}
+.bid-form {
+    margin-top: 20px;
+}
+
+.bid-input-group {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
+    padding: 5px;
+}
+
+.currency {
+    padding: 0 10px;
+    font-weight: bold;
+}
+
+.bid-input-group input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-white);
+    padding: 10px;
+    font-size: 1rem;
+}
+
+.btn-place-bid {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--Button-light-green);
+    color: var(--text-white);
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-place-bid:hover {
+    background-color: #45a049;
+}
+
+.btn-buy-now {
+    width: 100%;
+    padding: 12px;
+    background-color: var(--Button-light-blue);
+    color: var(--text-white);
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-buy-now:hover {
+    background-color: #0b7dda;
 }
 
 /*------------------ Bloc seller info------------------*/
 .seller-section {
-    background-color: var(--Background-grey);
-    border-radius: 8px;
-    color: var(--text-grey);
-    padding: 16px 20px;
     margin-top: 16px;
 }
 
+.seller-section h3 {
+
+}
+
 .seller-info {
-    display: flex;             
-    align-items: center;     
-    gap: 16px;                 
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .seller-pic{
@@ -214,22 +312,21 @@ width: 100%;
     margin: 0;
     font-weight: bold;
     color: var(--text-white);
+    font-size: 1rem;
 }
 
 
 .seller-status {
     margin: 2px 0 0 0;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
     color: var(--text-grey);
 }
 
 
 /* ------------BID HISTORY SECTION ------------- */
 .bid-history-section {
-    background-color: var(--Background-grey);
-  border-radius: 8px; 
     margin-top: 30px;
-    padding: 20px;
+    /* Utilise la classe .section de base */
 }
 
 .bid-section-header {
@@ -242,7 +339,7 @@ width: 100%;
 .bid-section-header h3 {
     margin: 0;
     color: var(--text-grey);
-    font-size: 1.2em;
+    font-size: 1.25rem;
     font-weight: 600;
 }
 
@@ -251,7 +348,7 @@ width: 100%;
 
     padding: 5px 12px;
     border-radius: 4px;
-    font-size: 0.9em;
+    font-size: 0.875rem;
     font-weight: bold;
 
 
@@ -287,19 +384,19 @@ width: 100%;
 .bidder-name {
     font-weight: bold;
     color: var(--text-white);
-    font-size: 1em;
+    font-size: 1rem;
 }
 
 .bid-date {
     color: var(--text-grey);
-    font-size: 0.9em;
+    font-size: 0.875rem;
     font-weight: normal;
 }
 
 .bid-amount {
     font-weight: bold;
     color: var(--text-green);
-    font-size: 1em;
+    font-size: 1rem;
 }
 
 
