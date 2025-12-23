@@ -134,6 +134,7 @@ width: 100%;
 
  /* --------------- Images  Additionnels --------------*/
  .additional-images-section {
+    background-color: transparent;
     margin-top: 20px;
     padding: 20px;
 }

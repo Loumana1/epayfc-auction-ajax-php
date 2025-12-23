@@ -79,7 +79,7 @@
 
                <!-- bloc images additionnel -->
             <?php if (count($pictures) > 1): ?>
-            <section class="section additional-images-section">
+            <section class="additional-images-section">
                 <h3 class="section-title">Additional Images</h3>
 
                 <div class="thumbnail-gallery">
@@ -155,22 +155,25 @@
         <h3 class="section-title pricing-title">Pricing</h3>
 
                 <!--- Prix ----->
-                <?php if ($item->has_bids ): ?>
+                <?php if ($item->get_Is_Auction()):?>
 
-                    <div class="price-row">
-                        <label class="price-label" >Current Bid</label>
-                    <p class="price-value-current-bid">€ <?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
-                    </div>
-                <?php else: ?>
+                        <?php if ($item->has_bids  ): ?>
+
+                            <div class="price-row">
+                                <label class="price-label" >Current Bid</label>
+                            <p class="price-value-current-bid">€ <?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
+                            </div>
+                        <?php else: ?>
 
 
-                    <div  class="price-row">
-                        <label class="price-label">Starting Bid</label>
-                        <p class="price-value-current-bid">€ <?= number_format($item->get_Starting_Bid(), 2, ',', '.') ?></p>
-                    </div>
+                            <div  class="price-row">
+                                <label class="price-label">Starting Bid</label>
+                                <p class="price-value-current-bid">€ <?= number_format($item->get_Starting_Bid(), 2, ',', '.') ?></p>
+                            </div>
+                        <?php endif; ?>
+
                 <?php endif; ?>
-
-          
+            
 
                 <?php if ($item->get_Buy_Now_Price() ): ?>
                     <div class="price-row">
