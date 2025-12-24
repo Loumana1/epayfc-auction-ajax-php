@@ -11,7 +11,7 @@ class User extends Model {
     private string $hashed_password;
     public string $role;
 
-    public function __construct(string $email, string $hashed_password) {
+    public function __construct(int $id, string $full_name, string $email, string $pseudo, string $hashed_password, string $role) {
         $this->id = $id;
         $this->full_name = $full_name;
         $this->email = $email;
