@@ -4,12 +4,20 @@ require_once "framework/Model.php";
 
 class User extends Model {
 
-     private string $email;
+    public int $id;
+    public string $full_name;
+    private string $email;
+    public string $pseudo;
     private string $hashed_password;
+    public string $role;
 
     public function __construct(string $email, string $hashed_password) {
+        $this->id = $id;
+        $this->full_name = $full_name;
         $this->email = $email;
+        $this->pseudo = $pseudo;
         $this->hashed_password = $hashed_password;
+        $this->role = $role;
     }
 
 
@@ -29,7 +37,14 @@ class User extends Model {
         if (!$row) {
             return null;
         }
-        return new User($row["email"], $row["hashed_password"]);
+        return new User(
+            (int)$row["id"], 
+            $row["full_name"], 
+            $row["email"], 
+            $row["pseudo"], 
+            $row["hashed_password"], 
+            $row["role"]
+        );
     }
 
     private static function validate_password(string $password): array {
