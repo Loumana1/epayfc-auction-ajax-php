@@ -46,6 +46,24 @@ class ControllerLogin extends Controller {
          $this->log_user($user);
          $this->redirect("browse_items"); 
          // encore a definir pour la redirection 
-    
+        }
+
+         public function login_as(): void {
+        if (!Configuration::is_dev()) {
+            $this->redirect();
+        }
+
+        
+       $mail = $_GET['param1'] ?? "";
+
+        if ($mail) {
+            $user = User::get_user_by_mail($mail);
+            if ($user) {
+                $this->log_user($user);
+                $this->redirect("browse_items");
+                return;
+            }
+        }
+        $this->redirect();
     }
 }

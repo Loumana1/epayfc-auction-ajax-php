@@ -47,8 +47,19 @@
     <p style="margin-top:15px; text-align:center;">
          <a href="user/register">New here ? Click here to subscribe !</a>
     </p>
-
-    <h3 style="margin-top:15px; text-align:center;"> For Debug Purpose </h3>
+    
+    <?php if (Configuration::is_dev()): ?>
+        <div style="margin-top:15px; border-top: 1px solid #444; padding-top: 10px;">
+            <h3 style="text-align:center; color: #aaa;"> For Debug Purpose </h3>
+            <div style="text-align:center;">
+                <a href="login/login_as/boverhaegen@epfc.eu" style="display:block; margin-bottom:3px;">login as boverhaegen@epfc.eu</a>   
+                <a href="login/login_as/quhouben@epfc.eu" style="display:block; margin-bottom:3px;">Login as quhouben@epfc.eu</a>
+                <a href="login/login_as/mamichel@epfc.eu" style="display:block; margin-bottom:3px;">login as mamichel@epfc.eu</a>
+                <a href="login/login_as/xapigeolet@epfc.eu" style="display:block; margin-bottom:3px;">login as xapigeolet@epfc.eu</a>
+                
+            </div>
+        </div>
+    <?php endif; ?>
 </div>
 
 </body>
