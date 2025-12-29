@@ -35,7 +35,7 @@ class Item extends Model{
         //v_items_status
         ?string $end_at = null,
         int $bid_count = 0,
-        ?float $max_bid = null,
+        float $max_bid= null,
         bool $is_direct_sale = false,
         bool $is_auction = false,
         bool $has_buy_now = false,
@@ -108,9 +108,17 @@ public function get_Starting_Bid(): float {
     public function get_Is_Auction(): bool {
         return $this->is_auction;
     }
+    public function get_Has_buy_now_price(): bool{
+        if( $this->buy_now_price!= null ) 
+            return true;
+
+         return false;
+
+    }
     public function get_Not_Purchased_Direct_Sale(): bool {
         return $this->not_purchased_direct_sale;
     }
+
 
     public function get_buy_now_reached(): bool{
         return $this->buy_now_reached;

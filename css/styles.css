@@ -35,7 +35,7 @@ header {
 
 /* Classe global que je reutilse  */
 .section {
-    padding: 20px;
+    padding: 15px;
     background-color: var(--Background-grey);
     border-radius: 8px;
 }
@@ -48,6 +48,12 @@ header {
     margin: 0 0 15px 0;
 }
 
+.section-title-small {
+       font-size: 1rem;
+    font-weight: 300;
+    color: var(--text-grey);
+    margin: 0 ;
+}
 .text-primary {
     color: var(--text-white);
     font-size: 1rem; 
@@ -168,18 +174,20 @@ width: 100%;
 .pricing-section {
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 7px;
 }
 
 .pricing-title {
-    /* Utilise .section-title */
+
+
+  font-size: 0.9rem;
 }
 
 .price-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px 0;
+    padding: 3px 0;
 }
 
 .price-label {
@@ -189,17 +197,25 @@ width: 100%;
     margin: 0;
 }
 
-.price-value,
+
 .price-value-current-bid {
     font-weight: 600;
     font-size: 1rem;
     margin: 0;
     text-align: right;
-}
-.price-value-current-bid {
     color: var(--text-green);
 }
 
+.price-texte-small-grey {
+    font-size: 0.875rem;
+    font-weight: 300;
+    color: var(--text-grey);
+    margin: 0;
+}
+.price-value {
+        font-weight: bold;
+    margin: 5px 0;
+}
 
 
 
@@ -211,9 +227,17 @@ width: 100%;
 }
 
 .btn-buy-now {
-    border: 1px solid var(--text-blue);
-    background: transparent;
-    color: var(--text-blue);
+    width: 100%;
+    padding: 12px;
+    background-color: transparent; 
+    color: var(--Button-light-blue); 
+    border: 2px solid var(--Button-light-blue); 
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+
 }
 
 .btn-place-bid:hover {
@@ -266,24 +290,17 @@ width: 100%;
     background-color: #45a049;
 }
 
-.btn-buy-now {
-    width: 100%;
-    padding: 12px;
-    background-color: var(--Button-light-blue);
-    color: var(--text-white);
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-}
 
-.btn-buy-now:hover {
-    background-color: #0b7dda;
-}
 
 /*------------------ Bloc seller info------------------*/
+.divider-line {
+    height: 1px;
+    background-color: rgba(149, 154, 173, 0.3);
+  /*  margin: 20px 0;*/
+    width: 100%;
+    padding: 0;
+    display: block;
+}
 .seller-section {
     margin-top: 16px;
 }
@@ -337,12 +354,7 @@ width: 100%;
     margin-bottom: 15px;
 }
 
-.bid-section-header h3 {
-    margin: 0;
-    color: var(--text-grey);
-    font-size: 1.25rem;
-    font-weight: 600;
-}
+
 
 .bid-count-tag{
 
@@ -434,4 +446,55 @@ width: 100%;
 
 .navBar a:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+/*------------------------Time Section--------------------*/
+.time-bar {
+    background-color: var(--Background-grey);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.time-display {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-white);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.time-icon {
+    font-size: 1.1rem;
+}
+
+.time-text {
+    font-family: monospace;
+}
+
+.time-controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.time-btn {
+    background-color: var(--Button-light-blue);
+    color: var(--text-white);
+
+}
+
+.time-btn:hover {
+    background-color:#575ff3;
+}
+
+.time-btn-reset {
+    background-color: var(--Button-light-green);
+}
+
+.time-btn-reset:hover {
+    background-color: #6ff678;
 }

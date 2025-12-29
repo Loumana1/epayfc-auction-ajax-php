@@ -58,7 +58,7 @@ $isOwner = $currentUserId && $item->get_is_Owner() == $currentUserId;
                // verifier si Enchere tjrs ouvert
         $now = AppTime::get_current_datetime();
         $endAt = $item->get_End_At();
-        
+       // A verififier  
         if ($endAt) { 
             $endAtDateTime = new DateTime($endAt);
             $nowDateTime = new DateTime($now);

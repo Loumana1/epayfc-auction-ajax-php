@@ -1,3 +1,7 @@
+<?php
+require_once "utils/AppTime.php";
+require_once "framework/Configuration.php";
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +16,7 @@
     <header>
         <h1>Item open</h1>
     </header>
+
     <!--------------------------------------->
 <!-- A faire
    -Creer les class et id pour chaque div ou presque
@@ -107,7 +112,7 @@
         <!-------Box  Bid History  --------->
 <section class="section bid-history-section">
     <div class="bid-section-header">
-        <h3 class="section-title">Bid History</h3>
+        <h3 class="section-title-small">Bid History</h3>
         <?php if (!empty($bids)): ?>
             <span class="bid-count-tag"><?= count($bids) ?> entries</span>
         <?php endif; ?>
@@ -131,7 +136,7 @@
 
         </div>
     <?php else: ?>
-        <p>No bids </p>
+        <p>No bids yet. Be the first to participate!</p>
     <?php endif; ?>
 </section>
 
@@ -144,7 +149,7 @@
 
 
 <!--------------------------------------->
-<!-- Sidebar -->
+            <!-- Sidebar -->
  <!---------------------------------------->
         <aside class="sidebar-content">
 
@@ -152,41 +157,59 @@
 <!----- Box Pricing section ------------->
 
  <section class="section pricing-section">
-        <h3 class="section-title pricing-title">Pricing</h3>
+        <h3 class="section-title-small pricing-title">Pricing</h3>
 
-                <!--- Prix ----->
-                <?php if ($item->get_Is_Auction()):?>
+                <!--- Bloc dynamic Prix ----->
+            
+                <!----- cas possibble:
+                - Annonce ouverte, utilisateur non créateur, pas de prix d'achat immédiat et pas encore d'enchère 
+                   -
+                   -
 
-                        <?php if ($item->has_bids  ): ?>
+                --->
+                <?php if ($item->get_Is_Auction() ):?>
+
+                
 
                             <div class="price-row">
-                                <label class="price-label" >Current Bid</label>
-                            <p class="price-value-current-bid">€ <?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
+                                <label class="price-label" >Current Bid €</label>
+                                <p class="price-value-current-bid"> € <?= number_format($item->get_Max_Bid() ?? $minBidAmount, 2, ',', '.') ?> </p>
                             </div>
-                        <?php else: ?>
+                            
+                            <?php if ($item->get_Buy_Now_Price() ): ?>
+                                    <div class="price-row">
+                                        <label class="price-label">Buy Now</label>
+                                        <p class="price-value">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
+                                    </div>
+                                    <?php else: ?>
 
 
-                            <div  class="price-row">
-                                <label class="price-label">Starting Bid</label>
-                                <p class="price-value-current-bid">€ <?= number_format($item->get_Starting_Bid(), 2, ',', '.') ?></p>
-                            </div>
-                        <?php endif; ?>
+                                            <div  class="price-row">
+                                                <label class="price-texte-small-grey" >Starting Bid € <?= number_format($item->get_Starting_Bid(), 2, ',', '.') ?> </label>
+                                            </div>
+
+                                <?php endif; ?>
+                <?php else: ?> 
+              
+                    <!---------------- Buy now seulement --------------->
+
+                                 <div class="price-row">
+                                        <label class="price-label">Price</label>
+                                        <p class="price-value-current-bid">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
+                                    </div> 
+     
+
 
                 <?php endif; ?>
             
 
-                <?php if ($item->get_Buy_Now_Price() ): ?>
-                    <div class="price-row">
-                        <label class="price-label">Buy Now</label>
-                        <p class="price-value">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
-                    </div>
-                <?php endif; ?>
+   
 
 
                 <!-- Button place bid , Formulmaire -->
-
-                <?php if ($isOpen && $item->get_Is_Auction() && $currentUser && !$isOwner): ?>
-                
+                <hr class="divider-line">
+                <?php if ($isOpen && $item->get_Is_Auction() && !$isOwner): ?>
+            
                         <form class="bid-form" >
 
                             <div class="bid-input-group">
@@ -199,22 +222,23 @@
                             <button type="submit" class="btn-place-bid">Place Bid</button>
                         </form>
 
-                        <?php elseif($isOpen) : ?>
 
-                             <!-- Si l'utilisateur n'est pas connecté et vente dispo-->
-                        <button type="button" class="btn-place-bid">log in to place a bid or buy now.</button>
+                        <?php elseif(!$isOpen): ?>
 
-                        <?php else: ?>
+                            <p class="price-texte-small-grey">  item not available </p>
 
-                            <span class="tag auction-sale-tag">Sale finished. item not available</span>
-
-          <?php endif; ?>
+                          <?php endif; ?>
 
 
                 <!---Button Buy now---->
-                              <?php if ($item->get_Buy_Now_Price()&& $isOpen && !$item->buy_now_reached && $currentUser && !$isOwner): ?>
+                              <?php if ($item->get_Has_buy_now_price() && $isOpen && $item->get_Is_Direct_Sale()): ?>
                     
-                            <button type="submit" class="btn-buy-now">
+                            <button type="submit" class="btn-place-bid">
+                                BUY NOW
+                            </button>
+                            <?php elseif($item->get_Has_buy_now_price() && $item->get_Is_Auction() && $isOpen ): ?>
+
+                                <button type="submit" class="btn-buy-now">
                                 Buy Now at € <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?>
                             </button>
                        
@@ -263,24 +287,61 @@
 
     <nav class="navBar">
 
+<!---commen
+            <a href="browse_items" >
+                <span >🔍</span>
+                <span>Browse</span>
+            </a>
 
-<a href="browse_items" >
-    <span >🔍</span>
-    <span>Browse</span>
-</a>
-
-    <a>
-        <span >🏠</span>
-        <span>My Items</span>
-    </a>
-<a>
-    <span >➕</span>
-    <span>Add Offer</span>
-</a>
-    <a>
-        <span>👤</span>
-        <span>Profile</span>
-    </a>
+                <a>
+                    <span >🏠</span>
+                    <span>My Items</span>
+                </a>
+            <a>
+                <span >➕</span>
+                <span>Add Offer</span>
+            </a>
+                <a>
+                    <span>👤</span>
+                    <span>Profile</span>
+                </a>
+                    -->
+    <nav class="time-bar">
+        <div class="time-display">
+            <span class="time-icon">🕐</span>
+            <span class="time-text"><?= date('d/m/y H:i', strtotime(AppTime::get_current_datetime())) ?></span>
+        </div>
+        <div class="time-controls">
+            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+                <input type="hidden" name="amount" value="1">
+                <input type="hidden" name="unit" value="hour">
+                <button type="submit" class="time-btn">+1h</button>
+            </form>
+            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+                <input type="hidden" name="amount" value="1">
+                <input type="hidden" name="unit" value="day">
+                <button type="submit" class="time-btn">+1day</button>
+            </form>
+            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+                <input type="hidden" name="amount" value="1">
+                <input type="hidden" name="unit" value="week">
+                <button type="submit" class="time-btn">+1week</button>
+            </form>
+            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+                <input type="hidden" name="amount" value="1">
+                <input type="hidden" name="unit" value="month">
+                <button type="submit" class="time-btn">+1month</button>
+            </form>
+            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+                <input type="hidden" name="amount" value="-1">
+                <input type="hidden" name="unit" value="month">
+                <button type="submit" class="time-btn">-1month</button>
+            </form>
+            <form method="post" action="<?= $web_root ?>time/reset" style="display: inline;">
+                <button type="submit" class="time-btn time-btn-reset">Reset</button>
+            </form>
+        </div>
+    </nav>
 
 </nav>
 

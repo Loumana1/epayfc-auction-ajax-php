@@ -1,5 +1,6 @@
-
 <?php
+require_once "framework/Model.php";
+
 class User extends Model {
     //Je prends tt les proprotes pour moment 
     //Verifier ce que les autres ont mis dans leur Model User 
