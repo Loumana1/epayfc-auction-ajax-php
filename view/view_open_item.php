@@ -249,7 +249,7 @@ require_once "framework/Configuration.php";
                         <!-- si l'utilisateur est le proprietaire -->
     <?php if ($isOwner && $isOpen): ?>
 
-        <p class="owner-message">You cannot bid on your own item.</p>
+        <p class="owner-message">You cannot bid on your own listing.</p>
     <?php endif; ?>
 
 
@@ -285,9 +285,9 @@ require_once "framework/Configuration.php";
         </aside>
     </div>
 
-    <nav class="navBar">
+    <nav class="navBar navBar-principal">
 
-<!---commen
+
             <a href="browse_items" >
                 <span >🔍</span>
                 <span>Browse</span>
@@ -305,8 +305,9 @@ require_once "framework/Configuration.php";
                     <span>👤</span>
                     <span>Profile</span>
                 </a>
-                    -->
-    <nav class="time-bar">
+    </nav>
+
+    <nav class="navBar navBar-time">
         <div class="time-display">
             <span class="time-icon">🕐</span>
             <span class="time-text"><?= date('d/m/y H:i', strtotime(AppTime::get_current_datetime())) ?></span>
@@ -343,7 +344,8 @@ require_once "framework/Configuration.php";
         </div>
     </nav>
 
-</nav>
+
+    
 
 
 
