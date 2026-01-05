@@ -42,22 +42,38 @@ class User extends Model {
             $row["full_name"], 
             $row["email"], 
             $row["pseudo"], 
-            $row["hashed_password"], 
+            $row["password"], 
             $row["role"]
         );
     }
 
     private static function validate_password(string $password): array {
         $errors = [];
-        if (strlen($password) < 8 || strlen($password) > 16) {
-            $errors[] = "Password length must be between 8 and 16.";
-        }
-        if (!preg_match("/[A-Z]/", $password) ||
-            !preg_match("/\d/", $password) ||
-            !preg_match("/['\";:,.\/?!\\-]/", $password)) {
-            $errors[] = "Password must contain one uppercase letter, one number and one punctuation mark.";
-        }
-        return $errors;
+       if (strlen($password) < 8 || strlen($password) > 16) {
+        $errors[] = "Password length must be between 8 and 16.";
+    }
+
+    // Majuscule
+    if (!preg_match("/[A-Z]/", $password)) {
+        $errors[] = "Password must contain at least one uppercase letter.";
+    }
+
+    // Minuscule
+    if (!preg_match("/[a-z]/", $password)) {
+        $errors[] = "Password must contain at least one lowercase letter.";
+    }
+
+    // Chiffre
+    if (!preg_match("/\d/", $password)) {
+        $errors[] = "Password must contain at least one number.";
+    }
+
+    // Non alphanumérique (IMPORTANT: conforme à l’énoncé)
+    if (!preg_match("/[^a-zA-Z0-9]/", $password)) {
+        $errors[] = "Password must contain at least one non-alphanumeric character.";
+    }
+
+    return $errors;
     }
 
 
