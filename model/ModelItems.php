@@ -88,5 +88,17 @@ public static function is_User_Highest_Bidder(int $userId, int $itemId): bool {
     return $highestBidderId !== false && (int)$highestBidderId === $userId;
 }
 
-
+public static function get_Highest_Bidder_Pseudo(int $itemId): string|false {
+    $query = self::execute(
+        "SELECT u.pseudo
+         FROM bids b
+         JOIN users u ON b.owner = u.id
+         WHERE b.item = :item_id
+         ORDER BY b.amount DESC, b.created_at DESC
+         LIMIT 1",
+        ['item_id' => $itemId]
+    );
+    $pseudo = $query->fetchColumn();
+    return $pseudo !== false ? (string)$pseudo : false;
+}
 }

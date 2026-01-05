@@ -19,11 +19,7 @@ class ControllerOpenItem extends Controller {
 
         // Verifier id item recu en url 
         // cas : 
-        // - contient rien
-        // - pas un chiffre 
         if (!$itemId || !is_numeric($itemId)) {
-            // pour tester
-            //remplacer ^par show browser
             throw new Exception("ERREUR: Pas d'ID d'item fourni" );
 
         }
@@ -36,8 +32,6 @@ class ControllerOpenItem extends Controller {
         // Verifier si id correspond a un item de la db
         //ne doit pas etre vide --> sinon retour browser 
         if ($item === false) {
-            // pour tester
-            //remplacer ^par show browser
               throw new Exception("ERREUR: Item avec ID $itemId n'existe pas");
         }
 
@@ -85,6 +79,7 @@ $minBidAmount = $item->get_Max_Bid()
 //toute les donnés a utiliser dans la vue 
     $data = [
         'item' => $item,
+        'itemId' => $itemId,
         'pictures' => $pictures,
         'seller' => $seller,
         'isOpen' => $isOpen,

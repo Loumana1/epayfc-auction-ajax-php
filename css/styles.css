@@ -1,18 +1,24 @@
 :root {
---Background-grey: rgb(37, 36, 36);
+--Background-grey: #27272A;
+--Background-grey-2: #212529;
 --Background-blue: #0E172Aff;
---naBarv-blue: #1E293Bff;
---Button-light-green: #16AD79ff;
+--naBarv-blue: #1E293B;
+--Button-light-green: #15B57Eff;
 --Button-light-grey:  rgb(95, 95, 99);
---Button-light-blue:  #4899F7ff; 
+
+--Button-light-blue: #468FE5ff;
 --Button-Wight :#dbd8d8;
+--navBar-grey:#2B3135;
 
 --text-white: #F8F9FAff;
---text-blue: #4899F7ff;
---text-grey: rgb(149, 154, 173);
---text-green:rgb(1, 198, 129); 
-}
+--text-blue:#8190A5;
+--text-grey: rgb(192, 210, 235);
+--text-green:#12B981ff; 
 
+
+--slate-grey: #6C757Dff;
+
+}
 body {
     background-color: var(--Background-blue);
     font-family: Arial, Helvetica, sans-serif;
@@ -288,13 +294,12 @@ max-width: 1400px;
     border: none;
     border-radius: 4px;
     font-size: 1rem;
-    font-weight: bold;
     cursor: pointer;
     margin-top: 10px;
 }
 
 .btn-place-bid:hover {
-    background-color: #45a049;
+    background-color:rgba(17, 227, 157, 0.897)
 }
 
 
@@ -313,6 +318,7 @@ max-width: 1400px;
 }
 
 .seller-section h3 {
+    
 
 }
 
@@ -330,7 +336,7 @@ max-width: 1400px;
 }
 
 .seller-pic.placeholder {
-    background-color: var(--Button-light-grey)
+    background-color: var(--slate-grey)
 }
 
 .seller-name {
@@ -341,17 +347,13 @@ max-width: 1400px;
 }
 
 
-.seller-status {
-    margin: 2px 0 0 0;
-    font-size: 0.875rem;
-    color: var(--text-grey);
-}
+
 
 
 /* ------------BID HISTORY SECTION ------------- */
 .bid-history-section {
     margin-top: 30px;
-    /* Utilise la classe .section de base */
+    background-color: var(--Background-grey-2);
 }
 
 .bid-section-header {
@@ -420,6 +422,103 @@ max-width: 1400px;
 }
 
 
+.disabled-form {
+    position: relative;
+    opacity: 0.6;
+     background-color: rgba(0, 0, 0, 0.1); 
+}
+/*desable form and button */
+.disabled-form::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.btn-place-bid.disabled,
+.btn-buy-now.disabled {
+    opacity: 0.5;
+ pointer-events: none;
+    background-color:var(--Button-light-green) ;
+}
+
+.btn-place-bid.disabled:hover,
+.btn-buy-now.disabled:hover {
+    background-color: var(--Button-light-green);
+}
+
+.bid-input-group.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+
+
+
+
+
+/* ------------------Owner Section------------------- */
+.owner-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--Background-grey);
+    border-radius: 8px;
+   
+}
+
+.owner-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-white);
+    margin: 0 0 15px 0;
+}
+
+.owner-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.btn-manage-item {
+    display: block;
+    padding: 10px 5px;
+    background-color: transparent;
+    border: 1px solid  #27c2fb;
+    border-radius: 4px;
+    color: #27c2fb;
+    text-align: center;
+    font-size: 0.9rem;
+
+}
+
+.btn-manage-item:hover {
+    background-color:#48c7f52f;
+}
+
+.btn-delete-item {
+    display: block;
+    padding: 10px 15px;
+       background-color: transparent;
+    border: 1px solid  #dc2626;
+    color:  #dc2626;;
+    border-radius: 4px;
+    text-align: center;
+
+        font-size: 0.9rem;
+
+}
+
+.btn-delete-item:hover {
+    background-color: #e15b5b25;
+}
+
 
 
 
@@ -447,7 +546,7 @@ max-width: 1400px;
     display: flex;
     flex-direction: column;
     align-items: center;
-
+color: var(--text-blue);
     gap: 5px;
     margin: 0 120px; 
     padding: 10px;
@@ -461,12 +560,12 @@ max-width: 1400px;
 .navBar-time {
     bottom: 0; 
     height: 50px;
-    background-color: var(--Background-grey);
+    background-color: var(--navBar-grey);
     justify-content: space-between;
     padding: 10px 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-/*------------------------Time Section--------------------*/
+/*------------------------Time Bar Section--------------------*/
 .time-bar {
     background-color: var(--Background-grey);
     display: flex;
@@ -485,12 +584,10 @@ max-width: 1400px;
     font-weight: 500;
 }
 
-.time-icon {
-    font-size: 1.1rem;
-}
 
 .time-text {
-    font-family: monospace;
+    font-family: Arial, Helvetica, sans-serif
+    ;
 }
 
 .time-controls {
@@ -506,7 +603,7 @@ max-width: 1400px;
 }
 
 .time-btn:hover {
-    background-color:#575ff3;
+    background-color:#17bcefbb;
 }
 
 .time-btn-reset {

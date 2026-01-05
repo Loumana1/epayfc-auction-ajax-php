@@ -208,49 +208,107 @@ require_once "framework/Configuration.php";
 
                 <!-- Button place bid , Formulmaire -->
                 <hr class="divider-line">
-                <?php if ($isOpen && $item->get_Is_Auction() && !$isOwner): ?>
+                <?php if ($isOpen && $item->get_Is_Auction() ): ?>
             
-                        <form class="bid-form" >
+                         <form class="bid-form <?= $isOwner ? 'disabled-form' : '' ?>" 
+          method="post" 
+          action="<?= $web_root ?>bid/create"
+          <?= $isOwner ? 'onsubmit="return false;"' : '' ?>>
+                            <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
 
-                            <div class="bid-input-group">
+                            <div class="bid-input-group <?= $isOwner ? 'disabled' : '' ?>">
                                 <span >€</span>
                                 <input type="number"
-                                min="<?= $minBidAmount ?>" 
-                                 required>
+                               name="amount" 
+                                step="1.0" 
+                                min="<?= number_format($minBidAmount, 2, '.', '') ?>" 
+                                value="<?= number_format($minBidAmount, 2, '.', '') ?>" 
+                                required>
 
                             </div>
-                            <button type="submit" class="btn-place-bid">Place Bid</button>
-                        </form>
-
-
-                        <?php elseif(!$isOpen): ?>
-
-                            <p class="price-texte-small-grey">  item not available </p>
-
-                          <?php endif; ?>
-
-
+                            <button type="submit" class="btn-place-bid"<?= $isOwner ? 'disabled' : '' ?>"
+                            <?= $isOwner ? 'disabled' : '' ?>>Place Bid
+                        </button>
+                <?php endif ?>
                 <!---Button Buy now---->
-                              <?php if ($item->get_Has_buy_now_price() && $isOpen && $item->get_Is_Direct_Sale()): ?>
+                        <?php if ($item->get_Has_buy_now_price() && $isOpen && $item->get_Is_Direct_Sale() ): ?>
+
+                                    <form method="post"
+                                     action="bid/create_bid"
+
+                                                class="<?= ($isOwner || !$currentUser) ? 'disabled-form' : '' ?>"
+                                                <?= ($isOwner || !$currentUser) ? 'onsubmit="return false;"' : '' ?>>
+
+                                        <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                                        <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
+
+                                    <button type="submit"
+
+                                               class="btn-place-bid <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>"
+                                              <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>>
+                                              BUY NOW</button>
+                                    </form>
+
+                            <?php elseif($item->get_Has_buy_now_price() && $item->get_Is_Auction() && $isOpen  ): ?>
+                                        <form method="post"
+                                         action="bid/create_bid"
+
+                                                 class="<?= ($isOwner || !$currentUser) ? 'disabled-form' : '' ?>"
+                                             <?= ($isOwner || !$currentUser) ? 'onsubmit="return false;"' : '' ?>>
+
+                                            <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                                            <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
+
+                                                <button type="submit"
+                                                 class="btn-buy-now" <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>"
+                                                     <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>>
+                                                Buy Now at € <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?>
+                                            </button> </form>
+
+                                       
+                                            
+                             <?php endif; ?>
+
+                            <?php if ($isOwner && $isOpen): ?>
+                                <p class="price-texte-small-grey">You cannot bid on your own listing.</p>
+                                 <?php elseif (!$currentUser): ?>
+                                     <p class="price-texte-small-grey">Please log in to place a bid</p>
+                            <?php endif; ?>
+                 
+
+
+
+
+
+            <?php if(!$isOpen): ?>
+
+                
+
+                            <?php if ($isHighestBidder && $currentUser): ?>
+                                    <p class="price-texte-small-grey">Congratulation! You purchased this item for € <?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
+
+                                <?php elseif ($isOwner && $item->has_bids): ?>
+                                    <p class="price-texte-small-grey"><?= ModelItems::get_Highest_Bidder_Pseudo($itemId)  ?>
+
+                                        won this item for €<?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
+
+                                <?php elseif ($isOwner && !$item->has_bids): ?>
+                                    <p class="price-texte-small-grey">This listing ended without a buyer.</p>
+
+                                <?php elseif ($item->has_bids): ?>
+                                    <p class="price-texte-small-grey">Final price: €<?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
+
+                                    <?php else: ?>
+                                        <p class="price-texte-small-grey">  item not available for sale.</p>
+                                <?php endif; ?>
+
+            <?php endif; ?>
+
+
+
+
+
                     
-                            <button type="submit" class="btn-place-bid">
-                                BUY NOW
-                            </button>
-                            <?php elseif($item->get_Has_buy_now_price() && $item->get_Is_Auction() && $isOpen ): ?>
-
-                                <button type="submit" class="btn-buy-now">
-                                Buy Now at € <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?>
-                            </button>
-                       
-                    <?php endif; ?>
-
-
-                    
-                        <!-- si l'utilisateur est le proprietaire -->
-    <?php if ($isOwner && $isOpen): ?>
-
-        <p class="owner-message">You cannot bid on your own listing.</p>
-    <?php endif; ?>
 
 
 </section>
@@ -263,7 +321,7 @@ require_once "framework/Configuration.php";
 
             <?php if ($seller): ?>
             <section class="section seller-section">
-                <h3 class="section-title">Seller Information</h3>
+                <h3 class="section-title-small">Seller Information</h3>
                 <div class="seller-info" >
                     <?php if ($seller->has_Picture()): ?>
                         <img src="<?= $seller->get_Thumbnail_Path() ?>" 
@@ -274,13 +332,42 @@ require_once "framework/Configuration.php";
 
                     <div  class="seller-details">
                         <h2 class="seller-name"><?= $seller->pseudo ?></h2>
-                        <p class="seller-status">Member</p>
+                        <p class="price-texte-small-grey">Member</p>
                         
                     </div>
                 </div>
 
             </section> 
             <?php endif; ?>
+
+            <!-- Section Manage item pour le owner -->
+<?php if ($isOwner): ?>
+    <div class="owner-section">
+        <h4 class="owner-section-title">Manage Your Item</h4>
+        
+      
+            <!-- Item peut être modif car pas d'enchère 
+              Afaire : 
+               -rajoutr des cnditions 
+            -->
+
+
+            <div class="owner-actions">
+                <a href="<?= $web_root ?>add_edit_item?param1=<?= $item->get_Id() ?>" class="btn-manage-item">
+                    Edit Item Details
+                </a>
+                <a href="<?= $web_root ?>manage_images?param1=<?= $item->get_Id() ?>" class="btn-manage-item">
+                    Manage Images
+                </a>
+                <a href="<?= $web_root ?>delete_confirm?param1=<?= $item->get_Id() ?>" class="btn-delete-item">
+                    Delete Item
+                </a>
+            </div>
+
+
+
+    </div>
+<?php endif; ?>
 
         </aside>
     </div>
@@ -309,36 +396,35 @@ require_once "framework/Configuration.php";
 
     <nav class="navBar navBar-time">
         <div class="time-display">
-            <span class="time-icon">🕐</span>
             <span class="time-text"><?= date('d/m/y H:i', strtotime(AppTime::get_current_datetime())) ?></span>
         </div>
         <div class="time-controls">
-            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+            <form method="post" action="time/advance" style="display: inline;">
                 <input type="hidden" name="amount" value="1">
                 <input type="hidden" name="unit" value="hour">
                 <button type="submit" class="time-btn">+1h</button>
             </form>
-            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+            <form method="post" action="time/advance" style="display: inline;">
                 <input type="hidden" name="amount" value="1">
                 <input type="hidden" name="unit" value="day">
                 <button type="submit" class="time-btn">+1day</button>
             </form>
-            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+            <form method="post" action="time/advance" style="display: inline;">
                 <input type="hidden" name="amount" value="1">
                 <input type="hidden" name="unit" value="week">
                 <button type="submit" class="time-btn">+1week</button>
             </form>
-            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+            <form method="post" action="time/advance" style="display: inline;">
                 <input type="hidden" name="amount" value="1">
                 <input type="hidden" name="unit" value="month">
                 <button type="submit" class="time-btn">+1month</button>
             </form>
-            <form method="post" action="<?= $web_root ?>time/advance" style="display: inline;">
+            <form method="post" action="time/advance" style="display: inline;">
                 <input type="hidden" name="amount" value="-1">
                 <input type="hidden" name="unit" value="month">
                 <button type="submit" class="time-btn">-1month</button>
             </form>
-            <form method="post" action="<?= $web_root ?>time/reset" style="display: inline;">
+            <form method="post" action="time/reset" style="display: inline;">
                 <button type="submit" class="time-btn time-btn-reset">Reset</button>
             </form>
         </div>
