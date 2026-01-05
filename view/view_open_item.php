@@ -25,36 +25,35 @@ require_once "framework/Configuration.php";
 --> 
 <!----------------------------------------> 
 
-    <div class="content-wrapper">
+         <div class="content-wrapper">
     
-<!--------------------------------------->
-<!-- Main container--> 
-<!----------------------------------------> 
-        <main class="main-content">
-            
-            <!--Bloc  grande image -->
-            <section>
+        <!--------------------------------------->
+        <!-- Main container--> 
+        <!----------------------------------------> 
+            <main class="main-content">
+                
+                <!--Bloc  grande image -->
+                <section>
+                    <?php if (!empty($pictures)): ?>
+                        <img   src="<?= $pictures[0]['picture_path'] ?>" 
+                                alt="<?=  $item->get_Title() ?>"
+                                class="main-item-image">
+                            
+                    <?php else: ?>
+                            <div >Image paas là! </div>
+                    <?php endif; ?>
 
-                        <?php if (!empty($pictures)): ?>
-                    <img   src="<?= $pictures[0]['picture_path'] ?>" 
-                            alt="<?=  $item->get_Title() ?>"
-
-                            class="main-item-image">
-                        <?php else: ?>
-                        <div >Image paas là! </div>
-                        <?php endif; ?>
-            </section>
-
-                    <!-- Bloc item description section -->
-            <section class="section item-details-section">
-                        <h2><?= $item->get_Title() ?></h2>
-
-                <p class="item-description"><?= $item->get_Description() ?? 'No description' ?></p>
-                        
+                </section>
 
 
+                        <!-- Bloc item description section -->
+                <section class="section item-details-section">
 
-                        <!--button type de vents section -->
+                    <h2><?= $item->get_Title() ?></h2>
+
+                    <p class="item-description"><?= $item->get_Description() ?? 'No description' ?></p>
+
+                            <!--button type de vents section -->
                     <div class="button-type-of-sale">
 
                         <?php if ($item->get_Is_Auction()): ?>
@@ -68,250 +67,239 @@ require_once "framework/Configuration.php";
 
                     </div>
 
-            
-                        <div class="item-dates">
+                
+                    <div class="item-dates">
 
-                            <p><strong>Start:</strong> <?= date('d/m/Y H:i:s', 
-                            strtotime($item->get_Created_At())) ?></p>
+                        <p><strong>Start:</strong> <?= date('d/m/Y H:i:s', 
+                        strtotime($item->get_Created_At())) ?></p>
 
-                            <p><strong>Ends:</strong> <?= $item->get_End_At() ? date('d/m/Y H:i:s',
-                             strtotime($item->get_End_At())) : 'N/A' ?></p>
+                        <p><strong>Ends:</strong> <?= $item->get_End_At() ? date('d/m/Y H:i:s',
+                        strtotime($item->get_End_At())) : 'N/A' ?></p>
 
-                        </div>
-
-
-            </section>
-
-               <!-- bloc images additionnel -->
-            <?php if (count($pictures) > 1): ?>
-            <section class="additional-images-section">
-                <h3 class="section-title">Additional Images</h3>
-
-                <div class="thumbnail-gallery">
-
-                    <?php foreach ($pictures as $index => $picture): ?>
-
-        
-
-                        <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg',
-                                    $picture['picture_path']) ?>" 
-                                    alt="Thumbnail <?= $index + 1 ?>"
-                       
-                         >
-             <?php endforeach; ?>    
-                </div>
-            </section>
-            <?php endif; ?>
-  
-
-
-
-
-
-
-        <!-------Box  Bid History  --------->
-<section class="section bid-history-section">
-    <div class="bid-section-header">
-        <h3 class="section-title-small">Bid History</h3>
-        <?php if (!empty($bids)): ?>
-            <span class="bid-count-tag"><?= count($bids) ?> entries</span>
-        <?php endif; ?>
-    </div>
-    
-    <?php if (!empty($bids)): ?>
-        <div class="bid-list">
-
-            <?php foreach ($bids as $bid): ?>
-                <div class="bid-row">
-
-                    <div class="bid-info">
-                    <span class="bidder-name"><?=$bid['pseudo'] ?></span>
-
-                    <span class="bid-date"><?= date('d/m/Y H:i:s', strtotime($bid['created_at'])) ?></span>
                     </div>
 
-                    <span class="bid-amount">€ <?= number_format($bid['amount'], 2, ',', '.') ?></span>
-                </div>
-            <?php endforeach; ?>
 
-        </div>
-    <?php else: ?>
-        <p>No bids yet. Be the first to participate!</p>
-    <?php endif; ?>
-</section>
+                </section>
+
+                <!-- bloc images additionnel -->
+                <?php if (count($pictures) > 1): ?>
+
+                    <section class="additional-images-section">
+                        <h3 class="section-title">Additional Images</h3>
+                        <div class="thumbnail-gallery">
+                            <?php foreach ($pictures as $index => $picture): ?>
+
+                                <img src="<?=  str_replace('.jpg', '_thumbnail.jpg',
+                                            $picture['picture_path']) ?>" 
+                                            alt="Thumbnail <?= $index + 1 ?>" >
+                            <?php endforeach; ?>    
+
+                        </div>
+                    </section>
+                <?php endif; ?>
+    
 
 
 
 
-        </main>
+
+
+            <!-------Box  Bid History  --------->
+                <section class="section bid-history-section">
+                    <div class="bid-section-header">
+                        <h3 class="section-title-small">Bid History</h3>
+                        <?php if (!empty($bids)): ?>
+                            <span class="bid-count-tag"><?= count($bids) ?> entries</span>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <?php if (!empty($bids)): ?>
+                        <div class="bid-list">
+
+                            <?php foreach ($bids as $bid): ?>
+                                <div class="bid-row">
+
+                                    <div class="bid-info">
+                                    <span class="bidder-name"><?=$bid['pseudo'] ?></span>
+
+                                    <span class="bid-date"><?= date('d/m/Y H:i:s', strtotime($bid['created_at'])) ?></span>
+                                    </div>
+
+                                    <span class="bid-amount">€ <?= number_format($bid['amount'], 2, ',', '.') ?></span>
+                                </div>
+                            <?php endforeach; ?>
+
+                        </div>
+                    <?php else: ?>
+                        <p>No bids yet. Be the first to participate!</p>
+                    <?php endif; ?>
+                </section>
 
 
 
 
-<!--------------------------------------->
-            <!-- Sidebar -->
- <!---------------------------------------->
+            </main>
+
+
+
+
+        <!--------------------------------------->
+                    <!-- Sidebar -->
+        <!---------------------------------------->
         <aside class="sidebar-content">
 
 
-<!----- Box Pricing section ------------->
+        <!----- Box Pricing section ------------->
 
- <section class="section pricing-section">
-        <h3 class="section-title-small pricing-title">Pricing</h3>
+            <section class="section pricing-section">
+                <h3 class="section-title-small pricing-title">Pricing</h3>
 
-                <!--- Bloc dynamic Prix ----->
-            
-                <!----- cas possibble:
-                - Annonce ouverte, utilisateur non créateur, pas de prix d'achat immédiat et pas encore d'enchère 
-                   -
-                   -
+                        <!--- Bloc dynamic Prix ----->
+                    
+                        <!----- cas possibble:
+                        - Annonce ouverte, utilisateur non créateur, pas de prix d'achat immédiat et pas encore d'enchère 
+                        -
+                        -
 
-                --->
-                <?php if ($item->get_Is_Auction() ):?>
+                        --->
+                        <?php if ($item->get_Is_Auction() ):?>
 
-                
+                        
 
-                            <div class="price-row">
-                                <label class="price-label" >Current Bid €</label>
-                                <p class="price-value-current-bid"> € <?= number_format($item->get_Max_Bid() ?? $minBidAmount, 2, ',', '.') ?> </p>
-                            </div>
-                            
-                            <?php if ($item->get_Buy_Now_Price() ): ?>
+                                <div class="price-row">
+                                    <label class="price-label" >Current Bid €</label>
+                                    <p class="price-value-current-bid"> € <?= number_format($item->get_Max_Bid() ?? $minBidAmount, 2, ',', '.') ?> </p>
+                                </div>
+                                
+                                <?php if ($item->get_Buy_Now_Price() ): ?>
                                     <div class="price-row">
                                         <label class="price-label">Buy Now</label>
                                         <p class="price-value">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
                                     </div>
-                                    <?php else: ?>
+                                <?php else: ?>
 
 
-                                            <div  class="price-row">
-                                                <label class="price-texte-small-grey" >Starting Bid € <?= number_format($item->get_Starting_Bid(), 2, ',', '.') ?> </label>
-                                            </div>
+                                    <div  class="price-row">
+                                        <label class="price-texte-small-grey" >Starting Bid € <?= number_format($item->get_Starting_Bid(), 2, ',', '.') ?> </label>
+                                    </div>
 
                                 <?php endif; ?>
-                <?php else: ?> 
-              
-                    <!---------------- Buy now seulement --------------->
+                        <?php else: ?> 
+                    
+                            <!---------------- Buy now seulement --------------->
 
-                                 <div class="price-row">
+                                <div class="price-row">
                                         <label class="price-label">Price</label>
                                         <p class="price-value-current-bid">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
                                     </div> 
-     
-
-
-                <?php endif; ?>
             
 
-   
+
+                        <?php endif; ?>
+                    
+
+        
 
 
-                <!-- Button place bid , Formulmaire -->
-                <hr class="divider-line">
-                <?php if ($isOpen && $item->get_Is_Auction() ): ?>
-            
-                         <form class="bid-form <?= $isOwner ? 'disabled-form' : '' ?>" 
-          method="post" 
-          action="<?= $web_root ?>bid/create"
-          <?= $isOwner ? 'onsubmit="return false;"' : '' ?>>
-                            <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
-
-                            <div class="bid-input-group <?= $isOwner ? 'disabled' : '' ?>">
-                                <span >€</span>
-                                <input type="number"
-                               name="amount" 
-                                step="1.0" 
-                                min="<?= number_format($minBidAmount, 2, '.', '') ?>" 
-                                value="<?= number_format($minBidAmount, 2, '.', '') ?>" 
-                                required>
-
-                            </div>
-                            <button type="submit" class="btn-place-bid"<?= $isOwner ? 'disabled' : '' ?>"
-                            <?= $isOwner ? 'disabled' : '' ?>>Place Bid
-                        </button>
-                <?php endif ?>
-                <!---Button Buy now---->
+                        <!-- Button place bid , Formulmaire -->
+                        <hr class="divider-line">
+                        <?php if ($isOpen && $item->get_Is_Auction() ): ?>
+                    
+                                <form class="bid-form <?= ($isOwner || !$currentUser) ? 'disabled-form' : '' ?>" 
+                                method="post" 
+                                action="bid/create"
+                                <?=($isOwner || !$currentUser) ? 'onsubmit="return false;"' : '' ?>>
+                                    <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                                    <div class="bid-input-group <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>">
+                                        <span >€</span>
+                                        <input type="number"
+                                        name="amount" 
+                                        step="1.0" 
+                                        min="<?= number_format($minBidAmount, 2, '.', '') ?>" 
+                                        value="<?= number_format($minBidAmount, 2, '.', '') ?>" 
+                                        required>
+                                    </div>
+                                    <button type="submit" class="btn-place-bid"<?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>"
+                                    <?= $isOwner ? 'disabled' : '' ?>>Place Bid
+                                </button>
+                        <?php endif ?>
+                        <!---Button Buy now---->
                         <?php if ($item->get_Has_buy_now_price() && $isOpen && $item->get_Is_Direct_Sale() ): ?>
 
                                     <form method="post"
-                                     action="bid/create_bid"
+                                    action="bid/create_bid"
+                                    class="<?= ($isOwner || !$currentUser) ? 'disabled-form' : '' ?>"
+                                    <?= ($isOwner || !$currentUser) ? 'onsubmit="return false;"' : '' ?>>
 
-                                                class="<?= ($isOwner || !$currentUser) ? 'disabled-form' : '' ?>"
-                                                <?= ($isOwner || !$currentUser) ? 'onsubmit="return false;"' : '' ?>>
-
-                                        <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
-                                        <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
+                                    <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                                    <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
 
                                     <button type="submit"
-
-                                               class="btn-place-bid <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>"
-                                              <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>>
-                                              BUY NOW</button>
+                                    class="btn-place-bid <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>"
+                                            <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>>
+                                            BUY NOW</button>
                                     </form>
 
-                            <?php elseif($item->get_Has_buy_now_price() && $item->get_Is_Auction() && $isOpen  ): ?>
-                                        <form method="post"
-                                         action="bid/create_bid"
+                        <?php elseif($item->get_Has_buy_now_price() && $item->get_Is_Auction() && $isOpen  ): ?>
+                                <form method="post"
+                                action="bid/create_bid"
 
-                                                 class="<?= ($isOwner || !$currentUser) ? 'disabled-form' : '' ?>"
-                                             <?= ($isOwner || !$currentUser) ? 'onsubmit="return false;"' : '' ?>>
+                                        class="<?= ($isOwner || !$currentUser) ? 'disabled-form' : '' ?>"
+                                    <?= ($isOwner || !$currentUser) ? 'onsubmit="return false;"' : '' ?>>
 
-                                            <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
-                                            <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
+                                    <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                                    <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
 
-                                                <button type="submit"
-                                                 class="btn-buy-now" <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>"
-                                                     <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>>
-                                                Buy Now at € <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?>
-                                            </button> </form>
-
-                                       
-                                            
-                             <?php endif; ?>
+                                        <button type="submit"
+                                        class="btn-buy-now" <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>"
+                                            <?= ($isOwner || !$currentUser) ? 'disabled' : '' ?>>
+                                        Buy Now at € <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?>
+                                    </button> </form>
+                        <?php endif; ?>
 
                             <?php if ($isOwner && $isOpen): ?>
                                 <p class="price-texte-small-grey">You cannot bid on your own listing.</p>
-                                 <?php elseif (!$currentUser): ?>
-                                     <p class="price-texte-small-grey">Please log in to place a bid</p>
+                            <?php elseif (!$currentUser && $isOpen): ?>
+                                    <p class="price-texte-small-grey">Please log in to place a bid</p>
                             <?php endif; ?>
-                 
+                        
 
 
 
 
 
-            <?php if(!$isOpen): ?>
+                        <?php if(!$isOpen): ?>
 
-                
+                        
 
                             <?php if ($isHighestBidder && $currentUser): ?>
                                     <p class="price-texte-small-grey">Congratulation! You purchased this item for € <?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
 
-                                <?php elseif ($isOwner && $item->has_bids): ?>
+                            <?php elseif ($isOwner && $item->has_bids): ?>
                                     <p class="price-texte-small-grey"><?= ModelItems::get_Highest_Bidder_Pseudo($itemId)  ?>
 
                                         won this item for €<?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
 
-                                <?php elseif ($isOwner && !$item->has_bids): ?>
+                            <?php elseif ($isOwner && !$item->has_bids): ?>
                                     <p class="price-texte-small-grey">This listing ended without a buyer.</p>
 
-                                <?php elseif ($item->has_bids): ?>
+                            <?php elseif ($item->has_bids): ?>
                                     <p class="price-texte-small-grey">Final price: €<?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
 
-                                    <?php else: ?>
+                            <?php else: ?>
                                         <p class="price-texte-small-grey">  item not available for sale.</p>
-                                <?php endif; ?>
+                            <?php endif; ?>
 
-            <?php endif; ?>
-
-
+                        <?php endif; ?>
 
 
 
-                    
 
 
-</section>
+                            
+
+
+            </section>
 
 
          
@@ -320,54 +308,54 @@ require_once "framework/Configuration.php";
 
 
             <?php if ($seller): ?>
-            <section class="section seller-section">
-                <h3 class="section-title-small">Seller Information</h3>
-                <div class="seller-info" >
-                    <?php if ($seller->has_Picture()): ?>
-                        <img src="<?= $seller->get_Thumbnail_Path() ?>" 
-                             class="seller-pic">
-                    <?php else: ?>
-                        <div  class="seller-pic placeholder"> </div>
-                    <?php endif; ?>
+                <section class="section seller-section">
+                    <h3 class="section-title-small">Seller Information</h3>
+                    <div class="seller-info" >
+                        <?php if ($seller->has_Picture()): ?>
+                            <img src="<?= $seller->get_Thumbnail_Path() ?>" 
+                                    class="seller-pic">
+                        <?php else: ?>
+                            <div  class="seller-pic placeholder"> </div>
+                        <?php endif; ?>
 
-                    <div  class="seller-details">
-                        <h2 class="seller-name"><?= $seller->pseudo ?></h2>
-                        <p class="price-texte-small-grey">Member</p>
-                        
+                        <div  class="seller-details">
+                            <h2 class="seller-name"><?= $seller->pseudo ?></h2>
+                            <p class="price-texte-small-grey">Member</p>
+                            
+                        </div>
                     </div>
-                </div>
 
-            </section> 
+                </section> 
             <?php endif; ?>
 
             <!-- Section Manage item pour le owner -->
-<?php if ($isOwner): ?>
-    <div class="owner-section">
-        <h4 class="owner-section-title">Manage Your Item</h4>
-        
-      
-            <!-- Item peut être modif car pas d'enchère 
-              Afaire : 
-               -rajoutr des cnditions 
-            -->
+            <?php if ($isOwner): ?>
+                <div class="owner-section">
+                    <h4 class="owner-section-title">Manage Your Item</h4>
+                    
+                
+                        <!-- Item peut être modif car pas d'enchère 
+                        Afaire : 
+                        -rajoutr des cnditions 
+                        -->
 
 
-            <div class="owner-actions">
-                <a href="<?= $web_root ?>add_edit_item?param1=<?= $item->get_Id() ?>" class="btn-manage-item">
-                    Edit Item Details
-                </a>
-                <a href="<?= $web_root ?>manage_images?param1=<?= $item->get_Id() ?>" class="btn-manage-item">
-                    Manage Images
-                </a>
-                <a href="<?= $web_root ?>delete_confirm?param1=<?= $item->get_Id() ?>" class="btn-delete-item">
-                    Delete Item
-                </a>
-            </div>
+                        <div class="owner-actions">
+                            <a href="add_edit_item?param1=<?= $item->get_Id() ?>" class="btn-manage-item">
+                                Edit Item Details
+                            </a>
+                            <a href="manage_images?param1=<?= $item->get_Id() ?>" class="btn-manage-item">
+                                Manage Images
+                            </a>
+                            <a href="delete_confirm?param1=<?= $item->get_Id() ?>" class="btn-delete-item">
+                                Delete Item
+                            </a>
+                        </div>
 
 
 
-    </div>
-<?php endif; ?>
+                </div>
+            <?php endif; ?>
 
         </aside>
     </div>
