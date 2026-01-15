@@ -10,11 +10,21 @@ require_once "framework/Configuration.php";
     <base href="<?= $web_root ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
 
     <header>
-        <h1>Item open</h1>
+    <div class="header-content">
+        <a href="browse_items" class="header-back-btn">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h1 class="header-title">
+            <i class="bi bi-cart"></i>
+            Item open
+        </h1>
+        <div class="header-spacer"></div> <!-- Pour centrer le titre -->
+    </div>
     </header>
 
     <!--------------------------------------->
@@ -406,26 +416,27 @@ require_once "framework/Configuration.php";
 
 
             <a href="browse_items" >
-                <span >🔍</span>
+            <i class="bi bi-search"></i>
                 <span>Browse</span>
             </a>
     <?php if ($currentUser): ?>
                 <a>
-                    <span >🏠</span>
+           
+                <i class="bi bi-house"></i>
                     <span>My Items</span>
                 </a>
             <a>
-                <span >➕</span>
+            <i class="bi bi-plus-circle"></i>
                 <span>Add Offer</span>
             </a>
                 <a>
-                    <span>👤</span>
+                <i class="bi bi-person"></i>
                     <span>Profile</span>
                 </a>
     <?php else: ?>
 
             <a href="login">
-                <span>👤</span>
+            <i class="bi bi-person-plus"></i>
                 <span>Join Us</span>
             </a>
     <?php endif; ?>
@@ -433,6 +444,7 @@ require_once "framework/Configuration.php";
 
     <nav class="navBar navBar-time">
         <div class="time-display">
+        <i class="bi bi-clock"></i>
             <span class="time-text"><?= date('d/m/y H:i', strtotime(AppTime::get_current_datetime())) ?></span>
         </div>
         <div class="time-controls">
@@ -462,7 +474,7 @@ require_once "framework/Configuration.php";
                 <button type="submit" class="time-btn">-1month</button>
             </form>
             <form method="post" action="time/reset" style="display: inline;">
-                <button type="submit" class="time-btn time-btn-reset">Reset</button>
+                <button type="submit" class="time-btn time-btn-reset">   <i class="bi bi-arrow-clockwise"></i> Reset</button>
             </form>
         </div>
     </nav>

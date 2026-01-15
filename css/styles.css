@@ -35,11 +35,63 @@ body {
 header {
     background-color: var(--naBarv-blue);
     align-items: center;
-    text-align: center;
+    display: flex;
     height: 60px;
+    border-bottom: 2px solid rgba(129, 144, 165, 0.5);
 }
 
 
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 20px;
+    height: 100%;
+}
+
+.header-back-btn {
+    color: var(--text-blue);
+    font-size: 1.5rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+
+.header-back-btn:hover {
+    background-color: rgba(129, 144, 165, 0.2);
+    color: var(--text-blue);
+}
+
+.header-title {
+    color: var(--Button-light-blue);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    justify-content: center;
+}
+
+.header-title i {
+    color: var(--text-blue);
+    font-size: 1.3rem;
+}
+
+.header-spacer {
+    width: 40px;
+}
 
 /* Classe global que je reutilse  */
 .section {
@@ -559,12 +611,12 @@ max-width: 1400px;
     z-index: 1000;
     display: flex;
     align-items: center;
-    padding: 15px;
+    padding: 10px;
 }
 
 .navBar-principal {
-    bottom: 60px; 
-    height: 60px;
+    bottom: 57px; 
+    height: 50px;
     background-color: var(--naBarv-blue);
     gap: 30px;
     flex-wrap: wrap;
@@ -588,10 +640,10 @@ color: var(--text-blue);
 
 .navBar-time {
     bottom: 0; 
-    height: 50px;
+    height: 40px;
     background-color: var(--navBar-grey);
     justify-content: space-between;
-    padding: 10px 20px;
+    padding: 8px 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 /*------------------------Time Bar Section--------------------*/
