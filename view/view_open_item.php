@@ -26,26 +26,38 @@ require_once "framework/Configuration.php";
 <!----------------------------------------> 
 
          <div class="content-wrapper">
-    
+
         <!--------------------------------------->
         <!-- Main container--> 
         <!----------------------------------------> 
             <main class="main-content">
+
                 
                 <!--Bloc  grande image -->
                 <section>
-                    <?php $selectedImg = $selectedImg ?? 0;
-                        $mainPicturePath = !empty($pictures) && isset($pictures[$selectedImg]) 
-                            ? $pictures[$selectedImg]['picture_path'] 
-                            : (!empty($pictures) ? $pictures[0]['picture_path'] : null);
-                        ?>
-                        <?php if ($mainPicturePath): ?>
-                            <img src="<?= $web_root . $mainPicturePath ?>" 
-                                alt="<?= htmlspecialchars($item->get_Title()) ?>"
-                                class="main-item-image">
+
+
+
+
+                    <?php 
+                    
+                        if (empty($pictures)) {
+                            $mainPicturePath = null;
+                        } else {
+                 
                             
+                            $mainPicturePath = $pictures[$selectedImg]['picture_path'] ?? $pictures[0]['picture_path'];
+                        }
+
+
+                    ?>
+                    <?php if ($mainPicturePath): ?>
+                        <img src="<?= $mainPicturePath ?>" 
+                            alt="<?= htmlspecialchars($item->get_Title()) ?>"
+                            class="main-item-image">
                     <?php else: ?>
-                            <div >Image paas là! </div>
+                        <div class="image-placeholder">
+                        <span class="placeholder-text">No image available fo this item </span>
                     <?php endif; ?>
 
                 </section>
@@ -93,13 +105,14 @@ require_once "framework/Configuration.php";
                         <h3 class="section-title">Additional Images</h3>
                         <div class="thumbnail-gallery">
 
-                            <?php foreach ($pictures as $index => $picture): ?>
-                                   <a href="open_item/index/<?= $item->get_Id() ?>?img=<?= $index ?>">
-                                      <img class="thumbnail <?= $selectedImg === $index ? 'active' : '' ?>" 
+                        <?php foreach ($pictures as $index => $picture): ?>
+                                <a href="open_item/index/<?= $item->get_Id() ?>/<?= $index ?>">
+                                    <img class="thumbnail <?= $selectedImg === $index ? 'active' : '' ?>" 
                                         src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $picture['picture_path']) ?>" 
                                         alt="Thumbnail <?= $index + 1 ?>">
                                 </a>
-                            <?php endforeach; ?>    
+                        <?php endforeach; ?>
+                  
 
 
 
@@ -391,12 +404,12 @@ require_once "framework/Configuration.php";
 
     <nav class="navBar navBar-principal">
 
-    <?php if ($currentUser): ?>
+
             <a href="browse_items" >
                 <span >🔍</span>
                 <span>Browse</span>
             </a>
-
+    <?php if ($currentUser): ?>
                 <a>
                     <span >🏠</span>
                     <span>My Items</span>

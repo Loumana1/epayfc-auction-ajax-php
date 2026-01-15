@@ -105,6 +105,20 @@ max-width: 1400px;
     display: block;
 }
 
+/* Image placeholder - à ajouter ici */
+.image-placeholder {
+    width: 100%;
+    min-height: 400px;
+    max-height: 600px;
+    background-color: var(--Background-grey);
+    border-radius: 8px;
+    color: var(--text-grey);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
 /* --------------- Bloc Description et Type de vent -------*/
 
 .item-details-section {
@@ -179,7 +193,14 @@ max-width: 1400px;
     object-fit: cover; 
     border: 2px solid transparent;
 }
+.thumbnail.active {
+    border: 2px solid var(--Button-light-grey); 
+}
 
+.thumbnail {
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
 
 
 /*--------------------Bloc Pricing -----------------*/
@@ -535,6 +556,7 @@ max-width: 1400px;
     position: fixed;
     left: 0;
     right: 0;
+    z-index: 1000;
     display: flex;
     align-items: center;
     padding: 15px;
