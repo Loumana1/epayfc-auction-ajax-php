@@ -305,7 +305,13 @@ require_once "framework/Configuration.php";
                         
 
                             <?php if ($isHighestBidder && $currentUser): ?>
-                                    <p class="price-texte-small-grey">Congratulation! You purchased this item for € <?= number_format($item->get_Max_Bid(), 2, ',', '.') ?></p>
+                                <?php 
+                                    $finalPrice = $item->get_Max_Bid() ?? 0;
+                                    ?>
+                                    <p class="price-texte-small-grey">
+                                        Congratulation! You purchased this item for € 
+                                        <?= number_format($finalPrice, 2, ',', '.') ?>
+                                    </p>
 
                             <?php elseif ($isOwner && $item->has_bids): ?>
                                     <p class="price-texte-small-grey"><?= ModelItems::get_Highest_Bidder_Pseudo($itemId)  ?>

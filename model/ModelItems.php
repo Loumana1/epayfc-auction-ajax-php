@@ -101,4 +101,50 @@ public static function get_Highest_Bidder_Pseudo(int $itemId): string|false {
     $pseudo = $query->fetchColumn();
     return $pseudo !== false ? (string)$pseudo : false;
 }
+
+
+
+public static function create_Bid(int $userId, int $itemId, float $amount, bool $isBuyNow = false): bool {
+    //l'item  est ouvert
+    $item = self::get_Item_By_Id($itemId);
+    if ($item === false) {
+        return false;
+    }
+
+    //  pas le propriétaire
+    if ($item->get_Owner() == $userId) {
+        return false;
+    }
+
+    //  montant est suffisant
+    if (!$isBuyNow && $item->get_Is_Auction()) {
+        $minBid = $item->get_Max_Bid() 
+            ? $item->get_Max_Bid() + 0.01 
+            : $item->get_Starting_Bid();
+        
+        if ($amount < $minBid) {
+            return false;
+        }
+    }
+
+    // Pour Buy Now : vérifier que c'est le bon montant
+    if ($isBuyNow && $item->get_Buy_Now_Price() && $amount != $item->get_Buy_Now_Price()) {
+        return false;
+    }
+
+    // Insérer le bid dans la base de données
+    $now = AppTime::get_current_datetime();
+    $query = self::execute(
+        "INSERT INTO bids (item, owner, created_at, amount) 
+         VALUES (:item_id, :user_id, :created_at, :amount)",
+        [
+            'item_id' => $itemId,
+            'user_id' => $userId,
+            'created_at' => $now,
+            'amount' => $amount
+        ]
+    );
+
+    return $query !== false;
+}
 }
