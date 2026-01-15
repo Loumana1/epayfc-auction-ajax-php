@@ -320,7 +320,7 @@ max-width: 1400px;
 }
 
 .btn-place-bid:hover {
-    background-color:rgba(17, 227, 157, 0.897)
+    background-color:rgba(17, 227, 157, 0.897);
 }
 
 
@@ -357,7 +357,7 @@ max-width: 1400px;
 }
 
 .seller-pic.placeholder {
-    background-color: var(--slate-grey)
+    background-color: var(--slate-grey);
 }
 
 .seller-name {
@@ -548,7 +548,7 @@ max-width: 1400px;
       border: 1px solid  #b7b7b7;
       color: #b7b7b7 ;
 
-
+}
 
 /*------------------------Navigation bar--------------------*/
 .navBar {
@@ -624,21 +624,36 @@ color: var(--text-blue);
     gap: 8px;
     align-items: center;
 }
-
 .time-btn {
-    background-color: var(--Button-light-blue);
-    color: var(--text-white);
-
+    background-color: rgba(230, 153, 0, 0.3);
+    color: #e69900;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .time-btn:hover {
-    background-color:#17bcefbb;
+    background-color: rgba(230, 153, 0, 0.5);
 }
 
 .time-btn-reset {
-    background-color: var(--Button-light-green);
+    background-color: rgba(229, 57, 53, 0.3);
+    color: #e53935;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
 .time-btn-reset:hover {
-    background-color: #6ff678;
+    background-color: rgba(229, 57, 53, 0.5);
 }
