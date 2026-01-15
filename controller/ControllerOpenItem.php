@@ -9,14 +9,8 @@ class ControllerOpenItem extends Controller {
     
     public function index(): void {
 
-        // Debug
-        /*
-        echo "<pre>DEBUG _GET: ";
-       print_r($_GET);
-        echo "</pre>";
-        */
-        $itemId = $_GET['param1'] ?? null;
 
+        $itemId = $_GET['param1'] ?? null;
         // Verifier id item recu en url 
         // cas : 
         if (!$itemId || !is_numeric($itemId)) {
@@ -37,7 +31,7 @@ class ControllerOpenItem extends Controller {
 
     $currentUser = $this->get_user_or_false();
 $currentUserId = $currentUser ? $currentUser->get_Id() : null;
-$isOwner = $currentUserId && $item->get_is_Owner() == $currentUserId;
+$isOwner = $currentUserId && $item->get_Owner() == $currentUserId;
         
         //  item pics
         $pictures = ModelItems::get_Item_Pictures($itemId);
@@ -45,9 +39,11 @@ $isOwner = $currentUserId && $item->get_is_Owner() == $currentUserId;
       
         $bids = ModelItems::get_Item_Bids($itemId); 
 
+        // Récupérer l'index de l'image sélectionnée
+        $selectedImg = isset($_GET['img']) ? (int)$_GET['img'] : 0;
         
         // venduer seller info
-        $seller = User::get_User_By_Id($item->get_is_owner());
+        $seller = $seller = User::get_User_By_Id($item->get_Owner());
 
                // verifier si Enchere tjrs ouvert
         $now = AppTime::get_current_datetime();
@@ -69,15 +65,16 @@ $isOwner = $currentUserId && $item->get_is_Owner() == $currentUserId;
                 $isHighestBidder = ModelItems::is_User_Highest_Bidder($currentUserId, $itemId);
             }
 
-$minBidAmount = $item->get_Max_Bid()
-    ? $item->get_Max_Bid() + 0.01  //  enchère doit être plus grand
-    : ($item->get_Starting_Bid() ?: 0);
+        $minBidAmount = $item->get_Max_Bid()
+            ? $item->get_Max_Bid() + 0.01  //  enchère doit être plus grand
+            : ($item->get_Starting_Bid() ?: 0);
 
 
 
 
 //toute les donnés a utiliser dans la vue 
     $data = [
+        'selectedImg' => $selectedImg,
         'item' => $item,
         'itemId' => $itemId,
         'pictures' => $pictures,

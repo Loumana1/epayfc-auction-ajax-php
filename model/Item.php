@@ -4,7 +4,7 @@ class Item extends Model{
     public $id;
     public $title;
     public $description;
-    public $is_owner;
+    public $owner;
     public $created_at;
     public $buy_now_price;
     public $duration_days;
@@ -26,7 +26,7 @@ class Item extends Model{
         int $id,
         string $title,
         ?string $description,
-        int $is_owner,
+        int $owner,
         string $created_at,
         ?float $buy_now_price,
         int $duration_days,
@@ -46,7 +46,7 @@ class Item extends Model{
         $this->id = $id;
         $this->title = $title;
         $this->description = $description;
-        $this->is_owner = $is_owner;
+        $this->owner = $owner;
         $this->created_at = $created_at;
         $this->buy_now_price = $buy_now_price;
         $this->duration_days = $duration_days;
@@ -78,8 +78,8 @@ class Item extends Model{
     return $this -> description;
 
     }
-    public function get_is_Owner(): int {
-        return $this->is_owner;
+    public function get_Owner(): int {
+        return $this->owner;
     }
 public function get_Created_At() : string {  
     return $this->created_at;

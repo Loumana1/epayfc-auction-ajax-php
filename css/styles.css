@@ -518,7 +518,14 @@ max-width: 1400px;
 .btn-delete-item:hover {
     background-color: #e15b5b25;
 }
-
+.btn-manage-item.disabled,
+.btn-delete-item.disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+    background-color: #a59d9d38;  
+      border: 1px solid  #b7b7b7;
+      color: #b7b7b7 ;
 
 
 

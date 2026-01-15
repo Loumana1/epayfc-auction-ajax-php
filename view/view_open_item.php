@@ -34,9 +34,14 @@ require_once "framework/Configuration.php";
                 
                 <!--Bloc  grande image -->
                 <section>
-                    <?php if (!empty($pictures)): ?>
-                        <img   src="<?= $pictures[0]['picture_path'] ?>" 
-                                alt="<?=  $item->get_Title() ?>"
+                    <?php $selectedImg = $selectedImg ?? 0;
+                        $mainPicturePath = !empty($pictures) && isset($pictures[$selectedImg]) 
+                            ? $pictures[$selectedImg]['picture_path'] 
+                            : (!empty($pictures) ? $pictures[0]['picture_path'] : null);
+                        ?>
+                        <?php if ($mainPicturePath): ?>
+                            <img src="<?= $web_root . $mainPicturePath ?>" 
+                                alt="<?= htmlspecialchars($item->get_Title()) ?>"
                                 class="main-item-image">
                             
                     <?php else: ?>
@@ -87,12 +92,16 @@ require_once "framework/Configuration.php";
                     <section class="additional-images-section">
                         <h3 class="section-title">Additional Images</h3>
                         <div class="thumbnail-gallery">
-                            <?php foreach ($pictures as $index => $picture): ?>
 
-                                <img src="<?=  str_replace('.jpg', '_thumbnail.jpg',
-                                            $picture['picture_path']) ?>" 
-                                            alt="Thumbnail <?= $index + 1 ?>" >
+                            <?php foreach ($pictures as $index => $picture): ?>
+                                   <a href="open_item/index/<?= $item->get_Id() ?>?img=<?= $index ?>">
+                                      <img class="thumbnail <?= $selectedImg === $index ? 'active' : '' ?>" 
+                                        src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $picture['picture_path']) ?>" 
+                                        alt="Thumbnail <?= $index + 1 ?>">
+                                </a>
                             <?php endforeach; ?>    
+
+
 
                         </div>
                     </section>
@@ -334,22 +343,42 @@ require_once "framework/Configuration.php";
                     <h4 class="owner-section-title">Manage Your Item</h4>
                     
                 
-                        <!-- Item peut être modif car pas d'enchère 
-                        Afaire : 
-                        -rajoutr des cnditions 
-                        -->
+                        <?php 
+                    // Déterminer l'état des boutons
+                    $itemPurchased = !$isOpen && ($item->has_bids || $item->buy_now_reached);
+                    $hasActiveBids = $item->has_bids;
+                             ?>
+        
 
 
                         <div class="owner-actions">
+
+                        <?php if ($hasActiveBids || $itemPurchased): ?>
+                            <span class="btn-manage-item disabled">Edit Item Details</span>
+                        <?php else: ?>
                             <a href="add_edit_item?param1=<?= $item->get_Id() ?>" class="btn-manage-item">
                                 Edit Item Details
                             </a>
+                        <?php endif; ?>
+
+
+
+                            <?php if ($itemPurchased): ?>
+                                <span class="btn-manage-item disabled">Manage Images</span>
+                            <?php else: ?>
                             <a href="manage_images?param1=<?= $item->get_Id() ?>" class="btn-manage-item">
                                 Manage Images
                             </a>
+                             <?php endif; ?>
+
+
+                            <?php if ($itemPurchased): ?>
+                                <span class="btn-delete-item disabled">Delete Item</span>
+                            <?php else: ?>
                             <a href="delete_confirm?param1=<?= $item->get_Id() ?>" class="btn-delete-item">
                                 Delete Item
                             </a>
+                            <?php endif; ?>
                         </div>
 
 
@@ -362,7 +391,7 @@ require_once "framework/Configuration.php";
 
     <nav class="navBar navBar-principal">
 
-
+    <?php if ($currentUser): ?>
             <a href="browse_items" >
                 <span >🔍</span>
                 <span>Browse</span>
@@ -380,6 +409,13 @@ require_once "framework/Configuration.php";
                     <span>👤</span>
                     <span>Profile</span>
                 </a>
+    <?php else: ?>
+
+            <a href="login">
+                <span>👤</span>
+                <span>Join Us</span>
+            </a>
+    <?php endif; ?>
     </nav>
 
     <nav class="navBar navBar-time">
