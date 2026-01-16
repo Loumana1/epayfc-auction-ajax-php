@@ -147,4 +147,28 @@ public static function create_Bid(int $userId, int $itemId, float $amount, bool 
 
     return $query !== false;
 }
+
+public static function delete_Item_Pictures(int $itemId): void {
+    // sup images
+    $pictures = self::get_Item_Pictures($itemId);
+    foreach ($pictures as $pic) {
+        $path = $pic['picture_path'];
+        $thumbPath = str_replace('.jpg', '_thumbnail.jpg', $path);
+        if (file_exists($path)) unlink($path);
+        if (file_exists($thumbPath)) unlink($thumbPath);
+    }
+    
+    // Supprimer entrées DB
+    self::execute(
+        "DELETE FROM item_pictures WHERE item = :item_id",
+        ['item_id' => $itemId]
+    );
+}
+
+public static function delete_Item(int $itemId): void {
+    self::execute(
+        "DELETE FROM items WHERE id = :id",
+        ['id' => $itemId]
+    );
+}
 }

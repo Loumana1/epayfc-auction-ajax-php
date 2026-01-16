@@ -357,7 +357,7 @@ require_once "framework/Configuration.php";
                         <?php endif; ?>
 
                         <div  class="seller-details">
-                            <h2 class="seller-name"><?= $seller->pseudo ?></h2>
+                            <h2 class="seller-name"><?= $seller->get_Pseudo() ?></h2>
                             <p class="price-texte-small-grey">Member</p>
                             
                         </div>
@@ -404,7 +404,7 @@ require_once "framework/Configuration.php";
                             <?php if ($itemPurchased): ?>
                                 <span class="btn-delete-item disabled">Delete Item</span>
                             <?php else: ?>
-                            <a href="delete_confirm?param1=<?= $item->get_Id() ?>" class="btn-delete-item">
+                            <a href="delete_confirm/index/<?= $item->get_Id() ?>" class="btn-delete-item">
                                 Delete Item
                             </a>
                             <?php endif; ?>

@@ -2,9 +2,7 @@
 require_once "framework/Model.php";
 
 class User extends Model {
-    //Je prends tt les proprotes pour moment 
-    //Verifier ce que les autres ont mis dans leur Model User 
-    // faudra merge rapidement pour que ca soit pas un bouzouf
+
     public $id;
     public $full_name;
     public $pseudo;
@@ -58,6 +56,10 @@ class User extends Model {
         return $this->pseudo;
     }
 
+
+    public function get_FullName(): string{
+        return $this->full_name;
+    }
 public function get_Thumbnail_Path(): ?string {
     if (!$this->picture_path) {
         return null;
