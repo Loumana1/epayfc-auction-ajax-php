@@ -16,7 +16,7 @@ require_once "framework/Configuration.php";
 
     <header>
         <div class="header-content">
-            <a href="browse_items" class="header-back-btn">
+            <a href="browser" class="header-back-btn">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <h1 class="header-title">
@@ -352,7 +352,7 @@ require_once "framework/Configuration.php";
     <nav class="navBar navBar-principal">
 
 
-            <a href="browse_items" >
+            <a href="browser" >
             <i class="bi bi-search"></i>
                 <span>Browse</span>
             </a>

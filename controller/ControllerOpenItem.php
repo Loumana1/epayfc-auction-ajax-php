@@ -15,13 +15,13 @@ class ControllerOpenItem extends Controller {
         $itemId = $_GET['param1'] ?? null;
  
         if (!$itemId || !is_numeric($itemId)) {
-            throw new Exception("ERREUR: Pas d'ID d'item fourni" );
+           $this->redirect("browser");
 
         }
 
         $item = Item::get_by_id($itemId);
         if ($item === false) {
-              throw new Exception("ERREUR: Item avec ID $itemId n'existe pas");
+             $this->redirect("browser");
         }
 
 
@@ -39,7 +39,7 @@ class ControllerOpenItem extends Controller {
         
         // -------REDIRECTION SI PAS AUTORISE---------
         if (!$isOpen && !$isOwner && !$isHighestBidder) {
-            $this->redirect("browse_items");
+            $this->redirect("browser");
             return;
         }
         

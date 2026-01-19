@@ -84,7 +84,7 @@
             <?php if (!empty($available_items)): ?>
                 <?php foreach ($available_items as $item): ?>
                     <div class="item-card">
-                        <a href="item/open/<?= $item['id'] ?>">
+                            <a href="open_item/index/<?= $item['id'] ?>">
                             <?php if ($item['pic_path']): ?>
                                 <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" class="item-image">
                             <?php else: ?>
