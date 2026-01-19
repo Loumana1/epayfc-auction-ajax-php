@@ -5,7 +5,7 @@
     <title>Browser</title>
     <base href="<?= $web_root ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="./css/browser.css">
 </head>
 <body>
 
@@ -21,7 +21,7 @@
             <?php if (!empty($participating_items)): ?>
                 <?php foreach ($participating_items as $item): ?>
                     <div class="item-card"> 
-                        <a href="item/open/<?= $item['id'] ?>">
+                        <a href="open_item/index/<?= $item['id'] ?>">
                             <?php if ($item['pic_path']): ?>
                                 <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" class="item-image">
                             <?php else: ?>
@@ -45,7 +45,7 @@
                                         <span class="label label-buy-now">Buy Now</span>
                                     <?php endif; ?>
                                 </div>
-                                div class="item-details">
+                                <div class="item-details">
                                     <?php if ($item['picture_count'] > 0): ?>
                                         <span class="picture-count"><?= $item['picture_count'] ?> image<?= $item['picture_count'] > 1 ? 's' : '' ?></span>
                                     <?php endif; ?>
