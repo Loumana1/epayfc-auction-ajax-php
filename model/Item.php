@@ -219,6 +219,9 @@ public function is_open(): bool {
         return $maxBid ? $maxBid + 0.01 : $this->starting_bid;
     }
 
+
+
+
     public function has_buy_now_reached_time(): bool {
      
         if (!$this->buy_now_price) {
@@ -227,4 +230,32 @@ public function is_open(): bool {
         $maxBid = $this->get_max_bid_time();
         return $maxBid !== null && $maxBid >= $this->buy_now_price;
     }
+
+
+
+
+
+
+    public static function delete_pictures(int $itemId): void {
+
+    //supp dans bd 
+    $query = self::execute(
+        "SELECT picture_path FROM item_pictures WHERE item = :id",
+        ['id' => $itemId]
+    );
+    $pictures = $query->fetchAll();
+    
+    foreach ($pictures as $pic) {
+        $path = $pic['picture_path'];
+        $thumbPath = str_replace('.jpg', '_thumbnail.jpg', $path);
+        if (file_exists($path)) unlink($path);
+        if (file_exists($thumbPath)) unlink($thumbPath);
+    }
+    //supp dans les ficheirb
+    
+    self::execute(
+        "DELETE FROM item_pictures WHERE item = :id",
+        ['id' => $itemId]
+    );
+}
 }

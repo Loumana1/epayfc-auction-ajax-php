@@ -1,7 +1,7 @@
 <?php
 require_once "framework/Controller.php";
 require_once "framework/View.php";
-require_once "model/ModelItems.php";
+require_once  "model/Item.php";
 require_once "model/User.php";
 
 class ControllerDeleteConfirm extends Controller {
@@ -16,7 +16,7 @@ class ControllerDeleteConfirm extends Controller {
             return;
         }
         
-        $item = ModelItems::get_Item_By_Id((int)$itemId);
+        $item = item::get_By_Id((int)$itemId);
         
         if (!$item) {
             $this->redirect('my_items');
@@ -53,17 +53,16 @@ class ControllerDeleteConfirm extends Controller {
             return;
         }
         
-        $item = ModelItems::get_Item_By_Id((int)$itemId);
+        $item = Item::get_By_Id((int)$itemId);
 
 
-        if (!$item || $item->get_Owner() != $user->get_Id() || $item->has_bids) {
+        if (!$item || $item->get_owner() != $user->get_Id() || $item->has_bids_time()) {
             $this->redirect('my_items');
             return;
         }
         
         //cascade
-        ModelItems::delete_Item_Pictures((int)$itemId);
-        ModelItems::delete_Item((int)$itemId);
+        Item::delete_pictures((int)$itemId);
         
         $this->redirect('my_items');
     }
