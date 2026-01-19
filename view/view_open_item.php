@@ -1,20 +1,31 @@
+<<<<<<< HEAD
 <?php
 require_once "utils/AppTime.php";
 require_once "framework/Configuration.php";
 ?>
+=======
+>>>>>>> feat_browser
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+<<<<<<< HEAD
     <title><?= $item->get_Title() ?> - Item Details</title>
     <base href="<?= $web_root ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+=======
+    <title><?= htmlspecialchars($item->get_Title()) ?> - Item Details</title>
+    <base href="<?= $web_root ?>">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/styles.css">
+>>>>>>> feat_browser
 </head>
 <body>
 
     <header>
+<<<<<<< HEAD
         <div class="header-content">
             <a href="browse_items" class="header-back-btn">
                 <i class="bi bi-arrow-left"></i>
@@ -74,6 +85,49 @@ require_once "framework/Configuration.php";
                     <p class="item-description"><?= $item->get_Description() ?? 'No description' ?></p>
 
                             <!--button type de vents section -->
+=======
+        <h1>Item open</h1>
+    </header>
+    <!--------------------------------------->
+<!-- A faire
+   -Creer les class et id pour chaque div ou presque
+ - Bien delimiter et colorer  (css) toutes les section avant php
+      
+--> 
+<!----------------------------------------> 
+
+    <div class="content-wrapper">
+    
+<!--------------------------------------->
+<!-- Main container--> 
+<!----------------------------------------> 
+        <main class="main-content">
+            
+            <!--Bloc  grande image -->
+            <section>
+
+                        <?php if (!empty($pictures)): ?>
+                    <img   src="<?= $web_root . $pictures[0]['picture_path'] ?>" 
+                            alt="<?=  htmlspecialchars($item->get_Title()) ?>"
+
+                            class="main-item-image">
+                        <?php else: ?>
+                        <div >Image paas là! </div>
+                        <?php endif; ?>
+            </section>
+
+
+                    <!-- Bloc item description section -->
+            <section class="item-details-section" >
+                        <h2><?= htmlspecialchars($item->get_Title()) ?></h2>
+
+                <p class="item-description"><?= htmlspecialchars($item->get_Description() ?? 'No description') ?></p>
+                        
+
+
+
+                        <!--button type de vents section -status tag  -->
+>>>>>>> feat_browser
                     <div class="button-type-of-sale">
 
                         <?php if ($item->get_Is_Auction()): ?>
@@ -87,6 +141,7 @@ require_once "framework/Configuration.php";
 
                     </div>
 
+<<<<<<< HEAD
                 
                     <div class="item-dates">
 
@@ -275,10 +330,23 @@ require_once "framework/Configuration.php";
 
 
                             
+=======
+            
+                        <div>
+
+                            <p><strong>Start:</strong> <?= date('d/m/Y H:i:s', 
+                            strtotime($item->get_Created_At())) ?></p>
+
+                            <p><strong>Ends:</strong> <?= $item->get_End_At() ? date('d/m/Y H:i:s',
+                             strtotime($item->get_End_At())) : 'N/A' ?></p>
+
+                        </div>
+>>>>>>> feat_browser
 
 
             </section>
 
+<<<<<<< HEAD
 
          
                 
@@ -344,11 +412,78 @@ require_once "framework/Configuration.php";
 
 
                 </div>
+=======
+               <!-- bloc images additionnel -->
+            <?php if (count($pictures) > 1): ?>
+            <section class="additional-images-section">
+                <h3>Additional Images</h3>
+
+                <div class="thumbnail-gallery">
+
+                    <?php foreach ($pictures as $index => $picture): ?>
+
+        
+
+                        <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg',
+                                    $picture['picture_path']) ?>" 
+                                    alt="Thumbnail <?= $index + 1 ?>"
+                       
+                         >
+             <?php endforeach; ?>    
+
+
+                </div>
+            </section>
+            <?php endif; ?>
+        </main>
+
+
+
+
+<!--------------------------------------->
+<!-- Sidebar -->
+ <!---------------------------------------->
+        <aside class="sidebar-content">
+         
+                
+                <!-- info Seller -->
+
+                
+                     <!--------------------------------------->
+                    <!-- A faire
+                    -Placehorde rond, qd pas d'image
+
+                    --> 
+                    <!----------------------------------------> 
+
+
+            <?php if ($seller): ?>
+            <section class="seller-section">
+                <h4>Seller Information</h4>
+                <div >
+                    <?php if ($seller->picture_path): ?>
+                        <img src="<?= $web_root . str_replace('.jpg',
+                         '_thumbnail.jpg', $seller->picture_path) ?>" 
+                             class="seller-pic">
+                    <?php else: ?>
+                        <div  class="seller-pic placeholder"> no pic</div>
+                    <?php endif; ?>
+                    <div>
+                        <p><?= htmlspecialchars($seller->pseudo) ?></p>
+                        <p>Member</p>
+                        
+                    </div>
+
+                </div>
+
+            </section>
+>>>>>>> feat_browser
             <?php endif; ?>
 
         </aside>
     </div>
 
+<<<<<<< HEAD
     <nav class="navBar navBar-principal">
 
 
@@ -418,6 +553,30 @@ require_once "framework/Configuration.php";
 
 
     
+=======
+    <nav class="navBar">
+
+
+<a href="browse_items" >
+    <span >🔍</span>
+    <span>Browse</span>
+</a>
+
+    <a>
+        <span >🏠</span>
+        <span>My Items</span>
+    </a>
+<a>
+    <span >➕</span>
+    <span>Add Offer</span>
+</a>
+    <a>
+        <span>👤</span>
+        <span>Profile</span>
+    </a>
+
+</nav>
+>>>>>>> feat_browser
 
 
 
