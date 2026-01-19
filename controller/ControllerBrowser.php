@@ -10,7 +10,7 @@ require_once 'model/ItemPicture.php';
 class ControllerBrowser extends Controller {
 
     public function index(): void {
-        $userId = 4 ; // apres corrige
+        $userId = 1 ; // apres corrige
         $now = AppTime::get_current_datetime();
 
         $participating_items_raw = ModelItems::get_Item_Participating($userId,$now);

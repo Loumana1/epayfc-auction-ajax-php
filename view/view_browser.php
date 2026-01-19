@@ -45,7 +45,7 @@
                                         <span class="label label-buy-now">Buy Now</span>
                                     <?php endif; ?>
                                 </div>
-                                div class="item-details">
+                                <div class="item-details">
                                     <?php if ($item['picture_count'] > 0): ?>
                                         <span class="picture-count"><?= $item['picture_count'] ?> image<?= $item['picture_count'] > 1 ? 's' : '' ?></span>
                                     <?php endif; ?>
