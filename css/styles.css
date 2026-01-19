@@ -31,28 +31,71 @@ body {
 
 /* ==================== UTILITY CLASSES ==================== */
 /* Text utilities */
-.text-small { font-size: 0.875rem; }
-.text-normal { font-size: 1rem; }
-.text-large { font-size: 1.25rem; }
-.text-bold { font-weight: bold; }
-.text-semibold { font-weight: 600; }
-.text-muted { color: var(--text-grey); }
-.text-success { color: var(--text-green); }
-.text-info { color: var(--text-blue); }
-.m-0 { margin: 0; }
+.text-small {
+    font-size: 0.875rem;
+}
+
+.text-normal {
+    font-size: 1rem;
+}
+
+.text-large {
+    font-size: 1.25rem;
+}
+
+.text-bold {
+    font-weight: bold;
+}
+
+.text-semibold {
+    font-weight: 600;
+}
+
+.text-muted {
+    color: var(--text-grey);
+}
+
+.text-success {
+    color: var(--text-green);
+}
+
+.text-info {
+    color: var(--text-blue);
+}
+
+.m-0 {
+    margin: 0;
+}
 
 /* Layout utilities */
-.flex { display: flex; }
-.flex-col { flex-direction: column; }
-.items-center { align-items: center; }
-.justify-between { justify-content: space-between; }
-.gap-sm { gap: 10px; }
-.gap-md { gap: 20px; }
+.flex {
+    display: flex;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.gap-sm {
+    gap: 10px;
+}
+
+.gap-md {
+    gap: 20px;
+}
 
 /* ==================== HEADER ==================== */
 header {
     background-color: var(--naBarv-blue);
- height: 60px;
+    height: 60px;
     border-bottom: 2px solid rgba(129, 144, 165, 0.5);
     display: flex;
     align-items: center;
@@ -119,8 +162,13 @@ header {
     box-sizing: border-box;
 }
 
-.main-content { flex: 2; }
-.sidebar-content { flex: 1; }
+.main-content {
+    flex: 2;
+}
+
+.sidebar-content {
+    flex: 1;
+}
 
 /* ==================== SECTIONS ==================== */
 .section {
@@ -176,8 +224,13 @@ header {
     font-weight: bold;
 }
 
-.auction-sale-tag { background-color: var(--Button-light-grey); }
-.direct-sale-tag { background-color: var(--Button-light-blue); }
+.auction-sale-tag {
+    background-color: var(--Button-light-grey);
+}
+
+.direct-sale-tag {
+    background-color: var(--Button-light-blue);
+}
 
 /* ==================== IMAGES ==================== */
 .main-item-image {
@@ -296,9 +349,7 @@ header {
     text-align: center;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: all 0.2s;
-    border: none;
-    text-decoration: none;
+
 }
 
 .btn-place-bid {
@@ -306,7 +357,6 @@ header {
     padding: 12px;
     background-color: var(--Button-light-green);
     color: var(--text-white);
-    border: none;
     border-radius: 4px;
     font-size: 1rem;
     cursor: pointer;
@@ -363,14 +413,27 @@ header {
     background-color: #e15b5b25;
 }
 
-.btn-disabled {
-    opacity: 0.7;
+
+button:disabled,
+.btn-place-bid:disabled {
+    background-color: #6B7280 !important; 
+    color: #ffffff !important;
+    border-color: #6B7280 !important;
     cursor: not-allowed;
     pointer-events: none;
-    background-color: #a59d9d38;
-    border-color: #b7b7b7;
-    color: #b7b7b7;
+    opacity: 0.8;
 }
+
+.btn-buy-now:disabled {
+    background-color: transparent !important;
+    color: #9CA3AF !important; 
+    border-color: #9CA3AF !important;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+
 
 /* ==================== FORMS ==================== */
 .bid-form {
@@ -389,41 +452,18 @@ header {
 .bid-input-group input {
     flex: 1;
     background: transparent;
-    border: none;
     color: var(--text-white);
     padding: 10px;
     font-size: 1rem;
 }
-
-.disabled-form {
-    position: relative;
+.bid-input-group input:disabled {
     opacity: 0.6;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #9CA3AF;
 }
 
-.disabled-form::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 4px;
-    pointer-events: none;
-    z-index: 1;
-}
 
-.bid-input-group.disabled,
-.btn-place-bid.disabled,
-.btn-buy-now.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-}
 
-.btn-place-bid.disabled {
-    background-color: var(--Button-light-green);
-}
 
 /* ==================== DIVIDER ==================== */
 .divider-line {
@@ -565,6 +605,17 @@ header {
     background-color: #48c7f52f;
 }
 
+.btn-manage-item.btn-disabled,
+.btn-delete-item.btn-disabled {
+    background-color: transparent;
+    border-color: #9CA3AF;
+    color: #9CA3AF;
+    cursor: not-allowed;
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+
 .btn-delete-item {
     display: block;
     padding: 10px 15px;
@@ -648,7 +699,6 @@ header {
 .time-btn {
     background-color: rgba(230, 153, 0, 0.3);
     color: #e69900;
-    border: none;
     border-radius: 6px;
     padding: 8px 16px;
     font-family: Arial, Helvetica, sans-serif;
@@ -665,7 +715,6 @@ header {
 .time-btn-reset {
     background-color: rgba(229, 57, 53, 0.3);
     color: #e53935;
-    border: none;
     border-radius: 6px;
     padding: 8px 16px;
     font-family: Arial, Helvetica, sans-serif;
@@ -744,18 +793,6 @@ header {
     display: flex;
     gap: 15px;
     justify-content: center;
-}
-
-.btn {
-    padding: 12px 24px;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    border: none;
-    transition: all 0.2s;
 }
 
 .btn-cancel {

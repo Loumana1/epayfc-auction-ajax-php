@@ -1,7 +1,9 @@
 <?php
 require_once "framework/Controller.php";
 require_once "framework/View.php";
-require_once "model/ModelItems.php";
+require_once "model/Item.php";
+require_once "model/Bid.php";
+require_once "model/User.php";
 require_once "utils/AppTime.php";
 
 class ControllerOpenItem extends Controller {
@@ -11,90 +13,126 @@ class ControllerOpenItem extends Controller {
 
 
         $itemId = $_GET['param1'] ?? null;
-        // Verifier id item recu en url 
-        // cas : 
+ 
         if (!$itemId || !is_numeric($itemId)) {
             throw new Exception("ERREUR: Pas d'ID d'item fourni" );
 
         }
-        
-        $itemId = (int)$itemId;
-        
-        // Lier id a un id de la db sinon vide 
-        $item = ModelItems::get_Item_By_Id($itemId);
 
-      
+        $item = Item::get_by_id($itemId);
         if ($item === false) {
               throw new Exception("ERREUR: Item avec ID $itemId n'existe pas");
         }
 
-            $currentUser = $this->get_user_or_false();
+
+
+        $currentUser = $this->get_user_or_false();
         $currentUserId = $currentUser ? $currentUser->get_Id() : null;
-        $isOwner = $currentUserId && $item->get_Owner() == $currentUserId;
-                
+        $isOwner = $currentUserId && $item->get_owner() == $currentUserId;
+        $isOpen = $item->is_open();  
 
-     
-        
-      
-        $bids = ModelItems::get_Item_Bids($itemId); 
-        $pictures = ModelItems::get_Item_Pictures($itemId);
-         //  item pics
-         $selectedImg = isset($_GET['param2']) && $_GET['param2'] !== '' ? (int)$_GET['param2'] : 0;
-   
-
-        // Valider  $selectedImg
-        if ($selectedImg < 0 || (count($pictures) > 0 && $selectedImg >= count($pictures))) {
-            $selectedImg = 0;
-}
-        
-        // venduer seller info
-        $seller = $seller = User::get_User_By_Id($item->get_Owner());
-
-               // verifier si Enchere tjrs ouvert
-        $now = AppTime::get_current_datetime();
-        $endAt = $item->get_End_At();
-       // A verififier  
-        if ($endAt) { 
-            $endAtDateTime = new DateTime($endAt);
-            $nowDateTime = new DateTime($now);
-            $isOpen = $endAtDateTime > $nowDateTime && !$item->buy_now_reached;
-        } else {
-            $isOpen = false;
+        $isHighestBidder = false;
+        if ($currentUserId) {
+            $isHighestBidder = Bid::is_user_highest($currentUserId, $itemId);
         }
 
-            // Verifier statut des enchere pour l'utilistuer courant 
-            $UserBidStatus = false; 
-            $isHighestBidder = false;
-            if ($currentUserId) {
-                $UserBidStatus = ModelItems::has_User_Bid_On_Item($currentUserId, $itemId);
-                $isHighestBidder = ModelItems::is_User_Highest_Bidder($currentUserId, $itemId);
-            }
-
-        $minBidAmount = $item->get_Max_Bid()
-            ? $item->get_Max_Bid() + 0.01
-            : ($item->get_Starting_Bid() ?: 0);
-
-
-
-//toute les donnés a utiliser dans la vue 
-    $data = [
-        'selectedImg' => $selectedImg,
-        'item' => $item,
-        'itemId' => $itemId,
-        'pictures' => $pictures,
-        'seller' => $seller,
-        'isOpen' => $isOpen,
-        'currentUser' => $currentUser,
-            'UserBidStatus' => $UserBidStatus,
-        'isHighestBidder' => $isHighestBidder,
-         'now'=>$now,
-          'minBidAmount' => $minBidAmount,
-          'bids' => $bids,
-          'isOwner' => $isOwner
+        
+        // -------REDIRECTION SI PAS AUTORISE---------
+        if (!$isOpen && !$isOwner && !$isHighestBidder) {
+            $this->redirect("browse_items");
+            return;
+        }
+        
   
-    ];
+        // ---------------------------------
+        $hasBidsTime = $item->has_bids_time();
+        $maxBidTime = $item->get_max_bid_time();
+        $buyNowReachedTime = $item->has_buy_now_reached_time();
+        $isSold = $hasBidsTime || $buyNowReachedTime;
+        $highestBidderPseudo = $item->get_highest_bidder_pseudo();
+        $minBidAmount = $item->get_min_bid_amount();
+
+    
+        // -------------- BOUTONS -------------------
+        $showButtons = true;
+        $buttonsDisabled = false;
+
+        if (!$isOpen) {
+            $showButtons = false;
+        } elseif ($isOwner || !$currentUser) {
+      
+            $buttonsDisabled = true;
+        }
 
 
-        (new View("open_item"))->show($data);
-    }
+        // -------------- MESSAGES -------------
+        $statusMessage = '';
+
+
+        if ($isOpen) {
+    
+            if ($isOwner) {
+                $statusMessage = "You cannot bid on your own listing.";
+
+            } elseif (!$currentUser) {
+                $statusMessage = "Please log in";
+
+            }
+            
+        } else {
+    
+            if ($isHighestBidder) {
+                $finalPrice = $maxBidTime ?? 0;
+                $statusMessage = "Congratulations! You purchased this item for € " . number_format($finalPrice, 2, ',', '.');
+   
+            } elseif ($isOwner) {
+                if ($isSold) {
+                    $statusMessage = $highestBidderPseudo . " won this item for € " . number_format($maxBidTime, 2, ',', '.');
+                    
+                } else {
+                    $statusMessage = "This listing ended without a buyer.";
+                    
+                }
+            }
+        }
+
+
+//-------------------------------------
+        $bids = $item->get_bids();
+        $pictures = $item->get_pictures();
+        $selectedImg = isset($_GET['param2']) && $_GET['param2'] !== '' ? (int)$_GET['param2'] : 0;
+        if ($selectedImg < 0 || (count($pictures) > 0 && $selectedImg >= count($pictures))) {
+            $selectedImg = 0;
+        }
+        $seller = $item->get_seller();
+
+        $hasActiveBids = $hasBidsTime;
+        $itemPurchased = !$isOpen && $isSold;
+
+
+
+        $data = [
+            'item' => $item,
+            'itemId' => $itemId,
+            'pictures' => $pictures,
+            'selectedImg' => $selectedImg,
+            'seller' => $seller,
+            'bids' => $bids,
+            'isOpen' => $isOpen,
+            'isOwner' => $isOwner,
+            'currentUser' => $currentUser,
+            'isHighestBidder' => $isHighestBidder,
+            'maxBidTime' => $maxBidTime,
+            'minBidAmount' => $minBidAmount,
+            'hasBidsTime' => $hasBidsTime,
+            'showButtons' => $showButtons,
+            'buttonsDisabled' => $buttonsDisabled,
+            'statusMessage' => $statusMessage,
+            'hasActiveBids' => $hasActiveBids,
+            'itemPurchased' => $itemPurchased,
+        ];
+
+
+            (new View("open_item"))->show($data);
+        }
 }

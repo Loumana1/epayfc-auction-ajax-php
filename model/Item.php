@@ -1,4 +1,6 @@
 <?php
+require_once "framework/Model.php";
+require_once "utils/AppTime.php";
 class Item extends Model{
 
     public $id;
@@ -10,7 +12,7 @@ class Item extends Model{
     public $duration_days;
     public $starting_bid;
 
-    //Proprité de v_items pour extra pour vu view_ (peut faciliter ?)
+    
     public $end_at;
     public $bid_count;
     public $max_bid;
@@ -52,7 +54,7 @@ class Item extends Model{
         $this->duration_days = $duration_days;
         $this->starting_bid = $starting_bid;
         
-        // proprietes pour view
+
         $this->end_at = $end_at;
         $this->bid_count = $bid_count;
         $this->max_bid = $max_bid;
@@ -70,6 +72,37 @@ class Item extends Model{
 
     }
 
+        public static function get_by_id(int $id): Item|false {
+        $query = self::execute(
+            "SELECT * FROM v_items_status WHERE id = :id", 
+            ['id' => $id]
+        );
+        $data = $query->fetch();
+        if ($data === false) return false;
+        
+        return new Item(
+            $data["id"],
+            $data["title"],
+            $data["description"],
+            $data["owner"],
+            $data["created_at"],
+            $data["buy_now_price"],
+            $data["duration_days"],
+            $data["starting_bid"],
+            $data["end_at"] ?? null,
+            $data["bid_count"] ?? 0,
+            $data["max_bid"] ?? null,
+            (bool)($data["is_direct_sale"] ?? false),
+            (bool)($data["is_auction"] ?? false),
+            (bool)($data["has_buy_now"] ?? false),
+            (bool)($data["has_bids"] ?? false),
+            (bool)($data["buy_now_reached"] ?? false),
+            (bool)($data["not_purchased_direct_sale"] ?? false)
+        );
+    }
+
+
+
     public function get_Title(): string {
     return $this-> title ;
     }
@@ -78,7 +111,7 @@ class Item extends Model{
     return $this -> description;
 
     }
-    public function get_Owner(): int {
+    public function get_owner(): int {
         return $this->owner;
     }
 public function get_Created_At() : string {  
@@ -88,10 +121,6 @@ public function get_Buy_Now_Price() :?float{
     return $this->buy_now_price;
 }
 
-
-public function get_Max_Bid(): ?float {
-    return $this ->max_bid;
-}
 
 public function get_Starting_Bid(): float {
  return $this -> starting_bid; 
@@ -115,21 +144,87 @@ public function get_Starting_Bid(): float {
          return false;
 
     }
-    public function get_Not_Purchased_Direct_Sale(): bool {
-        return $this->not_purchased_direct_sale;
+
+
+
+
+public function is_open(): bool {
+        $now = AppTime::get_current_datetime();
+        $nowDateTime = new DateTime($now);
+        
+       //l'item a commencé 
+       $createdAt = new DateTime($this->created_at);
+       if ($createdAt > $nowDateTime) {
+           return false; }
+            
+        //Direct Sale
+            if ($this->is_direct_sale && !$this->is_auction) {
+                        return !$this->has_bids_time(); // Pas encore acheté
+            }
+            
+            //  Auction
+            if ($this->end_at) {
+                $endAtDateTime = new DateTime($this->end_at);
+                $isBeforeEnd = $endAtDateTime > $nowDateTime;
+                
+                // pour tenir compte de AppTime
+                $buyNowReachedTime = $this->has_buy_now_reached_time();
+                
+                return $isBeforeEnd && !$buyNowReachedTime;
+            }
+        return false;
     }
 
 
-    public function get_buy_now_reached(): bool{
-        return $this->buy_now_reached;
+
+   
+
+       
+    
+    public function get_bids(): array {
+        require_once "model/Bid.php";
+        return Bid::get_by_item($this->id);
     }
-//-------------------------------------// 
-
-    public function is_Open(): bool {
-        //checker si l'item est toujours ouvert 
-    //analyser cas different
-    return true;
-
+    
+    public function get_pictures(): array {
+        $query = self::execute(
+            "SELECT * FROM item_pictures WHERE item = :id ORDER BY priority ASC",
+            ['id' => $this->id]
+        );
+        return $query->fetchAll();
+    }
+    
+    public function get_seller(): User {
+        require_once "model/User.php";
+        return User::get_User_By_Id($this->owner);
+    }
+    
+    public function has_bids_time(): bool {
+        return count($this->get_bids()) > 0;
+    }
+    
+    public function get_max_bid_time(): ?float {
+        $bids = $this->get_bids();
+        if (empty($bids)) return null;
+        return (float)max(array_column($bids, 'amount'));
+    }
+    
+    public function get_highest_bidder_pseudo(): ?string {
+        $bids = $this->get_bids();
+        return !empty($bids) ? $bids[0]['pseudo'] : null;
+    }
+    
+    public function get_min_bid_amount(): float {
+        $maxBid = $this->get_max_bid_time();
+        return $maxBid ? $maxBid + 0.01 : $this->starting_bid;
     }
 
+    public function has_buy_now_reached_time(): bool {
+     
+        if (!$this->buy_now_price) {
+            return false;
+        }
+        $maxBid = $this->get_max_bid_time();
+        return $maxBid !== null && $maxBid >= $this->buy_now_price;
+    }
 }
