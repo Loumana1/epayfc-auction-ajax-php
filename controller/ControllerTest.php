@@ -45,6 +45,8 @@ class ControllerTest extends Controller {
         echo "<p><a href='open_item/index/1'>Open Item #1 owner quentin</a></p>";
         echo "<p><a href='open_item/index/2'>Open Item #2  owner MARC </a></p>";
         echo "<p><a href='open_item/index/10'>Open Item #10 Owner Boris</a></p>";
+        echo "<p><a href='sales'><button type='button'>Go to Sales Page</button></a></p>";  // ← AJOUTER
+echo "<p><a href='browser'><button type='button'>Go to Browser</button></a></p>";  
         
         // Afficher l'utilisateur actuel
         $currentUser = $this->get_user_or_false();
