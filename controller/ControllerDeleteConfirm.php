@@ -30,7 +30,7 @@ class ControllerDeleteConfirm extends Controller {
         }
         
    
-        if ($item->has_bids) {
+        if ($item->has_bids_time()) {
             $this->redirect('open_item', 'index', (string)$itemId);
             return;
         }
@@ -63,7 +63,8 @@ class ControllerDeleteConfirm extends Controller {
         
         //cascade
         Item::delete_pictures((int)$itemId);
-        
+        Item::delete((int)$itemId);
+
         $this->redirect('my_items');
     }
 }

@@ -10,7 +10,7 @@
 <body>
     <header>
         <div class="header-content">
-            <a href="open_item/index/<?= $item->get_Id() ?>" class="header-back-btn">←</a>
+            <a href="open_item/index/<?= $item->get_Id() ?>" class="header-back-btn">    <i class="bi bi-arrow-left"></i></a>
             <h1 class="header-title">Delete Item</h1>
             <div class="header-spacer"></div>
         </div>
@@ -50,31 +50,12 @@
     </div>
 </div>
 
-    
-    <nav class="navBar navBar-principal">
 
-
-            <a href="browse_items" >
-            <i class="bi bi-search"></i>
-                <span>Browse</span>
-            </a>
-       
-                <a>
-
-                <i class="bi bi-house"></i>
-                    <span>My Items</span>
-                </a>
-            <a>
-            <i class="bi bi-plus-circle"></i>
-                <span>Add Offer</span>
-            </a>
-                <a>
-                <i class="bi bi-person"></i>
-                    <span>Profile</span>
-                </a>
-    
 
            
     </main>
+    <?php include __DIR__ . "/partials/_navbar.php"; ?>
+    <?php include __DIR__ . "/partials/_timebar.php"; ?>
+
 </body>
 </html>
