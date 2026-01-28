@@ -38,7 +38,7 @@ class Item extends Model{
         //v_items_status
         ?string $end_at = null,
         int $bid_count = 0,
-        float $max_bid= null,
+        ?float $max_bid = null,
         bool $is_direct_sale = false,
         bool $is_auction = false,
         bool $has_buy_now = false,
@@ -265,75 +265,20 @@ public function is_open(): bool {
 }
     public static function get_Item_Participating(int $userId, string $now): array {
         $query = "SELECT * FROM v_items_status 
-                  WHERE id IN (SELECT item FROM bids WHERE owner = :user_id)
-                  AND buy_now_reached = 0 
-                  AND end_at > :now 
-                  ORDER BY end_at DESC";
-                  
-        $query_result = self::execute($query, ['user_id' => $userId, 'now' => $now]);
-        $data = $query_result->fetchAll();
-        
-        $items = [];
-        foreach ($data as $row) {
-            $items[] = new Item(
-                $row["id"], 
-                $row["title"], 
-                $row["description"], 
-                $row["owner"], 
-                $row["created_at"], 
-                $row["buy_now_price"] ? (float)$row["buy_now_price"] : null, 
-                $row["duration_days"], 
-                $row["starting_bid"], 
-                $row["end_at"] ?? null,
-                $row["bid_count"] ?? 0,
-                $row["max_bid"] ? (float)$row["max_bid"] : null,
-                (bool)($row["is_direct_sale"] ?? false),
-                (bool)($row["is_auction"] ?? false),
-                (bool)($row["has_buy_now"] ?? false),
-                (bool)($row["has_bids"] ?? false),
-                (bool)($row["buy_now_reached"] ?? false),
-                (bool)($row["not_purchased_direct_sale"] ?? false)
-            );
-        }
-        
-        return $items;
+        WHERE id IN (SELECT item FROM bids WHERE owner = :user_id)
+        AND buy_now_reached = 0 AND end_at > :now 
+        ORDER BY end_at DESC";
+        return self::queryToItems($query, ['user_id' => $userId, 'now' => $now]);
+
     }
     
     public static function get_Item_Available(int $userId, string $now): array {
         $query = "SELECT * FROM v_items_status 
-                  WHERE id NOT IN (SELECT item FROM bids WHERE owner = :user_id)
-                  AND owner != :user_id
-                  AND buy_now_reached = 0 
-                  AND end_at > :now
-                  ORDER BY end_at DESC";
-                  
-        $query_result = self::execute($query, ['user_id' => $userId, 'now' => $now]);
-        $data = $query_result->fetchAll();
-        
-        $items = [];
-        foreach ($data as $row) {
-            $items[] = new Item(
-                $row["id"], 
-                $row["title"], 
-                $row["description"], 
-                $row["owner"], 
-                $row["created_at"], 
-                $row["buy_now_price"] ? (float)$row["buy_now_price"] : null, 
-                $row["duration_days"], 
-                $row["starting_bid"], 
-                $row["end_at"] ?? null,
-                $row["bid_count"] ?? 0,
-                $row["max_bid"] ? (float)$row["max_bid"] : null,
-                (bool)($row["is_direct_sale"] ?? false),
-                (bool)($row["is_auction"] ?? false),
-                (bool)($row["has_buy_now"] ?? false),
-                (bool)($row["has_bids"] ?? false),
-                (bool)($row["buy_now_reached"] ?? false),
-                (bool)($row["not_purchased_direct_sale"] ?? false)
-            );
-        }
-        
-        return $items;
+        WHERE id NOT IN (SELECT item FROM bids WHERE owner = :user_id)
+        AND owner != :user_id
+        AND buy_now_reached = 0 AND end_at > :now
+        ORDER BY end_at DESC";
+        return self::queryToItems($query, ['user_id' => $userId, 'now' => $now]);
     }
 
     public static function get_main_picture(int $itemId): ?ItemPicture {
@@ -374,4 +319,83 @@ public function is_open(): bool {
 
         return $data && (int)$data["count"] > 0;
     }
+
+
+
+    private static function queryToItems(string $query, array $params): array {
+        $query_result = self::execute($query, $params);
+        $data = $query_result->fetchAll();
+        
+        $items = [];
+        foreach ($data as $row) {
+            $items[] = new Item(
+                $row["id"], 
+                $row["title"], 
+                $row["description"], 
+                $row["owner"], 
+                $row["created_at"], 
+                $row["buy_now_price"] ? (float)$row["buy_now_price"] : null, 
+                $row["duration_days"], 
+                $row["starting_bid"], 
+                $row["end_at"] ?? null,
+                $row["bid_count"] ?? 0,
+                $row["max_bid"] ? (float)$row["max_bid"] : null,
+                (bool)($row["is_direct_sale"] ?? false),
+                (bool)($row["is_auction"] ?? false),
+                (bool)($row["has_buy_now"] ?? false),
+                (bool)($row["has_bids"] ?? false),
+                (bool)($row["buy_now_reached"] ?? false),
+                (bool)($row["not_purchased_direct_sale"] ?? false)
+            );
+        }
+        return $items;
+    }
+
+    public static function get_sold_items_by_owner(int $userId, string $now): array {
+        $query = "SELECT * FROM v_items_status 
+                  WHERE owner = :user_id
+                  AND has_bids = 1
+                  AND (end_at <= :now OR buy_now_reached = 1)
+                  ORDER BY end_at DESC";
+        return self::queryToItems($query, ['user_id' => $userId, 'now' => $now]);
+    }
+
+    public static function get_sales_statistics(int $userId, string $now): array {
+
+        $query = "SELECT 
+                    COUNT(*) as sales_count,
+                    COALESCE(SUM(max_bid), 0) as total_revenue,
+                    COALESCE(AVG(max_bid), 0) as average_ticket
+                  FROM v_items_status 
+                  WHERE owner = :user_id
+                  AND has_bids = 1
+                  AND (end_at <= :now OR buy_now_reached = 1)";
+                  
+        $result = self::execute($query, ['user_id' => $userId, 'now' => $now]);
+        $stats = $result->fetch();
+        
+
+        $query_loyal = "SELECT u.pseudo, COUNT(*) as win_count
+                        FROM bids b
+                        JOIN v_items_status v ON b.item = v.id
+                        JOIN users u ON b.owner = u.id
+                        WHERE v.owner = :user_id
+                        AND v.has_bids = 1
+                        AND (v.end_at <= :now OR v.buy_now_reached = 1)
+                        AND b.amount = v.max_bid
+                        GROUP BY b.owner, u.pseudo
+                        ORDER BY win_count DESC
+                        LIMIT 1";
+        
+        $loyal_result = self::execute($query_loyal, ['user_id' => $userId, 'now' => $now]);
+        $loyal_bidder = $loyal_result->fetch();
+        
+        return [
+            'sales_count' => (int)$stats['sales_count'],
+            'total_revenue' => (float)$stats['total_revenue'],
+            'average_ticket' => (float)$stats['average_ticket'],
+            'loyal_bidder' => $loyal_bidder ? $loyal_bidder['pseudo'] : null
+        ];
+    }
+
 }
