@@ -15,7 +15,6 @@ require_once "framework/Configuration.php";
 </head>
 <body>
 
-<!-- Header avec Bootstrap icons -->
 <header>
     <div class="header-content">
         <a href="profile" class="header-back-btn">
@@ -65,11 +64,11 @@ require_once "framework/Configuration.php";
         <?php if (!empty($sold_items)): ?>
             <section class="sales-grid">
                 <?php foreach ($sold_items as $item): ?>
-                    <?php include "view/partials/_sale_card.php"; ?>
+                    <?php include "view/partials/sales/_sale_card.php"; ?>
                 <?php endforeach; ?>
             </section>
         <?php else: ?>
-            <?php include "view/partials/_no_sales.php"; ?>
+            <?php include "view/partials/sales/_no_sales.php"; ?>
         <?php endif; ?>
 
     </main>

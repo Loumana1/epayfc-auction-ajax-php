@@ -5,24 +5,24 @@ require_once "model/Bid.php";
 require_once "model/User.php";
 class Item extends Model{
 
-    private $id;
-    private$title;
-    private $description;
-    private$owner;
-    private $created_at;
-    private $buy_now_price;
-    private $duration_days;
-    private $starting_bid;
+    public $id;
+    public  $title;
+    public  $description;
+    public  $owner;
+    public $created_at;
+    public  $buy_now_price;
+    public $duration_days;
+    public  $starting_bid;
 
-    private ?array $_cached_bids = null;    public $end_at;
-    private $bid_count;
-    private$max_bid;
-    private $is_direct_sale;
-    private $is_auction;
-    private $has_buy_now;
-    private $has_bids;
-    private $buy_now_reached;
-    private $not_purchased_direct_sale;
+    private  ?array $_cached_bids = null;    public $end_at;
+    public  $bid_count;
+    public  $max_bid;
+    public  $is_direct_sale;
+    public  $is_auction;
+    public $has_buy_now;
+    public  $has_bids;
+    public $buy_now_reached;
+    public  $not_purchased_direct_sale;
 
 
     public function __construct(
@@ -320,36 +320,6 @@ public function is_open(): bool {
         return $data && (int)$data["count"] > 0;
     }
 
-
-
-    private static function queryToItems(string $query, array $params): array {
-        $query_result = self::execute($query, $params);
-        $data = $query_result->fetchAll();
-        
-        $items = [];
-        foreach ($data as $row) {
-            $items[] = new Item(
-                $row["id"], 
-                $row["title"], 
-                $row["description"], 
-                $row["owner"], 
-                $row["created_at"], 
-                $row["buy_now_price"] ? (float)$row["buy_now_price"] : null, 
-                $row["duration_days"], 
-                $row["starting_bid"], 
-                $row["end_at"] ?? null,
-                $row["bid_count"] ?? 0,
-                $row["max_bid"] ? (float)$row["max_bid"] : null,
-                (bool)($row["is_direct_sale"] ?? false),
-                (bool)($row["is_auction"] ?? false),
-                (bool)($row["has_buy_now"] ?? false),
-                (bool)($row["has_bids"] ?? false),
-                (bool)($row["buy_now_reached"] ?? false),
-                (bool)($row["not_purchased_direct_sale"] ?? false)
-            );
-        }
-        return $items;
-    }
 
     public static function get_sold_items_by_owner(int $userId, string $now): array {
         $query = "SELECT * FROM v_items_status 

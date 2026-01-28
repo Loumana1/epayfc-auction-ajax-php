@@ -60,8 +60,8 @@ require_once "framework/Configuration.php";
         </div>
 
                      
-        <?php include __DIR__ . "/partials/open_item/_navbar.php"; ?>
-         <?php include __DIR__ . "/partials/open_item/_timebar.php"; ?>
+        <?php include __DIR__ . "/partials/_navbar.php"; ?>
+         <?php include __DIR__ . "/partials/_timebar.php"; ?>
             
 
 

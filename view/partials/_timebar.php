@@ -7,20 +7,32 @@
         <form method="post" action="time/advance" style="display: inline;">
             <input type="hidden" name="amount" value="1">
             <input type="hidden" name="unit" value="hour">
-            <button type="submit" class="time-btn"><i class="bi bi-clock"></i> +1h</button>
+            <button type="submit" class="time-btn">+1h</button>
         </form>
         <form method="post" action="time/advance" style="display: inline;">
             <input type="hidden" name="amount" value="1">
             <input type="hidden" name="unit" value="day">
-            <button type="submit" class="time-btn"><i class="bi bi-calendar"></i> +1d</button>
+            <button type="submit" class="time-btn">+1day</button>
         </form>
         <form method="post" action="time/advance" style="display: inline;">
             <input type="hidden" name="amount" value="1">
             <input type="hidden" name="unit" value="week">
-            <button type="submit" class="time-btn"><i class="bi bi-calendar"></i> +1w</button>
+            <button type="submit" class="time-btn">+1week</button>
+        </form>
+        <form method="post" action="time/advance" style="display: inline;">
+            <input type="hidden" name="amount" value="1">
+            <input type="hidden" name="unit" value="month">
+            <button type="submit" class="time-btn">+1month</button>
+        </form>
+        <form method="post" action="time/advance" style="display: inline;">
+            <input type="hidden" name="amount" value="-1">
+            <input type="hidden" name="unit" value="month">
+            <button type="submit" class="time-btn">-1month</button>
         </form>
         <form method="post" action="time/reset" style="display: inline;">
-            <button type="submit" class="time-btn time-btn-reset"><i class="bi bi-arrow-clockwise"></i> Reset</button>
+            <button type="submit" class="time-btn time-btn-reset">
+                <i class="bi bi-arrow-clockwise"></i> Reset
+            </button>
         </form>
     </div>
 </nav>

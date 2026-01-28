@@ -219,7 +219,7 @@
 .sale-card-info .price {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--text-white);
+    color: #2c86ed;;
 }
 
 .sale-card-info .current-bid {
