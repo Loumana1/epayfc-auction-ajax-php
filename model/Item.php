@@ -1,27 +1,28 @@
 <?php
 require_once "framework/Model.php";
 require_once "utils/AppTime.php";
+require_once "model/Bid.php";
+require_once "model/User.php";
 class Item extends Model{
 
-    public $id;
-    public $title;
-    public $description;
-    public $owner;
-    public $created_at;
-    public $buy_now_price;
-    public $duration_days;
-    public $starting_bid;
+    private $id;
+    private$title;
+    private $description;
+    private$owner;
+    private $created_at;
+    private $buy_now_price;
+    private $duration_days;
+    private $starting_bid;
 
-    
-    public $end_at;
-    public $bid_count;
-    public $max_bid;
-    public $is_direct_sale;
-    public $is_auction;
-    public $has_buy_now;
-    public $has_bids;
-    public $buy_now_reached;
-    public $not_purchased_direct_sale;
+    private ?array $_cached_bids = null;    public $end_at;
+    private $bid_count;
+    private$max_bid;
+    private $is_direct_sale;
+    private $is_auction;
+    private $has_buy_now;
+    private $has_bids;
+    private $buy_now_reached;
+    private $not_purchased_direct_sale;
 
 
     public function __construct(
@@ -66,39 +67,43 @@ class Item extends Model{
         $this->not_purchased_direct_sale = $not_purchased_direct_sale; 
     }
 
+    /* Centralise la logique de mapping pour éviter la duplication
+    */
+    private static function rowToItem(array $row): Item {
+        return new Item(
+            $row["id"], 
+            $row["title"], 
+            $row["description"], 
+            $row["owner"], 
+            $row["created_at"], 
+            $row["buy_now_price"] ? (float)$row["buy_now_price"] : null, 
+            $row["duration_days"], 
+            $row["starting_bid"], 
+            $row["end_at"] ?? null,
+            $row["bid_count"] ?? 0,
+            $row["max_bid"] ? (float)$row["max_bid"] : null,
+            (bool)($row["is_direct_sale"] ?? false),
+            (bool)($row["is_auction"] ?? false),
+            (bool)($row["has_buy_now"] ?? false),
+            (bool)($row["has_bids"] ?? false),
+            (bool)($row["buy_now_reached"] ?? false),
+            (bool)($row["not_purchased_direct_sale"] ?? false)
+        );
+    }
         
+
+    private static function queryToItems(string $query, array $params): array {
+        $result = self::execute($query, $params)->fetchAll();
+        return array_map([self::class, 'rowToItem'], $result);
+    }
     public function get_Id(): int {
         return $this->id;
 
     }
-
-        public static function get_by_id(int $id): Item|false {
-        $query = self::execute(
-            "SELECT * FROM v_items_status WHERE id = :id", 
-            ['id' => $id]
-        );
+    public static function get_by_id(int $id): Item|false {
+        $query = self::execute("SELECT * FROM v_items_status WHERE id = :id", ['id' => $id]);
         $data = $query->fetch();
-        if ($data === false) return false;
-        
-        return new Item(
-            $data["id"],
-            $data["title"],
-            $data["description"],
-            $data["owner"],
-            $data["created_at"],
-            $data["buy_now_price"],
-            $data["duration_days"],
-            $data["starting_bid"],
-            $data["end_at"] ?? null,
-            $data["bid_count"] ?? 0,
-            $data["max_bid"] ?? null,
-            (bool)($data["is_direct_sale"] ?? false),
-            (bool)($data["is_auction"] ?? false),
-            (bool)($data["has_buy_now"] ?? false),
-            (bool)($data["has_bids"] ?? false),
-            (bool)($data["buy_now_reached"] ?? false),
-            (bool)($data["not_purchased_direct_sale"] ?? false)
-        );
+        return $data === false ? false : self::rowToItem($data);
     }
 
 
@@ -138,10 +143,9 @@ public function get_Starting_Bid(): float {
         return $this->is_auction;
     }
     public function get_Has_buy_now_price(): bool{
-        if( $this->buy_now_price!= null ) 
-            return true;
 
-         return false;
+            return $this->buy_now_price !== null;
+        
 
     }
 
@@ -182,8 +186,10 @@ public function is_open(): bool {
        
     
     public function get_bids(): array {
-        require_once "model/Bid.php";
-        return Bid::get_by_item($this->id);
+        if ($this->_cached_bids === null) {
+            $this->_cached_bids = Bid::get_by_item($this->id);
+        }
+        return $this->_cached_bids;
     }
     
     public function get_pictures(): array {
@@ -195,7 +201,6 @@ public function is_open(): bool {
     }
     
     public function get_seller(): User {
-        require_once "model/User.php";
         return User::get_User_By_Id($this->owner);
     }
     
