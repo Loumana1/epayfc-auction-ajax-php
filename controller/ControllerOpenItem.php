@@ -30,6 +30,17 @@ class ControllerOpenItem extends Controller {
         $currentUserId = $currentUser ? $currentUser->get_Id() : null;
         $isOwner = $currentUserId && $item->get_owner() == $currentUserId;
         $isOpen = $item->is_open();  
+
+        $bidErrors = [];
+        $bidAmount = null;
+        if (isset($_SESSION['bid_errors'])) {
+            $bidErrors = $_SESSION['bid_errors'];
+            $bidAmount = $_SESSION['bid_amount'] ?? null;
+            unset($_SESSION['bid_errors']); // Supprimer après lecture
+            unset($_SESSION['bid_amount']);
+        }
+        
+
         $isHighestBidder = false;
         if ($currentUserId) {
             $isHighestBidder = Bid::is_user_highest($currentUserId, $itemId);
@@ -111,6 +122,8 @@ class ControllerOpenItem extends Controller {
 
 
         $data = [
+            'bidErrors' => $bidErrors,
+            'bidAmount' => $bidAmount,
             'header_title' => 'Item open',
             'header_icon' => 'bi-cart-fill',
             'back_url' => 'browser',

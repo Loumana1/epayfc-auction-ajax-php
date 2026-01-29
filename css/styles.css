@@ -104,6 +104,19 @@ body {
 .gap-md {
     gap: 20px;
 }
+/* ==================== BADGE ==================== */
+.badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.badge-green {
+    background-color: var(--Button-light-green);
+    color: white;
+}
 
 /* ==================== HEADER ==================== */
 header {
@@ -399,6 +412,7 @@ header {
     font-size: 1rem;
     cursor: pointer;
     margin-top: 10px;
+    border: none;
 }
 
 .btn-place-bid:hover {
@@ -637,6 +651,7 @@ button:disabled,
     text-align: center;
     font-size: 0.9rem;
     text-decoration: none;
+  
 }
 
 .btn-manage-item:hover {
@@ -750,6 +765,7 @@ button:disabled,
     font-weight: 500;
     cursor: pointer;
     transition: background-color 0.2s;
+    border: none;
 }
 
 .time-btn:hover {
@@ -868,4 +884,51 @@ button:disabled,
     background-color: #DC2626;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* ============================================
+   BID ERRORS
+   ============================================ */
+   .bid-errors {
+    background: rgba(231, 76, 60, 0.15);
+    border: 1px solid #e74c3c;
+    border-radius: 8px;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.bid-error-icon {
+    color: #e74c3c;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.bid-error-content {
+    flex: 1;
+}
+
+.bid-error-message {
+    margin: 0;
+    color: #e74c3c;
+    font-size: 0.9rem;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.bid-error-message:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+/* Input avec erreur */
+.bid-input-group input.input-error {
+    border-color: #e74c3c;
+    background-color: rgba(231, 76, 60, 0.05);
+}
+
+.bid-input-group input.input-error:focus {
+    outline-color: #e74c3c;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
 }

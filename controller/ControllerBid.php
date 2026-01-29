@@ -57,6 +57,17 @@ class ControllerBid extends Controller {
         $bid = new Bid($itemId, $currentUser->get_id(), $amount);
         $errors = $bid->persist();
 
+            // Si erreurs, les stocker en session
+    if (!empty($errors)) {
+        $_SESSION['bid_errors'] = $errors;
+        $_SESSION['bid_amount'] = $amount; 
+    } else {
+        // Succès : supprimer les erreurs précédentes
+        unset($_SESSION['bid_errors']);
+        unset($_SESSION['bid_amount']);
+    }
+    
+
        $this->redirect("open_item", "index", $itemId);
     }
 

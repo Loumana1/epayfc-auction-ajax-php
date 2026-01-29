@@ -1,7 +1,7 @@
-
-
-/* Override layout pour page sans sidebar */
-.content-wrapper {
+/* ============================================
+   SALES PAGE - Layout Override
+   ============================================ */
+   .content-wrapper {
     display: block;
     padding: 20px;
     max-width: 1200px;
@@ -12,7 +12,9 @@
     width: 100%;
 }
 
-/* Page Header */
+/* ============================================
+   PAGE HEADER (réutilise .section-title)
+   ============================================ */
 .page-header {
     display: flex;
     justify-content: space-between;
@@ -38,32 +40,21 @@
     font-weight: 400;
 }
 
-.badge {
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-}
-
-.badge-green {
-    background-color: var(--Button-light-green);
-    color: white;
-}
-
-/* Stats Row */
+/* ============================================
+   STATS ROW (réutilise .section)
+   ============================================ */
 .stats-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 15px;
-    margin-bottom: 30px;
+    margin-bottom: 70px;
 }
 
-
-
 .stat-box {
+    /* Réutilise .section mais avec padding différent */
     background-color: var(--Background-grey);
     border-radius: 8px;
-    padding: 20px;
+    padding: 20px; /* .section a 15px, on garde 20px pour stats */
 }
 
 .stat-label {
@@ -85,8 +76,9 @@
 
 .stat-value.stat-value-text {
     font-weight: 600;
-    font-size: 1.4rem;   
+    font-size: 1.4rem;
 }
+
 .stat-desc {
     display: block;
     font-size: 0.8rem;
@@ -94,23 +86,26 @@
     font-weight: 400;
 }
 
-/* Sales Grid */
+/* ============================================
+   SALES GRID
+   ============================================ */
 .sales-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(330px, 1fr));
     gap: 25px;
-    justify-content: center; 
-
+    justify-content: center;
 }
 
-/* Sale Card */
+/* ============================================
+   SALE CARD
+   ============================================ */
 .sale-card {
     background-color: var(--Background-grey);
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
-    max-width: 340px; 
+    max-width: 370px;
 }
 
 .sale-card:hover {
@@ -125,7 +120,6 @@
     color: inherit;
 }
 
-/* Card Image */
 .sale-card-image {
     position: relative;
     height: 220px;
@@ -147,7 +141,6 @@
     color: var(--text-grey);
 }
 
-/* Labels on image */
 .sale-card-labels {
     position: absolute;
     top: 10px;
@@ -193,19 +186,18 @@
     gap: 4px;
 }
 
-/* Card Info */
 .sale-card-info {
     padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 12px;     
+    gap: 12px;
 }
 
 .sale-card-info h3 {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-white);
-    margin:0;
+    margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -221,13 +213,13 @@
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin: 0;   
+    margin: 0;
 }
 
 .sale-card-info .price {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #2c86ed;;
+    color: #2c86ed;
 }
 
 .sale-card-info .current-bid {
@@ -248,7 +240,6 @@
     gap: 6px;
 }
 
-/* Sale Details */
 .sale-details {
     background-color: rgba(0, 0, 0, 0.2);
     padding: 15px;
@@ -274,7 +265,6 @@
     color: var(--text-blue);
 }
 
-/* No Sales */
 .no-sales {
     text-align: center;
     padding: 60px 20px;
