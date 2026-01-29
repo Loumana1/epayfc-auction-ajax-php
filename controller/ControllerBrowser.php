@@ -1,20 +1,19 @@
 <?php
-
 require_once "framework/Controller.php";
 require_once 'framework/View.php';
 require_once 'utils/AppTime.php';
-require_once 'model/ModelItems.php';
+require_once 'model/Item.php';
 require_once 'model/ItemPicture.php';
 
 
 class ControllerBrowser extends Controller {
 
     public function index(): void {
-        $userId = 4 ; // apres corrige
+        $userId = 1 ; // apres corrige
         $now = AppTime::get_current_datetime();
 
-        $participating_items_raw = ModelItems::get_Item_Participating($userId,$now);
-        $available_items_raw = ModelItems::get_Item_Available($userId, $now);
+        $participating_items_raw = Item::get_Item_Participating($userId,$now);
+        $available_items_raw = Item::get_Item_Available($userId, $now);
     
 
         $participating_items = [];
@@ -26,7 +25,7 @@ class ControllerBrowser extends Controller {
             $mainPicture = ItemPicture::get_main_picture($item->id);
 
             // Récupérer le pseudo du vendeur
-            $sellerPseudo = ModelItems::get_User_Pseudo_By_Id($item->is_owner);
+            $sellerPseudo = Item::get_User_Pseudo_By_Id($item->get_owner());
 
             $participating_items[] = [
                 'id' => $item->id,
@@ -41,9 +40,9 @@ class ControllerBrowser extends Controller {
                 'time_remaining' => $this->calculate_time_remaining($item->end_at),
                 'is_auction' => $item->is_auction,
                 'has_buy_now' => $item->has_buy_now,
-                'is_highest_bidder' => ModelItems::is_Highest_Bidder($userId, $item->id),
-                'has_bid' => ModelItems::has_Bid_On_Item($userId, $item->id),
-                'is_owner' => $item->is_owner,
+                'is_highest_bidder' => Item::is_Highest_Bidder($userId, $item->id),
+                'has_bid' => Item::has_Bid_On_Item($userId, $item->id),
+                'is_owner' => $item->get_owner(),
                 'description' => $item->description
             ];
         }
@@ -58,7 +57,7 @@ class ControllerBrowser extends Controller {
             $mainPicture = ItemPicture::get_main_picture($item->id);
 
             // Récupérer le pseudo du vendeur
-            $sellerPseudo = ModelItems::get_User_Pseudo_By_Id($item->is_owner);
+            $sellerPseudo = Item::get_User_Pseudo_By_Id($item->get_owner());
 
             $available_items[] = [
                 'id' => $item->id,
@@ -74,7 +73,7 @@ class ControllerBrowser extends Controller {
                 'is_auction' => $item->is_auction,
                 'has_buy_now' => $item->has_buy_now,
                 'is_direct_sale' => $item->is_direct_sale,
-                'is_owner' => $item->is_owner,
+                'is_owner' => $item->get_owner(),
                 'description' => $item->description
             ];
         }
