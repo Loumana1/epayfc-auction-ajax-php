@@ -37,6 +37,9 @@ class ControllerDeleteConfirm extends Controller {
         $seller = User::get_User_By_Id($item->get_Owner());
         
         (new View("delete_confirm"))->show([
+            'header_title' => 'Delete Item',
+            'header_icon' => 'bi-trash',
+            'back_url' => 'open_item/index/' . $itemId,
             'item' => $item,
             'currentUser' => $user,
             'seller' => $seller 

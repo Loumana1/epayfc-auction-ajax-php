@@ -2,19 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Delete Item - Confirmation</title>
+    <title>Delete Item</title>
     <base href="<?= $web_root ?>">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <a href="open_item/index/<?= $item->get_Id() ?>" class="header-back-btn">    <i class="bi bi-arrow-left"></i></a>
-            <h1 class="header-title">Delete Item</h1>
-            <div class="header-spacer"></div>
-        </div>
-    </header>
+    <!------HEADER---------->
+        <?php include __DIR__ . "/partials/_header.php"; ?>
 
         <main class="delete-confirm-container">
         <div class="delete-confirm-box">
@@ -35,7 +30,7 @@
         <p>Do you really want to delete item 
        
             <strong>"<?= $item->get_Title() ?>"</strong> 
-            by <strong> <?= $seller ? $seller->get_FullName() : 'unknom'   ?></strong>
+            by <strong> <?= $seller ? $seller->get_FullName() : 'unknown'   ?></strong>
             and all of its dependencies?
         </p>
         <p>This process cannot be undone.</p>

@@ -3,7 +3,7 @@
     --Background-grey-2: #212529;
     --Background-blue: #0E172Aff;
     --naBarv-blue: #1E293B;
-    --Button-light-green: #15B57Eff;
+    --Button-light-green: rgb(39, 160, 118);
     --Button-light-grey: rgb(95, 95, 99);
     --Button-light-blue: #468FE5ff;
     --Button-Wight: #dbd8d8;
@@ -19,6 +19,13 @@
 --foothead: #1F283Bff;
 }
 
+/* ==================== RESET ==================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
 /* ==================== BASE ==================== */
 body {
     background-color: var(--Background-blue);
@@ -27,10 +34,12 @@ body {
     font-size: 1rem;
     flex-direction: column;
     min-height: 110vh;
+    margin: 0;      
     margin-bottom: 180px;
     padding: 0;
     overflow-x: hidden;
     max-width: 100vw;
+    width: 100%;  
 }
 
 /* ==================== UTILITY CLASSES ==================== */
@@ -99,10 +108,12 @@ body {
 /* ==================== HEADER ==================== */
 header {
     background-color: var(--naBarv-blue);
-    height: 60px;
+    height: 70px;
     border-bottom: 2px solid rgba(129, 144, 165, 0.5);
     display: flex;
+    margin: 0;
     align-items: center;
+    width: 100%;       
 }
 
 .header-content {
@@ -111,8 +122,9 @@ header {
     justify-content: space-between;
     width: 100%;
     max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 20px;
+   margin: 0 auto;
+
+   /* padding: 0 20px;*/
     height: 100%;
 }
 
@@ -201,6 +213,19 @@ header {
     color: var(--text-white);
     margin: 0 0 15px 0;
 }
+.item-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.item-header-row h2 {
+    margin: 0;
+}
+
 
 .item-description {
     color: var(--text-grey);
@@ -211,13 +236,17 @@ header {
 
 .item-dates {
     color: var(--text-grey);
-    font-size: 0.875rem;
+    font-size: 1rem;    
+    margin-top: 15px;
+}
+.item-dates p {
+    margin: 5px 0;
 }
 
 .button-type-of-sale {
     display: flex;
     gap: 10px;
-    margin: 15px 0;
+    margin: 0;
 }
 
 /* ==================== TAGS ==================== */
@@ -293,13 +322,18 @@ header {
 
 .thumbnail {
     cursor: pointer;
-    transition: border-color 0.2s;
+    transition: border-color 0.2s, opacity 0.2s;
+    opacity: 0.7;
 }
 
 .thumbnail.active {
+    opacity: 1;
     border: 2px solid var(--Button-light-grey);
 }
-
+.thumbnail:hover {
+    opacity: 1;
+    border: 2px solid var(--Button-light-blue);
+}
 /* ==================== PRICING ==================== */
 .pricing-section {
     display: flex;
@@ -368,7 +402,7 @@ header {
 }
 
 .btn-place-bid:hover {
-    background-color: rgba(17, 227, 157, 0.897);
+    background-color: rgba(75, 203, 160, 0.897);
 }
 
 .btn-buy-now {
@@ -637,6 +671,7 @@ button:disabled,
 }
 
 /* ==================== NAVIGATION ==================== */
+/* ==================== NAVIGATION ==================== */
 .navBar {
     position: fixed;
     left: 0;
@@ -644,27 +679,33 @@ button:disabled,
     z-index: 1000;
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 0 20px;
 }
 
 .navBar-principal {
-    bottom: 57px;
-    height: 50px;
+    bottom: 50px;
+    height: 60px;
     background-color: var(--naBarv-blue);
-    gap: 30px;
-    flex-wrap: wrap;
     justify-content: center;
+    gap: 310px;
 }
 
 .navBar-principal a {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     color: var(--text-blue);
-    gap: 5px;
-    margin: 0 120px;
-    padding: 10px;
-    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.75rem;
+    gap: 4px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.navBar-principal a i {
+    font-size: 1.2rem;
 }
 
 .navBar-principal a:hover {
@@ -673,13 +714,12 @@ button:disabled,
 
 .navBar-time {
     bottom: 0;
-    height: 40px;
+    height: 50px;
     background-color: var(--navBar-grey);
     justify-content: space-between;
-    padding: 8px 20px;
+    padding: 0 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
-
 /* ==================== TIME BAR ==================== */
 .time-display {
     display: flex;
@@ -703,7 +743,7 @@ button:disabled,
 .time-btn {
     background-color: rgba(230, 153, 0, 0.3);
     color: #e69900;
-    border-radius: 6px;
+
     padding: 8px 16px;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 0.9rem;

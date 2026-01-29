@@ -60,6 +60,9 @@ class ControllerSales extends Controller {
         }
         
         (new View("sales"))->show([
+            'header_title' => 'Sales',
+            'header_icon' => 'bi-cart',
+            'back_url' => 'profile',
             'sold_items' => $sold_items,
             'statistics' => $statistics,
             'currentUser' => $currentUser,

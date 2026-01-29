@@ -1,6 +1,4 @@
-/* ===========================================
-   SALES PAGE
-   =========================================== */
+
 
 /* Override layout pour page sans sidebar */
 .content-wrapper {
@@ -27,8 +25,8 @@
 }
 
 .page-title {
-    font-size: 1.6rem;
-    font-weight: 600;
+    font-size: 2.2rem;
+    font-weight: 300;
     margin: 0 0 8px 0;
     color: var(--text-white);
 }
@@ -79,12 +77,16 @@
 
 .stat-value {
     display: block;
-    font-size: 1.8rem;
-    font-weight: 300;
+    font-size: 2rem;
+    font-weight: 200;
     color: var(--text-white);
     margin: 8px 0;
 }
 
+.stat-value.stat-value-text {
+    font-weight: 600;
+    font-size: 1.4rem;   
+}
 .stat-desc {
     display: block;
     font-size: 0.8rem;
@@ -95,8 +97,10 @@
 /* Sales Grid */
 .sales-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 25px;
+    justify-content: center; 
+
 }
 
 /* Sale Card */
@@ -106,6 +110,7 @@
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
+    max-width: 340px; 
 }
 
 .sale-card:hover {
@@ -123,7 +128,7 @@
 /* Card Image */
 .sale-card-image {
     position: relative;
-    height: 200px;
+    height: 220px;
     background-color: #1a1a1a;
 }
 
@@ -190,14 +195,17 @@
 
 /* Card Info */
 .sale-card-info {
-    padding: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;     
 }
 
 .sale-card-info h3 {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-white);
-    margin: 0 0 5px 0;
+    margin:0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -206,14 +214,14 @@
 .sale-card-info .seller {
     font-size: 0.875rem;
     color: var(--text-grey);
-    margin: 0 0 12px 0;
+    margin: 0;
 }
 
 .sale-card-info .pricing {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 10px;
+    margin: 0;   
 }
 
 .sale-card-info .price {

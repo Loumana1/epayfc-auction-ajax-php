@@ -14,19 +14,7 @@ require_once "framework/Configuration.php";
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
-
-<header>
-    <div class="header-content">
-        <a href="profile" class="header-back-btn">
-            <i class="bi bi-arrow-left"></i>
-        </a>
-        <h1 class="header-title">
-            <span>Sales</span>
-            <i class="bi bi-cart-fill"></i>
-        </h1>
-        <div class="header-spacer"></div>
-    </div>
-</header>
+<?php include __DIR__ . "/partials/_header.php"; ?>
 
 <div class="content-wrapper">
     <main class="main-content">
@@ -54,13 +42,13 @@ require_once "framework/Configuration.php";
                 <span class="stat-desc">Median buyer appetite indicator</span>
             </div>
             <div class="stat-box">
-                <span class="stat-label">LOYAL BIDDER</span>
-                <span class="stat-value"><?= $statistics['loyal_bidder'] ?? 'N/A' ?></span>
+                <span class="stat-label"><strong>LOYAL BIDDER</strong></span>
+                <span class="stat-value stat-value-text"><?= $statistics['loyal_bidder'] ?? 'N/A' ?></span>
                 <span class="stat-desc">Most recurring winning bidder</span>
             </div>
         </section>
 
-        
+         
         <?php if (!empty($sold_items)): ?>
             <section class="sales-grid">
                 <?php foreach ($sold_items as $item): ?>

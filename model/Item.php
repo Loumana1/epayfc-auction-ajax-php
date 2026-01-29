@@ -163,7 +163,14 @@ public function is_open(): bool {
             
         //Direct Sale
             if ($this->is_direct_sale && !$this->is_auction) {
-                        return !$this->has_bids_time(); // Pas encore acheté
+                if ($this->end_at) {
+                    $endAtDateTime = new DateTime($this->end_at);
+                    if ($endAtDateTime <= $nowDateTime) {
+                        return false; 
+                    }
+                }
+                        return !$this->has_bids_time(); 
+                    
             }
             
             //  Auction
@@ -260,6 +267,13 @@ public function is_open(): bool {
     
     self::execute(
         "DELETE FROM item_pictures WHERE item = :id",
+        ['id' => $itemId]
+    );
+}
+
+public static function delete(int $itemId): void {
+    self::execute(
+        "DELETE FROM items WHERE id = :id",
         ['id' => $itemId]
     );
 }

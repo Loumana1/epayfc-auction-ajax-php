@@ -14,14 +14,14 @@ class ControllerOpenItem extends Controller {
 
         $itemId = $_GET['param1'] ?? null;
  
-        if (!$itemId || !is_numeric($itemId)) {
-           $this->redirect("browser");
-
+        if (!$itemId || !ctype_digit($itemId)) {
+            throw new Exception("Invalid item ID: '$itemId'");
         }
 
-        $item = Item::get_by_id($itemId);
+
+        $item = Item::get_by_id((int)$itemId);
         if ($item === false) {
-             $this->redirect("browser");
+            throw new Exception("Item #$itemId not found.");
         }
 
 
@@ -30,7 +30,6 @@ class ControllerOpenItem extends Controller {
         $currentUserId = $currentUser ? $currentUser->get_Id() : null;
         $isOwner = $currentUserId && $item->get_owner() == $currentUserId;
         $isOpen = $item->is_open();  
-
         $isHighestBidder = false;
         if ($currentUserId) {
             $isHighestBidder = Bid::is_user_highest($currentUserId, $itemId);
@@ -39,7 +38,7 @@ class ControllerOpenItem extends Controller {
         
         // -------REDIRECTION SI PAS AUTORISE---------
         if (!$isOpen && !$isOwner && !$isHighestBidder) {
-            $this->redirect("browser");
+            (new View("error"))->show(['error' => "Invalid item ID."]);
             return;
         }
         
@@ -112,6 +111,9 @@ class ControllerOpenItem extends Controller {
 
 
         $data = [
+            'header_title' => 'Item open',
+            'header_icon' => 'bi-cart-fill',
+            'back_url' => 'browser',
             'item' => $item,
             'itemId' => $itemId,
             'pictures' => $pictures,
