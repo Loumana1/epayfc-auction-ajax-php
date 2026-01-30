@@ -3,6 +3,8 @@ require_once "framework/Model.php";
 require_once "utils/AppTime.php";
 require_once "model/Bid.php";
 require_once "model/User.php";
+require_once "framework/Configuration.php";
+
 
 class Item extends Model{
 
@@ -13,7 +15,7 @@ class Item extends Model{
     private $created_at;
     private  $buy_now_price;
     private $duration_days;
-    private  $starting_bid;
+    private ?float $starting_bid;
 
     private  ?array $_cached_bids = null;    public $end_at;
     private  $bid_count;
@@ -27,14 +29,14 @@ class Item extends Model{
 
 
     public function __construct(
-        int $id,
+        ?int $id,
         string $title,
         ?string $description,
         int $owner,
         string $created_at,
         ?float $buy_now_price,
         int $duration_days,
-        float $starting_bid,
+        ?float $starting_bid,
 
         //v_items_status
         ?string $end_at = null,
@@ -107,6 +109,23 @@ class Item extends Model{
         $query = self::execute("SELECT * FROM v_items_status WHERE id = :id", ['id' => $id]);
         $data = $query->fetch();
         return $data === false ? false : self::rowToItem($data);
+    }
+
+      public static function get_by_id_for_edit(int $id): ?Item {
+        $q = self::execute("SELECT * FROM items WHERE id = :id", ["id" => $id]);
+        $r = $q->fetch();
+        if (!$r) return null;
+
+        return new Item(
+            (int)$r["id"],
+            $r["title"],
+            $r["description"],
+            (int)$r["owner"],
+            $r["created_at"],
+            $r["buy_now_price"] !== null ? (float)$r["buy_now_price"] : null,
+            (int)$r["duration_days"],
+            $r["starting_bid"] !== null ? (float)$r["starting_bid"] : null
+        );
     }
 
     public function get_Title(): string {

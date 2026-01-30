@@ -18,7 +18,7 @@ class ControllerItem extends Controller {
         $item = null;
 
         if ($item_id !== null) {
-            $item = Item::get_by_id($item_id);
+            $item = Item::get_by_id_for_edit($item_id);
             if ($item === null || $item->get_owner() !== $owner_id) {
                 $this->redirect();
             }

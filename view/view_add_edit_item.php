@@ -17,7 +17,7 @@
             <i class="bi bi-arrow-left"></i>
         </a>
 
-    <   h1><?= $item_id ? "Edit item" : "Add item" ?></h1>
+        <h1><?= $item_id ? "Edit item" : "Add item" ?></h1>
 
         <button class="save-btn" form="item-form">
             <i class="bi bi-floppy"></i>
