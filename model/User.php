@@ -1,56 +1,100 @@
-<?php 
-
+<?php
 require_once "framework/Model.php";
 
 class User extends Model {
 
-     private string $email;
-    private string $hashed_password;
+    public $id;
+    public $full_name;
+    public $pseudo;
+    public $email;
+    public $role;
+    public $picture_path;
+    public $hashed_password;
+    public $iban;
 
-    public function __construct(string $email, string $hashed_password) {
+    public function __construct(
+        int $id,
+        string $full_name,
+        string $pseudo,
+        string $email,
+        string $role,
+        ?string $picture_path,
+        ?string $iban
+    ) {
+        $this->id = $id;
+        $this->full_name = $full_name;
+        $this->pseudo = $pseudo;
         $this->email = $email;
-        $this->hashed_password = $hashed_password;
+        $this->role = $role;
+        $this->picture_path = $picture_path;
+        $this->iban = $iban;
     }
 
 
-     public function get_email(): string {
-        return $this->email;
+    public function get_Id(): int {
+        return $this->id;
     }
 
-  
-    public function check_password(string $password): bool {
-        return password_verify($password, $this->hashed_password);
-    }
-
-    public static function get_user_by_mail(string $email): ?User {
-        $query = self::execute("SELECT * FROM users WHERE email = :email", ["email" => $email]);
-        $row = $query->fetch();
-
-        if (!$row) {
-            return null;
+           // choper info de l'utilisateur courant
+           public static function get_User_By_Id(int $userId): User|false {
+            $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
+            $data = $query->fetch();
+            if ($data === false) { 
+                return false;
+            } else {
+                return new User($data["id"],
+                 $data["full_name"],
+                  $data["pseudo"],
+                   $data["email"],
+                    $data["role"], 
+                    $data["picture_path"], 
+                    $data["iban"]);
+            }
         }
-        return new User($row["email"], $row["hashed_password"]);
-    }
 
-    private static function validate_password(string $password): array {
-        $errors = [];
-        if (strlen($password) < 8 || strlen($password) > 16) {
-            $errors[] = "Password length must be between 8 and 16.";
-        }
-        if (!preg_match("/[A-Z]/", $password) ||
-            !preg_match("/\d/", $password) ||
-            !preg_match("/['\";:,.\/?!\\-]/", $password)) {
-            $errors[] = "Password must contain one uppercase letter, one number and one punctuation mark.";
-        }
-        return $errors;
+    public function get_Pseudo(): string {
+        return $this->pseudo;
     }
 
 
-    public static function validate_passwords(string $password, string $password_confirm): array {
-        $errors = self::validate_password($password);
-        if ($password !== $password_confirm) {
+    public function get_FullName(): string{
+        return $this->full_name;
+    }
+public function get_Thumbnail_Path(): ?string {
+    if (!$this->picture_path) {
+        return null;
+    }
+    return str_replace('.jpg', '_thumbnail.jpg', $this->picture_path);
+}
+
+public function has_Picture(): bool {
+    return !empty($this->picture_path);
+}
+
+public function get_user_or_false () {
+
+    return null;
+
+}
+
+
+
+private static function validate_password(string $password) : array {
+    $errors = [];
+    if (strlen($password) <  8 || strlen($password) > 16) {
+        $errors[] = "Password length must be between 8 and 16.";
+    } if (!((preg_match("/[A-Z]/", $password)) && preg_match("/\d/", $password) && preg_match("/['\";:,.\/?!\\-]/", $password))) {
+        $errors[] = "Password must contain one uppercase letter, one number and one punctuation mark." ;
+    }
+    return $errors;
+}
+
+public static function validate_passwords(string $password, string $password_confirm) : array {
+        $errors = user::validate_password($password);
+        if ($password != $password_confirm) {
             $errors[] = "You have to enter twice the same password.";
         }
         return $errors;
-    }
+}
+
 }
