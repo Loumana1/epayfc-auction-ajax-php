@@ -19,7 +19,8 @@ class User extends Model {
         string $email,
         string $role,
         ?string $picture_path,
-        ?string $iban
+        ?string $iban,
+        ?string $hashed_password = null
     ) {
         $this->id = $id;
         $this->full_name = $full_name;
@@ -28,6 +29,7 @@ class User extends Model {
         $this->role = $role;
         $this->picture_path = $picture_path;
         $this->iban = $iban;
+        $this->hashed_password = $hashed_password;
     }
 
 
@@ -48,7 +50,8 @@ class User extends Model {
                    $data["email"],
                     $data["role"], 
                     $data["picture_path"], 
-                    $data["iban"]);
+                    $data["iban"],
+                    $data["password"] ?? null);
             }
         }
 
@@ -95,6 +98,61 @@ public static function validate_passwords(string $password, string $password_con
             $errors[] = "You have to enter twice the same password.";
         }
         return $errors;
+}
+
+public function get_hashed_password(): ?string {
+    if ($this->hashed_password) {
+        return $this->hashed_password;
+    }
+    // Si pas dans l'objet, récupérer depuis la DB
+    $query = self::execute("SELECT password FROM users WHERE id = :id", ['id' => $this->id]);
+    $data = $query->fetch();
+    return $data ? $data['password'] : null;
+}
+
+public static function update_password(int $userId, string $hashedPassword): void {
+    self::execute(
+        "UPDATE users SET password = :password WHERE id = :id",
+        ['password' => $hashedPassword, 'id' => $userId]
+    );
+}
+
+
+public static function validate_change_password(self $user, ?string $currentPassword, ?string $newPassword, ?string $confirmPassword): array {
+    $fieldErrors = [
+        'current_password' => [],
+        'new_password' => [],
+        'confirm_password' => []
+    ];
+
+    $hashedPassword = $user->get_hashed_password();
+    if (!$currentPassword || !$hashedPassword || !password_verify($currentPassword, $hashedPassword)) {
+        $fieldErrors['current_password'][] = "Current password is incorrect.";
+    }
+
+    if ($newPassword !== null && $newPassword !== '' && $confirmPassword !== null && $confirmPassword !== '') {
+        $validationErrors = self::validate_passwords($newPassword, $confirmPassword);
+        foreach ($validationErrors as $error) {
+            if (strpos($error, 'twice the same') !== false) {
+                $fieldErrors['confirm_password'][] = $error;
+            } elseif (strpos($error, 'length') !== false || strpos($error, '8 and 16') !== false) {
+                $fieldErrors['new_password'][] = $error;
+            } elseif (strpos($error, 'uppercase') !== false || strpos($error, 'number') !== false || strpos($error, 'punctuation') !== false) {
+                $fieldErrors['new_password'][] = $error;
+            } else {
+                $fieldErrors['new_password'][] = $error;
+            }
+        }
+    } else {
+        if (!$newPassword) {
+            $fieldErrors['new_password'][] = "Please enter a new password.";
+        }
+        if (!$confirmPassword) {
+            $fieldErrors['confirm_password'][] = "Please confirm your new password.";
+        }
+    }
+
+    return $fieldErrors;
 }
 
 }
