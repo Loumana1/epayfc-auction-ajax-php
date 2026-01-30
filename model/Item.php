@@ -1,8 +1,10 @@
 <?php
+
 require_once "framework/Model.php";
 require_once "utils/AppTime.php";
 require_once "model/Bid.php";
 require_once "model/User.php";
+
 class Item extends Model{
 
     private $id;
@@ -45,6 +47,7 @@ class Item extends Model{
         bool $has_bids = false,
         bool $buy_now_reached = false,
         bool $not_purchased_direct_sale = false 
+
     ) {
         $this->id = $id;
         $this->title = $title;
@@ -54,7 +57,8 @@ class Item extends Model{
         $this->buy_now_price = $buy_now_price;
         $this->duration_days = $duration_days;
         $this->starting_bid = $starting_bid;
-        
+
+
 
         $this->end_at = $end_at;
         $this->bid_count = $bid_count;
@@ -106,8 +110,6 @@ class Item extends Model{
         return $data === false ? false : self::rowToItem($data);
     }
 
-
-
     public function get_Title(): string {
     return $this-> title ;
     }
@@ -148,9 +150,10 @@ public function get_Starting_Bid(): float {
         
 
     }
+  
+    public function get_duration_days(): int { return $this->duration_days; }
 
-
-
+    
 
 public function is_open(): bool {
         $now = AppTime::get_current_datetime();
@@ -382,4 +385,103 @@ public static function delete(int $itemId): void {
         ];
     }
 
+    private static function title_exists_for_owner(string $title, int $owner, ?int $exclude_id): bool {
+        $sql = "SELECT COUNT(*) FROM items WHERE title = :title AND owner = :owner";
+        $params = ["title" => $title, "owner" => $owner];
+
+        if ($exclude_id !== null) {
+            $sql .= " AND id <> :id";
+            $params["id"] = $exclude_id;
+        }
+
+        $q = self::execute($sql, $params);
+        return (int)$q->fetchColumn() > 0;
+    }
+
+
+    public function validate(): array {
+        $errors = [];
+
+        $title = trim($this->title);
+        $min = (int)Configuration::get("title_min_length", 3);
+        $max = (int)Configuration::get("title_max_length", 255);
+
+        if (strlen($title) < $min || strlen($title) > $max) {
+            $errors["title"] = "Title length must be between $min and $max characters.";
+        } else if (self::title_exists_for_owner($title, $this->owner, $this->id)) {
+            $errors["title"] = "You already have an item with this title.";
+        }
+
+        if ($this->description !== null && trim($this->description) !== "" && strlen(trim($this->description)) < 3) {
+            $errors["description"] = "Description must be at least 3 characters.";
+        }
+
+        if ($this->duration_days < 1 || $this->duration_days > 365) {
+            $errors["duration_days"] = "Duration must be between 1 and 365 days.";
+        }
+
+        $sb = $this->starting_bid;
+        $bn = $this->buy_now_price;
+
+        $sb_is_auction = ($sb !== null && $sb > 0);
+
+        if ($sb !== null && $sb < 0) {
+            $errors["starting_bid"] = "Starting bid must be greater than 0.";
+        }
+
+        if ($bn !== null && $bn <= 0) {
+            $errors["buy_now_price"] = "Buy now price must be greater than 0.";
+        }
+
+        if ($sb_is_auction) {
+            if ($bn !== null && $bn <= $sb) {
+                $errors["buy_now_price"] = "Buy now price must be greater than the starting bid.";
+            }
+        } else {
+            // vente directe : starting_bid null ou 0 => buy_now obligatoire
+            if ($bn === null) {
+                $errors["buy_now_price"] = "Sale price is required for a direct sale.";
+            }
+        }
+
+        return $errors;
+    }
+
+    public function persist(): array {
+        $errors = $this->validate();
+        if (!empty($errors)) return $errors;
+
+        if ($this->id === null) {
+            self::execute(
+                "INSERT INTO items(title, description, owner, created_at, buy_now_price, duration_days, starting_bid)
+                 VALUES(:title, :description, :owner, :created_at, :buy_now_price, :duration_days, :starting_bid)",
+                [
+                    "title" => $this->title,
+                    "description" => $this->description,
+                    "owner" => $this->owner,
+                    "created_at" => $this->created_at,
+                    "buy_now_price" => $this->buy_now_price,
+                    "duration_days" => $this->duration_days,
+                    "starting_bid" => $this->starting_bid ?? 0.0
+                ]
+            );
+            $this->id = self::lastInsertId();
+        } else {
+            self::execute(
+                "UPDATE items
+                 SET title=:title, description=:description, buy_now_price=:buy_now_price, duration_days=:duration_days, starting_bid=:starting_bid
+                 WHERE id=:id",
+                [
+                    "title" => $this->title,
+                    "description" => $this->description,
+                    "buy_now_price" => $this->buy_now_price,
+                    "duration_days" => $this->duration_days,
+                    "starting_bid" => $this->starting_bid ?? 0.0,
+                    "id" => $this->id
+                ]
+            );
+        }
+
+        return [];
+    }
 }
