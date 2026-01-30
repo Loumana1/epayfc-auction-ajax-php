@@ -5,24 +5,24 @@ require_once "model/Bid.php";
 require_once "model/User.php";
 class Item extends Model{
 
-    public $id;
-    public  $title;
-    public  $description;
-    public  $owner;
-    public $created_at;
-    public  $buy_now_price;
-    public $duration_days;
-    public  $starting_bid;
+    private $id;
+    private  $title;
+    private  $description;
+    private  $owner;
+    private $created_at;
+    private  $buy_now_price;
+    private $duration_days;
+    private  $starting_bid;
 
     private  ?array $_cached_bids = null;    public $end_at;
-    public  $bid_count;
-    public  $max_bid;
-    public  $is_direct_sale;
-    public  $is_auction;
-    public $has_buy_now;
-    public  $has_bids;
-    public $buy_now_reached;
-    public  $not_purchased_direct_sale;
+    private  $bid_count;
+    private  $max_bid;
+    private $is_direct_sale;
+    private  $is_auction;
+    private $has_buy_now;
+    private  $has_bids;
+    private $buy_now_reached;
+    private  $not_purchased_direct_sale;
 
 
     public function __construct(
