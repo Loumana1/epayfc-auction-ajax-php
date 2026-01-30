@@ -5,54 +5,12 @@ class User extends Model {
 
     public int $id;
     public string $full_name;
-    private string $email;
     public string $pseudo;
-    private string $hashed_password;
+    private string $email;
     public string $role;
-
-    public function __construct(int $id, string $full_name, string $email, string $pseudo, string $hashed_password, string $role) {
-        $this->id = $id;
-        $this->full_name = $full_name;
-        $this->email = $email;
-        $this->pseudo = $pseudo;
-        $this->hashed_password = $hashed_password;
-        $this->role = $role;
-    }
-
-
-     public function get_email(): string {
-        return $this->email;
-    }
-
-  
-    public function check_password(string $password): bool {
-        return password_verify($password, $this->hashed_password);
-    }
-
-    public static function get_user_by_mail(string $email): ?User {
-        $query = self::execute("SELECT * FROM users WHERE email = :email", ["email" => $email]);
-        $row = $query->fetch();
-
-        if (!$row) {
-            return null;
-        }
-        return new User(
-            (int)$row["id"], 
-            $row["full_name"], 
-            $row["email"], 
-            $row["pseudo"], 
-            $row["password"], 
-            $row["role"]
-        );
-    }
-    public $id;
-    public $full_name;
-    public $pseudo;
-    public $email;
-    public $role;
-    public $picture_path;
-    public $hashed_password;
-    public $iban;
+    public ?string $picture_path;
+    public ?string $iban;
+    private ?string $hashed_password;
 
     public function __construct(
         int $id,
@@ -60,8 +18,8 @@ class User extends Model {
         string $pseudo,
         string $email,
         string $role,
-        ?string $picture_path,
-        ?string $iban,
+        ?string $picture_path = null,
+        ?string $iban = null,
         ?string $hashed_password = null
     ) {
         $this->id = $id;
@@ -74,6 +32,43 @@ class User extends Model {
         $this->hashed_password = $hashed_password;
     }
 
+
+    public static function get_user_by_mail(string $email): ?User {
+    $query = self::execute(
+        "SELECT * FROM users WHERE email = :email",
+        ["email" => $email]
+    );
+    $row = $query->fetch();
+
+    if (!$row) {
+        return null;
+    }
+
+    return new User(
+        $row["id"],
+        $row["full_name"],
+        $row["pseudo"],
+        $row["email"],
+        $row["role"],
+        $row["picture_path"] ?? null,
+        $row["iban"] ?? null,
+        $row["password"] ?? null
+    );
+    }
+
+
+    
+     public function check_password(string $password): bool {
+        return $this->hashed_password !== null
+            && password_verify($password, $this->hashed_password);
+    }
+
+    
+    
+    public function get_email(): string {
+            return $this->email;
+    }
+    
 
     public function get_Id(): int {
         return $this->id;
@@ -160,7 +155,7 @@ public function get_user_or_false () {
         }
         return $errors;
     }
-}
+
 
 public function get_hashed_password(): ?string {
     if ($this->hashed_password) {
