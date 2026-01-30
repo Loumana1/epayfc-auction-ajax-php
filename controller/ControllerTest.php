@@ -47,7 +47,7 @@ class ControllerTest extends Controller {
         echo "<p><a href='open_item/index/10'>Open Item #10 Owner Boris</a></p>";
         echo "<p><a href='sales'><button type='button'>Go to Sales Page</button></a></p>";  // ← AJOUTER
 echo "<p><a href='browser'><button type='button'>Go to Browser</button></a></p>";  
-        
+echo "<p><a href='user/change_password'>Change Password</a></p>"; 
         // Afficher l'utilisateur actuel
         $currentUser = $this->get_user_or_false();
         if ($currentUser) {
@@ -75,8 +75,7 @@ echo "<p><a href='browser'><button type='button'>Go to Browser</button></a></p>"
        
         $this->redirect("", "index");
     }
-    
-    // Déco - override pour redirect a test page
+
     public function logout(): void {
         $_SESSION = array();
         session_destroy();
