@@ -145,6 +145,7 @@ class ControllerOpenItem extends Controller {
             'statusMessage' => $statusMessage,
             'hasActiveBids' => $hasActiveBids,
             'itemPurchased' => $itemPurchased,
+            'showBidHistory' => $item->get_Is_Auction(),
         ];
 
 
