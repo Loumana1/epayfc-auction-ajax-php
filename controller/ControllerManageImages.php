@@ -35,8 +35,8 @@ class ControllerManageImages extends Controller
             'picture_count' => $pictureCount,
             'current_user_id' => $currentUserId,
             'currentUser' => $currentUser,
-            'header_title' => 'Browser',
-            'header_icon' => 'bi-cart-fill'
+            'header_title' => 'Manage images',
+            'header_icon' => 'bi-image-fill'
         ]);
     }
 
