@@ -92,6 +92,92 @@
         </section>
     <?php endif; ?>
 
+    <?php if (!empty($closed_unsold_items)): ?>
+        <section class="items-section">
+            <h2>Closed · Unsold Items</h2>
+
+            <div class="items-grid">
+                <?php foreach ($closed_unsold_items as $item): ?>
+
+                    <?php
+                    $pic = ItemPicture::get_main_picture($item->get_id());
+                    $img = $pic ? $pic->picture_path : "assets/no-image.png";
+                    ?>
+
+                    <div class="item-card closed">
+
+                        <div class="image-wrapper">
+                            <img src="<?= $img ?>" alt="">
+                            <span class="badge closed">Closed</span>
+                        </div>
+
+                        <div class="item-body">
+                            <h3><?= $item->get_title() ?></h3>
+
+                            <div class="price">
+                                <span class="main">
+                                    <?= euro($item->get_starting_bid()) ?>
+                                </span>
+                                <span class="sub">No bids</span>
+                            </div>
+
+                            <div class="time ended">
+                                <i class="bi bi-x-circle"></i>
+                                Not sold
+                            </div>
+                        </div>
+
+                    </div>
+
+                <?php endforeach; ?>
+            </div>
+        </section>
+    <?php endif; ?>
+
+    <?php if (!empty($sold_items)): ?>
+        <section class="items-section">
+            <h2>Sold Items</h2>
+
+            <div class="items-grid">
+                <?php foreach ($sold_items as $item): ?>
+
+                    <?php
+                    $pic = ItemPicture::get_main_picture($item->get_id());
+                    $img = $pic ? $pic->picture_path : "assets/no-image.png";
+                    ?>
+
+                    <div class="item-card sold">
+
+                        <div class="image-wrapper">
+                            <img src="<?= $img ?>" alt="">
+                            <span class="badge sold">Sold</span>
+                        </div>
+
+                        <div class="item-body">
+                            <h3><?= $item->get_title() ?></h3>
+
+                            <div class="price">
+                                <span class="main">
+                                    <?= euro($item->get_max_bid_time()) ?>
+                                </span>
+                                <span class="sub">Final price</span>
+                            </div>
+
+                            <div class="time sold">
+                                <i class="bi bi-check-circle"></i>
+                                Sold
+                            </div>
+                        </div>
+
+                    </div>
+
+                <?php endforeach; ?>
+            </div>
+        </section>
+    <?php endif; ?>
+
+
+
 </div>
 
 </body>

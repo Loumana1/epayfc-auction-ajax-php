@@ -515,7 +515,7 @@ public static function delete(int $itemId): void {
         ]);
     }
 
-public static function get_closed_unsold_items_by_owner(int $userId, string $now): array {
+    public static function get_closed_unsold_items_by_owner(int $userId, string $now): array {
         $query = "SELECT * FROM v_items_status
                 WHERE owner = :user_id
                 AND end_at <= :now
@@ -527,6 +527,28 @@ public static function get_closed_unsold_items_by_owner(int $userId, string $now
             'now' => $now
         ]);
     }
+
+    public function get_has_bids(): bool {
+        return (bool)$this->has_bids;
+    }
+
+    public function get_buy_now_reached(): bool {
+        return (bool)$this->buy_now_reached;
+    }
+
+    public static function get_items_by_owner(int $userId): array {
+        $query = "
+            SELECT * FROM v_items_status
+            WHERE owner = :user_id
+            ORDER BY end_at DESC
+        ";
+
+        return self::queryToItems($query, [
+            "user_id" => $userId
+        ]);
+    }
+
+
 
 
 }
