@@ -2,14 +2,15 @@
 
 require_once "framework/Controller.php";
 require_once 'framework/View.php';
-require_once 'model/ModelItems.php';
 require_once 'model/ItemPicture.php';
+require_once 'model/Item.php';
 
 class ControllerManageImages extends Controller
 {
     // Affiche la page de gestion des images
-    public function index(): void
-    {
+    public function index(): void {
+        $currentUser = $this->get_user_or_false();
+        $currentUserId = $currentUser ? $currentUser->get_Id() : null; // apres corrige
         $itemId = isset($_GET['param1']) ? (int) $_GET['param1'] : 0;
 
         if ($itemId <= 0) {
@@ -18,7 +19,7 @@ class ControllerManageImages extends Controller
         }
 
         // Récupérer l'item
-        $item = ModelItems::get_Item_By_Id($itemId);
+        $item = Item::get_by_id($itemId);
         if (!$item) {
             $this->redirect("browser");
             return;
@@ -31,7 +32,11 @@ class ControllerManageImages extends Controller
         (new View("manage_images"))->show([
             'item' => $item,
             'pictures' => $pictures,
-            'picture_count' => $pictureCount
+            'picture_count' => $pictureCount,
+            'current_user_id' => $currentUserId,
+            'currentUser' => $currentUser,
+            'header_title' => 'Browser',
+            'header_icon' => 'bi-cart-fill'
         ]);
     }
 
