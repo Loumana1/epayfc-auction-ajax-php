@@ -10,6 +10,29 @@ class ControllerItem extends Controller {
         $this->redirect("item", "add_edit_item");
     }
 
+    public function my_items(): void {
+        $user = $this->get_user_or_false();
+        if (!$user) {
+            $this->redirect("login");
+            return;
+        }
+
+        $now = AppTime::get_current_datetime();
+        $userId = $user->get_id();
+
+        $active_items = Item::get_active_items_by_owner($userId, $now);
+        $closed_unsold_items = Item::get_closed_unsold_items_by_owner($userId, $now);
+        $sold_items = Item::get_sold_items_by_owner($userId, $now);
+
+        (new View("my_items"))->show([
+            "active_items" => $active_items,
+            "closed_unsold_items" => $closed_unsold_items,
+            "sold_items" => $sold_items
+        ]);
+    }
+
+
+
     public function add_edit_item(): void {
         $user = $this->get_user_or_false();
         $owner_id = $user ? $user->get_id() : 1;

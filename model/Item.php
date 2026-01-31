@@ -502,4 +502,31 @@ public static function delete(int $itemId): void {
 
         return [];
     }
+
+    public static function get_active_items_by_owner(int $userId, string $now): array {
+        $query = "SELECT * FROM v_items_status
+                    WHERE owner = :user_id
+                    AND end_at > :now
+                    AND buy_now_reached = 0
+                    ORDER BY end_at DESC";
+        return self::queryToItems($query, [
+            'user_id' => $userId,
+            'now' => $now
+        ]);
+    }
+
+public static function get_closed_unsold_items_by_owner(int $userId, string $now): array {
+        $query = "SELECT * FROM v_items_status
+                WHERE owner = :user_id
+                AND end_at <= :now
+                AND has_bids = 0
+                AND buy_now_reached = 0
+                ORDER BY end_at DESC";
+        return self::queryToItems($query, [
+            'user_id' => $userId,
+            'now' => $now
+        ]);
+    }
+
+
 }
