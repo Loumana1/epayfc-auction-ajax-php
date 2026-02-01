@@ -1,4 +1,23 @@
+/* ===== VARIABLES POUR MANAGE IMAGES ===== */
+:root {
+    --bg-card: #1E293B;
+    --bg-body: #0E172A;
+    --border-color: rgba(129, 144, 165, 0.3);
+    --text-main: #F8F9FA;
+    --text-muted: #9CA3AF;
+    --accent-blue: #3B82F6;
+    --accent-red: #EF4444;
+}
+
 /* ===== MANAGE IMAGES PAGE ===== */
+/* Page subtitle */
+.manage-page .page-subtitle {
+    color: var(--text-main);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0 0 20px 0;
+    padding: 0 5px;
+}
 
 /* Main adjustments */
 .manage-page main {
