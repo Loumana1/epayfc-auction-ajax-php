@@ -5,6 +5,7 @@
     <title>My items</title>
     <base href="<?= $web_root ?>">
     <link rel="stylesheet" href="css/my_items.css">
+    <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
@@ -179,6 +180,10 @@
 
 
 </div>
+
+<?php include __DIR__ . "/partials/_navbar.php"; ?>
+<?php include __DIR__ . "/partials/_timebar.php"; ?>
+
 
 </body>
 </html>
