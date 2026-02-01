@@ -123,6 +123,8 @@ class ControllerOpenItem extends Controller {
 
         $data = [
             'bid_success_message' => $_SESSION['bid_success_message'] ?? null,
+            'delete_item_blocked_message' => $_SESSION['delete_item_blocked_message'] ?? null,
+            'manage_images_blocked_message' => $_SESSION['manage_images_blocked_message'] ?? null,
             'bidErrors' => $bidErrors,
             'bidAmount' => $bidAmount,
             'header_title' => 'Item open',

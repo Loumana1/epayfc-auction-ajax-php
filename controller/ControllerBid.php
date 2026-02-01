@@ -80,7 +80,7 @@ class ControllerBid extends Controller {
 
     public function ack(): void {
         $itemId = isset($_GET['param1']) ? $_GET['param1'] : null;
-        unset($_SESSION['bid_success_message']);
+        unset($_SESSION['bid_success_message'], $_SESSION['delete_item_blocked_message'], $_SESSION['manage_images_blocked_message']);
         if (!$itemId) {
             $this->redirect("browser");
             return;

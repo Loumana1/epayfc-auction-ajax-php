@@ -153,7 +153,7 @@ header {
 }
 
 .header-back-btn {
-    color: var(--text-blue);
+    color: var(--Button-light-blue);
     font-size: 1.5rem;
     text-decoration: none;
     display: flex;
@@ -234,7 +234,9 @@ header {
 /* ==================== DIVIDER ==================== */
 .divider-line {
     height: 1px;
-    background-color: rgba(149, 154, 173, 0.3);
+    margin: 0;
+    border: none;
+    background-color: rgb(149, 154, 173);
     width: 100%;
     padding: 0;
     display: block;

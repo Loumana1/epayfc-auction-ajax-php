@@ -25,7 +25,7 @@
 
         <h2 >Are you sure?</h2>
 
-        <hr class="divider-line" style="height: 1px; width: 80%; margin: 20px auto;">
+        <hr class="divider-line">
     
      
         <p>Do you really want to delete item 

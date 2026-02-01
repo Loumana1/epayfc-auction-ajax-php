@@ -11,7 +11,7 @@
     background-color: #282828;
     border-radius: 12px;
     padding: 40px 50px;
-    max-width: 450px;
+    max-width: 600px;
     width: 100%;
     text-align: center;
 
@@ -20,7 +20,7 @@
 .icon-delete-container {
     display: flex;
     justify-content: center;
-    margin-bottom: 15px;
+   
 }
 
 .icon-delete-container i {
@@ -35,10 +35,7 @@
     margin: 0 0 15px 0;
 }
 
-.delete-confirm-box .divider-line {
-    margin: 20px auto;
-    width: 80%;
-}
+
 
 .delete-confirm-box p {
     color: var(--text-white);
