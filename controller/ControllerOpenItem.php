@@ -15,7 +15,7 @@ class ControllerOpenItem extends Controller {
         $itemId = $_GET['param1'] ?? null;
  
         if (!$itemId || !ctype_digit($itemId)) {
-            throw new Exception("Invalid item ID: '$itemId'");
+            throw new Exception("Invalid item ID: Item does not exist --> '$itemId'");
         }
 
 
@@ -49,7 +49,7 @@ class ControllerOpenItem extends Controller {
         
         // -------REDIRECTION SI PAS AUTORISE---------
         if (!$isOpen && !$isOwner && !$isHighestBidder) {
-            (new View("error"))->show(['error' => "Invalid item ID."]);
+            (new View("error"))->show(['error' => "This item is only available to the owner or the winner."]);
             return;
         }
         
@@ -146,6 +146,7 @@ class ControllerOpenItem extends Controller {
             'hasActiveBids' => $hasActiveBids,
             'itemPurchased' => $itemPurchased,
             'showBidHistory' => $item->get_Is_Auction(),
+            'auctionEnded' => !$isOpen && $item->get_Is_Auction(),
         ];
 
 

@@ -5,6 +5,7 @@
     <title>Delete Item</title>
     <base href="<?= $web_root ?>">
     <link rel="stylesheet" href="css/styles.css">
+     <link rel="stylesheet" href="css/delete_item.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
