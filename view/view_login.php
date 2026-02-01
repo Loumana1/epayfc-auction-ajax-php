@@ -3,51 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <base href="/prwb_2526_c04/">
 
-    <link rel="stylesheet" href="/prwb_2526_c04/css/styles.css">
+    <link rel="stylesheet" href="css/login.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
 <body>
-    <div>
-        <h1 class="bi bi-cart4"
-            style = "text-align:center;"> EPayFC
-        </h1>
+
+    <div class="top-title">
+        <i class="bi bi-cart4"></i> EPayFC
     </div>
 
-<div class="card">
+    <div class="card">
+        <h2>Sign in</h2>
 
-    <h2 style="text-align:center;">Sign in</h2>
+        <hr class="separator">
 
-   
-    <?php if (!empty($errors)): ?>
-        <div class="error">
-            <?php foreach ($errors as $e): ?>
-                <?= $e ?><br>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
+        <?php if (!empty($errors)): ?>
+            <div class="error">
+                <?php foreach ($errors as $e): ?>
+                    <?= $e ?><br>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
 
-    <form method="post" action="login/login" >
+        <form method="post" action="login/login">
 
-        <input type="text"
-               name="mail"
-               placeholder="Mail"
-               value="<?= $mail ?>">
+            <div class="input-group">
+                <span class="icon"><i class="bi bi-person"></i></span>
+                <input type="text"
+                       name="mail"
+                       placeholder="Mail"
+                       value="<?= $mail ?>">
+            </div>
 
-        <input type="password"
-               name="password"
-               placeholder="Password">
+            <div class="input-group">
+                <span class="icon"><i class="bi bi-key"></i></span>
+                <input type="password"
+                       name="password"
+                       placeholder="Password">
+            </div>
 
-        <button class="btn btn-login" type="submit">Login</button>
+            <button class="btn btn-login" type="submit">Login</button>
+        </form>
 
-    </form>
+        <a class="btn btn-guest" href="test">Continue as guest</a>
 
-    <p style="margin-top:15px; text-align:center;">
-        New here ? <a href="user/register">Click here to subscribe !</a>
-    </p>
+        <p class="subscribe">
+            <a href="user/register">New here ? Click here to subscribe !</a>
+        </p>
 
-</div>
+        <hr class="separator">
+
+        <?php if (Configuration::is_dev()): ?>
+            <div class="debug">
+                <div class="debug-title">For Debug Purpose</div>
+
+                <a href="login/login_as/boverhaegen@epfc.eu">Login as boverhaegen@epfc.eu</a><br>
+                <a href="login/login_as/mamichel@epfc.eu">Login as mamichel@epfc.eu</a><br>
+                <a href="login/login_as/quhouben@epfc.eu">Login as quhouben@epfc.eu</a><br>
+                <a href="login/login_as/xapigeolet@epfc.eu">Login as xapigeolet@epfc.eu</a>
+            
+               
+
+                <a href="setup/install" class="debug-action debug-ok">
+                    Restore original data
+                </a>
+
+                <a href="setup/export" class="debug-action debug-warn">
+                    Backup personal data
+                </a>
+
+                <a href="setup/restore" class="debug-action debug-warn">
+                    Restore personal data
+                </a>
+
+
+            </div>
+        <?php endif; ?>
+    </div>
 
 </body>
 </html>

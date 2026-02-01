@@ -15,6 +15,6 @@
     
     <div class="item-dates">
         <p>start:<strong><?= date('d/m/Y H:i:s', strtotime($item->get_Created_At())) ?></strong></p>
-        <p>Ends:<strong> <?= $item->get_End_At() ? date('d/m/Y H:i:s', strtotime($item->get_End_At())) : 'N/A' ?></strong></p>
+        <p<?= !empty($auctionEnded) ? ' class="ended"' : '' ?>>Ends:<strong> <?= $item->get_End_At() ? date('d/m/Y H:i:s', strtotime($item->get_End_At())) : 'N/A' ?></strong></p>
     </div>
 </section>

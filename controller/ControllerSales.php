@@ -28,7 +28,7 @@ class ControllerSales extends Controller {
             if (!$item instanceof Item) continue;
             
            
-            $mainPicture = ItemPicture::get_main_picture($item->id);
+            $mainPicture = ItemPicture::get_main_picture($item->get_Id());
             
          
             $pictures = $item->get_pictures();
@@ -41,21 +41,21 @@ class ControllerSales extends Controller {
             $sellerPseudo = $currentUser->get_Pseudo();
             
             $sold_items[] = [
-                'id' => $item->id,
-                'title' => $item->title,
+                'id' => $item->get_Id(),
+                'title' => $item->get_Title(),
                 'pic_path' => $mainPicture ? $mainPicture->picture_path : null,
                 'picture_count' => $pictureCount,
                 'seller_pseudo' => $sellerPseudo,
-                'buy_now_price' => $item->buy_now_price,
-                'starting_bid' => $item->starting_bid,
-                'max_bid' => $item->max_bid,
-                'final_price' => $item->max_bid, 
-                'end_at' => $item->end_at,
-                'is_auction' => $item->is_auction,
-                'has_buy_now' => $item->has_buy_now,
-                'is_direct_sale' => $item->is_direct_sale,
+                'buy_now_price' => $item->get_Buy_Now_Price(),
+                'starting_bid' => $item->get_Starting_Bid(),
+                'max_bid' => $item->get_max_bid_time(),
+                'final_price' => $item->get_max_bid_time(), 
+                'end_at' => $item->get_End_At(),
+                'is_auction' => $item->get_Is_Auction(),
+                'has_buy_now' => $item->get_Has_buy_now_price(),
+                'is_direct_sale' => $item->get_Is_Direct_Sale(),
                 'winner_pseudo' => $winnerPseudo,
-                'closed_at' => $item->end_at 
+                'closed_at' => $item->get_End_At() 
             ];
         }
         

@@ -15,7 +15,7 @@ class ControllerOpenItem extends Controller {
         $itemId = $_GET['param1'] ?? null;
  
         if (!$itemId || !ctype_digit($itemId)) {
-            throw new Exception("Invalid item ID: '$itemId'");
+            throw new Exception("Invalid item ID: Item does not exist --> '$itemId'");
         }
 
 
@@ -30,15 +30,26 @@ class ControllerOpenItem extends Controller {
         $currentUserId = $currentUser ? $currentUser->get_Id() : null;
         $isOwner = $currentUserId && $item->get_owner() == $currentUserId;
         $isOpen = $item->is_open();  
+
+        $bidErrors = [];
+        $bidAmount = null;
+        if (isset($_SESSION['bid_errors'])) {
+            $bidErrors = $_SESSION['bid_errors'];
+            $bidAmount = $_SESSION['bid_amount'] ?? null;
+            unset($_SESSION['bid_errors']); // Supprimer après lecture
+            unset($_SESSION['bid_amount']);
+        }
+        
+
         $isHighestBidder = false;
         if ($currentUserId) {
             $isHighestBidder = Bid::is_user_highest($currentUserId, $itemId);
         }
-
+     
         
         // -------REDIRECTION SI PAS AUTORISE---------
         if (!$isOpen && !$isOwner && !$isHighestBidder) {
-            (new View("error"))->show(['error' => "Invalid item ID."]);
+            (new View("error"))->show(['error' => "This item is only available to the owner or the winner."]);
             return;
         }
         
@@ -111,6 +122,9 @@ class ControllerOpenItem extends Controller {
 
 
         $data = [
+            'bid_success_message' => $_SESSION['bid_success_message'] ?? null,
+            'bidErrors' => $bidErrors,
+            'bidAmount' => $bidAmount,
             'header_title' => 'Item open',
             'header_icon' => 'bi-cart-fill',
             'back_url' => 'browser',
@@ -132,6 +146,8 @@ class ControllerOpenItem extends Controller {
             'statusMessage' => $statusMessage,
             'hasActiveBids' => $hasActiveBids,
             'itemPurchased' => $itemPurchased,
+            'showBidHistory' => $item->get_Is_Auction(),
+            'auctionEnded' => !$isOpen && $item->get_Is_Auction(),
         ];
 
 

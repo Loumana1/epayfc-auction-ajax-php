@@ -4,16 +4,19 @@ require_once 'framework/View.php';
 require_once 'utils/AppTime.php';
 require_once 'model/Item.php';
 require_once 'model/ItemPicture.php';
+require_once 'model/User.php';
+
 
 
 class ControllerBrowser extends Controller {
 
     public function index(): void {
-        $userId = 1 ; // apres corrige
+        $currentUser = $this->get_user_or_false();
+        $currentUserId = $currentUser ? $currentUser->get_Id() : -1;
         $now = AppTime::get_current_datetime();
 
-        $participating_items_raw = Item::get_Item_Participating($userId,$now);
-        $available_items_raw = Item::get_Item_Available($userId, $now);
+        $participating_items_raw = Item::get_Item_Participating($currentUserId,$now);
+        $available_items_raw = Item::get_Item_Available($currentUserId, $now);
     
 
         $participating_items = [];
@@ -22,28 +25,28 @@ class ControllerBrowser extends Controller {
             if (!$item instanceof Item)
                 continue;
 
-            $mainPicture = ItemPicture::get_main_picture($item->id);
+            $mainPicture = ItemPicture::get_main_picture($item->get_Id());
 
             // Récupérer le pseudo du vendeur
             $sellerPseudo = Item::get_User_Pseudo_By_Id($item->get_owner());
 
             $participating_items[] = [
-                'id' => $item->id,
-                'title' => $item->title,
+                'id' => $item->get_Id(),
+                'title' => $item->get_Title(),
                 'pic_path' => $mainPicture?->picture_path,
                 'picture_count' => 0, // Set to 0 to avoid view errors
                 'seller_pseudo' => $sellerPseudo,
-                'buy_now_price' => $item->buy_now_price,
-                'starting_bid' => $item->starting_bid,
-                'max_bid' => $item->max_bid,
-                'end_at' => $item->end_at,
-                'time_remaining' => $this->calculate_time_remaining($item->end_at),
-                'is_auction' => $item->is_auction,
-                'has_buy_now' => $item->has_buy_now,
-                'is_highest_bidder' => Item::is_Highest_Bidder($userId, $item->id),
-                'has_bid' => Item::has_Bid_On_Item($userId, $item->id),
+                'buy_now_price' => $item->get_Buy_Now_Price(),
+                'starting_bid' => $item->get_Starting_Bid(),
+                'max_bid' => $item->get_max_bid_time(),
+                'end_at' => $item->get_End_At(),
+                'time_remaining' => $this->calculate_time_remaining($item->get_End_At()),
+                'is_auction' => $item->get_Is_Auction(),
+                'has_buy_now' => $item->get_Has_buy_now_price(),
+                'is_highest_bidder' => Item::is_Highest_Bidder($currentUserId, $item->get_Id()),
+                'has_bid' => Item::has_Bid_On_Item($currentUserId, $item->get_Id()),
                 'is_owner' => $item->get_owner(),
-                'description' => $item->description
+                'description' => $item->get_Description()
             ];
         }
 
@@ -54,27 +57,27 @@ class ControllerBrowser extends Controller {
             if (!$item instanceof Item)
                 continue;
 
-            $mainPicture = ItemPicture::get_main_picture($item->id);
+            $mainPicture = ItemPicture::get_main_picture($item->get_Id());
 
             // Récupérer le pseudo du vendeur
             $sellerPseudo = Item::get_User_Pseudo_By_Id($item->get_owner());
 
             $available_items[] = [
-                'id' => $item->id,
-                'title' => $item->title,
+                'id' => $item->get_Id(),
+                'title' => $item->get_Title(),
                 'pic_path' => $mainPicture?->picture_path,
                 'picture_count' => 0, // Set to 0 to avoid view errors
                 'seller_pseudo' => $sellerPseudo,
-                'buy_now_price' => $item->buy_now_price,
-                'starting_bid' => $item->starting_bid,
-                'max_bid' => $item->max_bid,
-                'end_at' => $item->end_at,
-                'time_remaining' => $this->calculate_time_remaining($item->end_at),
-                'is_auction' => $item->is_auction,
-                'has_buy_now' => $item->has_buy_now,
-                'is_direct_sale' => $item->is_direct_sale,
+                'buy_now_price' => $item->get_Buy_Now_Price(),
+                'starting_bid' => $item->get_Starting_Bid(),
+                'max_bid' => $item->get_max_bid_time(),
+                'end_at' => $item->get_End_At(),
+                'time_remaining' => $this->calculate_time_remaining($item->get_End_At()),
+                'is_auction' => $item->get_Is_Auction(),
+                'has_buy_now' => $item->get_Has_buy_now_price(),
+                'is_direct_sale' => $item->get_Is_Direct_Sale(),
                 'is_owner' => $item->get_owner(),
-                'description' => $item->description
+                'description' => $item->get_Description()
             ];
         }
         
@@ -82,7 +85,10 @@ class ControllerBrowser extends Controller {
         (new View("browser"))->show([
             'participating_items' => $participating_items,
             'available_items' => $available_items,
-            'current_user_id' => $userId
+            'current_user_id' => $currentUserId,
+            'currentUser' => $currentUser,
+            'header_title' => 'Browser',
+            'header_icon' => 'bi-cart-fill'
         ]);
 
     } 

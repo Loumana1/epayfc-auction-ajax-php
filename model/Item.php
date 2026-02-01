@@ -3,37 +3,40 @@ require_once "framework/Model.php";
 require_once "utils/AppTime.php";
 require_once "model/Bid.php";
 require_once "model/User.php";
+require_once "framework/Configuration.php";
+
+
 class Item extends Model{
 
-    public $id;
-    public  $title;
-    public  $description;
-    public  $owner;
-    public $created_at;
-    public  $buy_now_price;
-    public $duration_days;
-    public  $starting_bid;
+    private $id;
+    private  $title;
+    private  $description;
+    private  $owner;
+    private $created_at;
+    private  $buy_now_price;
+    private $duration_days;
+    private ?float $starting_bid;
 
     private  ?array $_cached_bids = null;    public $end_at;
-    public  $bid_count;
-    public  $max_bid;
-    public  $is_direct_sale;
-    public  $is_auction;
-    public $has_buy_now;
-    public  $has_bids;
-    public $buy_now_reached;
-    public  $not_purchased_direct_sale;
+    private  $bid_count;
+    private  $max_bid;
+    private $is_direct_sale;
+    private  $is_auction;
+    private $has_buy_now;
+    private  $has_bids;
+    private $buy_now_reached;
+    private  $not_purchased_direct_sale;
 
 
     public function __construct(
-        int $id,
+        ?int $id,
         string $title,
         ?string $description,
         int $owner,
         string $created_at,
         ?float $buy_now_price,
         int $duration_days,
-        float $starting_bid,
+        ?float $starting_bid,
 
         //v_items_status
         ?string $end_at = null,
@@ -45,6 +48,7 @@ class Item extends Model{
         bool $has_bids = false,
         bool $buy_now_reached = false,
         bool $not_purchased_direct_sale = false 
+
     ) {
         $this->id = $id;
         $this->title = $title;
@@ -54,7 +58,8 @@ class Item extends Model{
         $this->buy_now_price = $buy_now_price;
         $this->duration_days = $duration_days;
         $this->starting_bid = $starting_bid;
-        
+
+
 
         $this->end_at = $end_at;
         $this->bid_count = $bid_count;
@@ -106,7 +111,22 @@ class Item extends Model{
         return $data === false ? false : self::rowToItem($data);
     }
 
+      public static function get_by_id_for_edit(int $id): ?Item {
+        $q = self::execute("SELECT * FROM items WHERE id = :id", ["id" => $id]);
+        $r = $q->fetch();
+        if (!$r) return null;
 
+        return new Item(
+            (int)$r["id"],
+            $r["title"],
+            $r["description"],
+            (int)$r["owner"],
+            $r["created_at"],
+            $r["buy_now_price"] !== null ? (float)$r["buy_now_price"] : null,
+            (int)$r["duration_days"],
+            $r["starting_bid"] !== null ? (float)$r["starting_bid"] : null
+        );
+    }
 
     public function get_Title(): string {
     return $this-> title ;
@@ -148,9 +168,10 @@ public function get_Starting_Bid(): float {
         
 
     }
+  
+    public function get_duration_days(): int { return $this->duration_days; }
 
-
-
+    
 
 public function is_open(): bool {
         $now = AppTime::get_current_datetime();
@@ -381,5 +402,217 @@ public static function delete(int $itemId): void {
             'loyal_bidder' => $loyal_bidder ? $loyal_bidder['pseudo'] : null
         ];
     }
+
+    private static function title_exists_for_owner(string $title, int $owner, ?int $exclude_id): bool {
+        $sql = "SELECT COUNT(*) FROM items WHERE title = :title AND owner = :owner";
+        $params = ["title" => $title, "owner" => $owner];
+
+        if ($exclude_id !== null) {
+            $sql .= " AND id <> :id";
+            $params["id"] = $exclude_id;
+        }
+
+        $q = self::execute($sql, $params);
+        return (int)$q->fetchColumn() > 0;
+    }
+
+
+    public function validate(): array {
+        $errors = [];
+
+        $title = trim($this->title);
+        $min = (int)Configuration::get("title_min_length", 3);
+        $max = (int)Configuration::get("title_max_length", 255);
+
+        if (strlen($title) < $min || strlen($title) > $max) {
+            $errors["title"] = "Title length must be between $min and $max characters.";
+        } else if (self::title_exists_for_owner($title, $this->owner, $this->id)) {
+            $errors["title"] = "You already have an item with this title.";
+        }
+
+        if ($this->description !== null && trim($this->description) !== "" && strlen(trim($this->description)) < 3) {
+            $errors["description"] = "Description must be at least 3 characters.";
+        }
+
+        if ($this->duration_days < 1 || $this->duration_days > 365) {
+            $errors["duration_days"] = "Duration must be between 1 and 365 days.";
+        }
+
+        $sb = $this->starting_bid;
+        $bn = $this->buy_now_price;
+
+        $sb_is_auction = ($sb !== null && $sb > 0);
+
+        if ($sb !== null && $sb < 0) {
+            $errors["starting_bid"] = "Starting bid must be greater than 0.";
+        }
+
+        if ($bn !== null && $bn <= 0) {
+            $errors["buy_now_price"] = "Buy now price must be greater than 0.";
+        }
+
+        if ($sb_is_auction) {
+            if ($bn !== null && $bn <= $sb) {
+                $errors["buy_now_price"] = "Buy now price must be greater than the starting bid.";
+            }
+        } else {
+            // vente directe : starting_bid null ou 0 => buy_now obligatoire
+            if ($bn === null) {
+                $errors["buy_now_price"] = "Sale price is required for a direct sale.";
+            }
+        }
+
+        return $errors;
+    }
+
+    public function persist(): array {
+        $errors = $this->validate();
+        if (!empty($errors)) return $errors;
+
+        if ($this->id === null) {
+            self::execute(
+                "INSERT INTO items(title, description, owner, created_at, buy_now_price, duration_days, starting_bid)
+                 VALUES(:title, :description, :owner, :created_at, :buy_now_price, :duration_days, :starting_bid)",
+                [
+                    "title" => $this->title,
+                    "description" => $this->description,
+                    "owner" => $this->owner,
+                    "created_at" => $this->created_at,
+                    "buy_now_price" => $this->buy_now_price,
+                    "duration_days" => $this->duration_days,
+                    "starting_bid" => $this->starting_bid ?? 0.0
+                ]
+            );
+            $this->id = self::lastInsertId();
+        } else {
+            self::execute(
+                "UPDATE items
+                 SET title=:title, description=:description, buy_now_price=:buy_now_price, duration_days=:duration_days, starting_bid=:starting_bid
+                 WHERE id=:id",
+                [
+                    "title" => $this->title,
+                    "description" => $this->description,
+                    "buy_now_price" => $this->buy_now_price,
+                    "duration_days" => $this->duration_days,
+                    "starting_bid" => $this->starting_bid ?? 0.0,
+                    "id" => $this->id
+                ]
+            );
+        }
+
+        return [];
+    }
+
+    public static function get_active_items_by_owner(int $userId, string $now): array {
+        $query = "SELECT * FROM v_items_status
+                    WHERE owner = :user_id
+                    AND end_at > :now
+                    AND buy_now_reached = 0
+                    ORDER BY end_at DESC";
+        return self::queryToItems($query, [
+            'user_id' => $userId,
+            'now' => $now
+        ]);
+    }
+
+    public static function get_closed_unsold_items_by_owner(int $userId, string $now): array {
+        $query = "SELECT * FROM v_items_status
+                WHERE owner = :user_id
+                AND end_at <= :now
+                AND has_bids = 0
+                AND buy_now_reached = 0
+                ORDER BY end_at DESC";
+        return self::queryToItems($query, [
+            'user_id' => $userId,
+            'now' => $now
+        ]);
+    }
+
+    public function get_has_bids(): bool {
+        return (bool)$this->has_bids;
+    }
+
+    public function get_buy_now_reached(): bool {
+        return (bool)$this->buy_now_reached;
+    }
+
+    public static function get_items_by_owner(int $userId): array {
+        $query = "
+            SELECT * FROM v_items_status
+            WHERE owner = :user_id
+            ORDER BY end_at DESC
+        ";
+
+        return self::queryToItems($query, [
+            "user_id" => $userId
+        ]);
+    }
+
+   public static function get_purchased_items_by_user(int $userId, string $now): array {
+        $query = "
+            SELECT * FROM v_items_status
+            WHERE id IN (
+                SELECT item
+                FROM bids
+                WHERE owner = :user_id
+                AND amount = max_bid
+            )
+            AND (end_at <= :now OR buy_now_reached = 1)
+            ORDER BY end_at DESC
+        ";
+
+        return self::queryToItems($query, [
+            "user_id" => $userId,
+            "now" => $now
+        ]);
+    }
+
+
+    public static function get_purchase_statistics(int $userId, string $now): array {
+
+        $query = "
+            SELECT 
+                COUNT(*) as purchase_count,
+                COALESCE(SUM(max_bid), 0) as total_spent,
+                COALESCE(AVG(max_bid), 0) as average_ticket
+            FROM v_items_status
+            WHERE has_bids = 1
+            AND (end_at <= :now OR buy_now_reached = 1)
+            AND id IN (
+                SELECT item FROM bids
+                WHERE owner = :user_id
+            )
+        ";
+
+        $stats = self::execute($query, [
+            "user_id" => $userId,
+            "now" => $now
+        ])->fetch();
+
+        
+        $topSellerQuery = "
+            SELECT u.pseudo, COUNT(*) as cnt
+            FROM bids b
+            JOIN v_items_status v ON v.id = b.item
+            JOIN users u ON u.id = v.owner
+            WHERE b.owner = :user_id
+            AND b.amount = v.max_bid
+            GROUP BY v.owner, u.pseudo
+            ORDER BY cnt DESC
+            LIMIT 1
+        ";
+
+        $top = self::execute($topSellerQuery, [
+            "user_id" => $userId
+        ])->fetch();
+
+        return [
+            "count" => (int)$stats["purchase_count"],
+            "total" => (float)$stats["total_spent"],
+            "average" => (float)$stats["average_ticket"],
+            "top_seller" => $top ? $top["pseudo"] : null
+        ];
+    }
+
 
 }
