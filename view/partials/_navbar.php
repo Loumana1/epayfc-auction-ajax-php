@@ -14,7 +14,7 @@
             <span>Add Offer</span>
         </a>
         <a href="profile">
-            <i class="bi bi-person"></i>
+            <i class="bi bi-gear"></i>
             <span>Profile</span>
         </a>
     <?php else: ?>

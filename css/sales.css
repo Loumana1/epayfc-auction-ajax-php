@@ -1,6 +1,4 @@
-/* ============================================
-   SALES PAGE - Layout Override
-   ============================================ */
+
    .content-wrapper {
     display: block;
     padding: 20px;
@@ -13,7 +11,7 @@
 }
 
 /* ============================================
-   PAGE HEADER (réutilise .section-title)
+   PAGE HEADER 
    ============================================ */
 .page-header {
     display: flex;
@@ -41,7 +39,7 @@
 }
 
 /* ============================================
-   STATS ROW (réutilise .section)
+   STATS ROW 
    ============================================ */
 .stats-row {
     display: grid;
@@ -51,10 +49,11 @@
 }
 
 .stat-box {
-    /* Réutilise .section mais avec padding différent */
+   
     background-color: var(--Background-grey);
     border-radius: 8px;
-    padding: 20px; /* .section a 15px, on garde 20px pour stats */
+  
+    padding: 20px; 
 }
 
 .stat-label {

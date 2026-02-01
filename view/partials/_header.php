@@ -1,8 +1,8 @@
 <?php
-// Variables attendues (avec valeurs par défaut)
+// Variables attendues
 $header_title = $header_title ?? 'Page';
 $header_icon = $header_icon ?? 'bi-house';
-$back_url = $back_url ?? 'browser';
+$back_url = $back_url ?? null ;
 $header_right_icon = $header_right_icon ?? null;
 $header_right_url = $header_right_url ?? null;
 $header_right_text = $header_right_text ?? null;
@@ -12,9 +12,16 @@ $header_right_form_id = $header_right_form_id ?? null;
 
 <header>
     <div class="header-content">
-        <a href="<?= $back_url ?>" class="header-back-btn">
-            <i class="bi bi-arrow-left"></i>
-        </a>
+            <?php if (!empty($back_url)): ?>
+            <a href="<?= $back_url ?>" class="header-back-btn">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <?php else: ?>
+                <div class="header-back-spacer"></div>
+            <?php endif; ?>
+
+
+
         <h1 class="header-title">
         <i class="bi <?= $header_icon ?>"></i>
             <?= $header_title ?>

@@ -24,7 +24,10 @@ require_once "framework/Configuration.php";
                             <?php include __DIR__ . "/partials/open_item/_main_image.php"; ?>
                             <?php include __DIR__ . "/partials/open_item/_item_details.php"; ?>
                             <?php include __DIR__ . "/partials/open_item/_thumbnails.php"; ?>
-                            <?php include __DIR__ . "/partials/open_item/_bid_history.php"; ?>
+
+                            <?php if (!empty($showBidHistory)): ?>
+                                <?php include __DIR__ . "/partials/open_item/_bid_history.php"; ?>
+                            <?php endif; ?>
 
                     </main>
 
