@@ -43,7 +43,7 @@
         </div>
     </a>
 
-    <a href="change_password/index" class="menu-item">
+    <a href="user/change_password" class="menu-item">
         <div class="menu-icon">•••</div>
         <div class="menu-content">
             <div class="menu-title">Change Password</div>
