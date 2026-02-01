@@ -93,7 +93,9 @@ class ControllerItem extends Controller {
                     "starting_bid" => $starting_bid_raw,
                     "buy_now_price" => $buy_now_raw,
                     "sale_price" => $sale_price_raw,
-                    "errors" => $errors
+                    "errors" => $errors,
+                    "currentUser" => $user, 
+                    "current_page" => "add_item"
                 ]);
                 return;
             }
@@ -109,7 +111,9 @@ class ControllerItem extends Controller {
             "starting_bid" => $item ? (string)($item->get_starting_bid() ?? "") : "",
             "buy_now_price" => $item ? (string)($item->get_buy_now_price() ?? "") : "",
             "sale_price" => $item && (($item->get_starting_bid() ?? 0) <= 0) ? (string)($item->get_buy_now_price() ?? "") : "",
-            "errors" => []
+            "errors" => [],
+            "currentUser" => $user, 
+            "current_page" => "add_item"
         ]);
     }
 }

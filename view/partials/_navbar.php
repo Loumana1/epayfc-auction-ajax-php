@@ -9,7 +9,7 @@
             <i class="bi bi-house"></i>
             <span>My Items</span>
         </a>
-        <a href="add_edit_item">
+        <a href="item/add_edit_item">
             <i class="bi bi-plus-circle"></i>
             <span>Add Offer</span>
         </a>

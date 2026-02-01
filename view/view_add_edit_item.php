@@ -5,6 +5,7 @@
     <title><?= $item_id ? "Edit item" : "Add item" ?></title>
     <base href="/prwb_2526_c04/">
     <link rel="stylesheet" href="css/add_edit_item.css">
+    <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
@@ -96,27 +97,8 @@
 
 </div>
 
-<nav class="bottom-nav">
-    <a href="#" class="nav-item">
-        <i class="bi bi-search"></i>
-        <span>Browse</span>
-    </a>
-
-    <a href="#" class="nav-item">
-        <i class="bi bi-house"></i>
-        <span>My Items</span>
-    </a>
-
-    <a href="#" class="nav-item active">
-        <i class="bi bi-plus-circle"></i>
-        <span>Add Offer</span>
-    </a>
-
-    <a href="#" class="nav-item">
-        <i class="bi bi-gear"></i>
-        <span>Profile</span>
-    </a>
-</nav>
+<?php include __DIR__ . "/partials/_navbar.php"; ?>
+<?php include __DIR__ . "/partials/_timebar.php"; ?>
 
 
 </body>

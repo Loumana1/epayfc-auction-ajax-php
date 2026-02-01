@@ -45,7 +45,9 @@ class ControllerMyItems extends Controller {
         (new View("my_items"))->show([
             "active_items" => $active,
             "closed_unsold_items" => $closed_unsold,
-            "sold_items" => $sold
+            "sold_items" => $sold,
+            "currentUser" => $user, 
+            "current_page" => "my_items" 
         ]);
     }
 }
