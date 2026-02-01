@@ -316,4 +316,23 @@ public static function validate_change_password(self $user, ?string $currentPass
         return self::get_user_by_mail($email);
     }
 
+    public function get_picture_path(): ?string {
+        return $this->picture_path;
+    }
+
+    public function set_picture_path(?string $path): void {
+        $this->picture_path = $path;
+    }
+
+    public function save_picture(): void {
+        self::execute(
+            "UPDATE users SET picture_path = :path WHERE id = :id",
+            [
+                "path" => $this->picture_path,
+                "id" => $this->id
+            ]
+        );
+    }
+
+
 }
