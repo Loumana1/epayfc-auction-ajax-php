@@ -12,7 +12,7 @@ class ControllerBrowser extends Controller {
 
     public function index(): void {
         $currentUser = $this->get_user_or_false();
-        $currentUserId = $currentUser ? $currentUser->get_Id() : null;
+        $currentUserId = $currentUser ? $currentUser->get_Id() : -1;
         $now = AppTime::get_current_datetime();
 
         $participating_items_raw = Item::get_Item_Participating($currentUserId,$now);
