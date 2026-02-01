@@ -548,7 +548,68 @@ public static function delete(int $itemId): void {
         ]);
     }
 
+    public static function get_purchases_by_user(int $userId, string $now): array {
+        $query = "
+            SELECT * FROM v_items_status
+            WHERE has_bids = 1
+            AND (end_at <= :now OR buy_now_reached = 1)
+            ORDER BY end_at DESC
+    ";
 
+    $items = self::queryToItems($query, ["now" => $now]);
+
+   
+    return array_filter($items, function(Item $item) use ($userId) {
+        return self::is_Highest_Bidder($userId, $item->get_id());
+    });
+
+    }
+
+    public static function get_purchase_statistics(int $userId, string $now): array {
+
+        $query = "
+            SELECT 
+                COUNT(*) as purchase_count,
+                COALESCE(SUM(max_bid), 0) as total_spent,
+                COALESCE(AVG(max_bid), 0) as average_ticket
+            FROM v_items_status
+            WHERE has_bids = 1
+            AND (end_at <= :now OR buy_now_reached = 1)
+            AND id IN (
+                SELECT item FROM bids
+                WHERE owner = :user_id
+            )
+        ";
+
+        $stats = self::execute($query, [
+            "user_id" => $userId,
+            "now" => $now
+        ])->fetch();
+
+        
+        $topSellerQuery = "
+            SELECT u.pseudo, COUNT(*) as cnt
+            FROM bids b
+            JOIN v_items_status v ON v.id = b.item
+            JOIN users u ON u.id = v.owner
+            WHERE b.owner = :user_id
+            AND b.amount = v.max_bid
+            GROUP BY v.owner, u.pseudo
+            ORDER BY cnt DESC
+            LIMIT 1
+        ";
+
+        $top = self::execute($topSellerQuery, [
+            "user_id" => $userId
+        ])->fetch();
+
+        return [
+            "count" => (int)$stats["purchase_count"],
+            "total" => (float)$stats["total_spent"],
+            "average" => (float)$stats["average_ticket"],
+            "top_seller" => $top ? $top["pseudo"] : null
+        ];
+    }
 
 
 }
