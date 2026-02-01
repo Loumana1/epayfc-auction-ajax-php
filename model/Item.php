@@ -548,22 +548,25 @@ public static function delete(int $itemId): void {
         ]);
     }
 
-    public static function get_purchases_by_user(int $userId, string $now): array {
+   public static function get_purchased_items_by_user(int $userId, string $now): array {
         $query = "
             SELECT * FROM v_items_status
-            WHERE has_bids = 1
+            WHERE id IN (
+                SELECT item
+                FROM bids
+                WHERE owner = :user_id
+                AND amount = max_bid
+            )
             AND (end_at <= :now OR buy_now_reached = 1)
             ORDER BY end_at DESC
-    ";
+        ";
 
-    $items = self::queryToItems($query, ["now" => $now]);
-
-   
-    return array_filter($items, function(Item $item) use ($userId) {
-        return self::is_Highest_Bidder($userId, $item->get_id());
-    });
-
+        return self::queryToItems($query, [
+            "user_id" => $userId,
+            "now" => $now
+        ]);
     }
+
 
     public static function get_purchase_statistics(int $userId, string $now): array {
 

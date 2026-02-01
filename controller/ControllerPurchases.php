@@ -3,24 +3,22 @@
 require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once "model/Item.php";
-require_once "utils/AppTime.php";
 require_once "model/ItemPicture.php";
-
+require_once "utils/AppTime.php";
 
 
 class ControllerPurchases extends Controller {
 
     public function index(): void {
 
-        // sécurité
         $user = $this->get_user_or_redirect();
         $userId = $user->get_id();
         $now = AppTime::get_current_datetime();
 
-        // items gagnés par l'utilisateur
-        $items = Item::get_Item_Participating($userId, $now);
+        
+        $items = Item::get_purchased_items_by_user($userId, $now);
 
-        // stats
+        
         $total = 0;
         $count = count($items);
         $sellers = [];
@@ -30,6 +28,7 @@ class ControllerPurchases extends Controller {
             if ($price) {
                 $total += $price;
             }
+
             $seller = $item->get_seller()->get_pseudo();
             $sellers[$seller] = ($sellers[$seller] ?? 0) + 1;
         }
@@ -46,7 +45,9 @@ class ControllerPurchases extends Controller {
 
         (new View("purchases"))->show([
             "items" => $items,
-            "stats" => $stats
+            "stats" => $stats,
+            "currentUser" => $user 
         ]);
     }
 }
+

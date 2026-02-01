@@ -5,7 +5,9 @@
     <title>My Purchases</title>
     <base href="<?= $web_root ?>">
     <link rel="stylesheet" href="css/purchases.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
 </head>
 
 <body>
@@ -16,7 +18,11 @@
         <a href="browser/index" class="back">
             <i class="bi bi-arrow-left"></i>
         </a>
-        <h1>My Purchases 🛍️</h1>
+        <h1>
+            My Purchases
+            <i class="bi bi-cart"></i>
+        </h1>
+
     </header>
 
     <?php
@@ -77,15 +83,17 @@
                             <h3><?= $item->get_title() ?></h3>
                             <p class="seller">by <?= $item->get_seller()->get_pseudo() ?></p>
 
-                            <div class="price">
-                                <span class="main"><?= euro($item->get_max_bid_time()) ?></span>
-                                <span class="sub">Paid</span>
+                            <div class="item-footer">
+                            <div>
+                                <i class="bi bi-tag"></i>
+                                Paid <?= euro($item->get_max_bid_time()) ?>
                             </div>
+                            <div>
+                                <i class="bi bi-clock"></i>
+                                Closed on <?= date("d/m/Y H:i:s", strtotime($item->get_end_at())) ?>
+                            </div>
+                        </div>
 
-                            <div class="time closed">
-                                <i class="bi bi-lock"></i>
-                                Closed
-                            </div>
                         </div>
 
                     </div>
@@ -97,6 +105,9 @@
     <?php endif; ?>
 
 </div>
+
+<?php require_once "view/partials/_navbar.php"; ?>
+
 
 </body>
 </html>
