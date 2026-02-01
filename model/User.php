@@ -211,5 +211,109 @@ public static function validate_change_password(self $user, ?string $currentPass
 
     return $fieldErrors;
 }
+// ============ SIGN UP METHODS ============
+
+    public static function email_exists(string $email): bool
+    {
+        $query = self::execute(
+            "SELECT COUNT(*) as count FROM users WHERE email = :email",
+            ["email" => $email]
+        );
+        $row = $query->fetch();
+        return $row['count'] > 0;
+    }
+
+    public static function pseudo_exists(string $pseudo): bool
+    {
+        $query = self::execute(
+            "SELECT COUNT(*) as count FROM users WHERE pseudo = :pseudo",
+            ["pseudo" => $pseudo]
+        );
+        $row = $query->fetch();
+        return $row['count'] > 0;
+    }
+
+    public static function full_name_exists(string $full_name): bool
+    {
+        $query = self::execute(
+            "SELECT COUNT(*) as count FROM users WHERE full_name = :full_name",
+            ["full_name" => $full_name]
+        );
+        $row = $query->fetch();
+        return $row['count'] > 0;
+    }
+
+    public static function validate_signup(
+        string $email,
+        string $full_name,
+        string $pseudo,
+        string $password,
+        string $password_confirm
+    ): array {
+        $errors = [
+            'email' => [],
+            'full_name' => [],
+            'pseudo' => [],
+            'password' => [],
+            'password_confirm' => []
+        ];
+
+        // Email validation
+        if (empty($email)) {
+            $errors['email'][] = "Email is required.";
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $errors['email'][] = "Invalid email format.";
+        } elseif (self::email_exists($email)) {
+            $errors['email'][] = "This email is already registered.";
+        }
+
+        // Full name validation
+        if (empty($full_name)) {
+            $errors['full_name'][] = "Full name is required.";
+        } elseif (self::full_name_exists($full_name)) {
+            $errors['full_name'][] = "This name is already taken.";
+        }
+
+        // Pseudo validation
+        if (empty($pseudo)) {
+            $errors['pseudo'][] = "Pseudo is required.";
+        } elseif (self::pseudo_exists($pseudo)) {
+            $errors['pseudo'][] = "This pseudo is already taken.";
+        }
+
+        // Password validation
+        $passwordErrors = self::validate_passwords($password, $password_confirm);
+        foreach ($passwordErrors as $error) {
+            if (strpos($error, 'twice the same') !== false) {
+                $errors['password_confirm'][] = $error;
+            } else {
+                $errors['password'][] = $error;
+            }
+        }
+
+        return $errors;
+    }
+
+    public static function signup(
+        string $email,
+        string $full_name,
+        string $pseudo,
+        string $password
+    ): ?User {
+        $hashed = password_hash($password, PASSWORD_DEFAULT);
+
+        self::execute(
+            "INSERT INTO users (email, full_name, pseudo, password, role) 
+             VALUES (:email, :full_name, :pseudo, :password, 'user')",
+            [
+                'email' => $email,
+                'full_name' => $full_name,
+                'pseudo' => $pseudo,
+                'password' => $hashed
+            ]
+        );
+
+        return self::get_user_by_mail($email);
+    }
 
 }
