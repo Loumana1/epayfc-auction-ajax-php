@@ -18,6 +18,14 @@ require_once "framework/Configuration.php";
 
 
          <div class="content-wrapper">
+                <?php if (!empty($bid_success_message)): ?>
+                    <div class="bid-success-overlay">
+                        <div class="bid-success-box">
+                            <p class="bid-success-message"><?= htmlspecialchars($bid_success_message) ?></p>
+                            <a href="bid/ack/<?= (int)$item->get_Id() ?>" class="bid-success-ok">OK</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                     <main class="main-content">
 

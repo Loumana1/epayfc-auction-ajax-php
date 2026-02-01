@@ -841,3 +841,43 @@ border-radius: 6px;
     box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
 }
 
+/* ============================================
+   Valitdation message 
+   ============================================ */
+.bid-success-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.bid-success-box {
+    background: var(--Background-grey);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 28px;
+    max-width: 480px;
+    text-align: center;
+}
+
+.bid-success-message {
+    color: var(--text-white);
+    font-size: 2rem;
+    margin: 0 0 20px 0;
+}
+
+.bid-success-ok {
+    display: inline-block;
+    padding: 10px 24px;
+    background: var(--Button-light-blue);
+    color: var(--text-white);
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+}
