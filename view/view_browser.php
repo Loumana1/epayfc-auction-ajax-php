@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
+
     <meta charset="UTF-8">
     <title>Browser</title>
     <base href="<?= $web_root ?>">
@@ -8,20 +10,24 @@
     <link rel="stylesheet" href="./css/browser.css">
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
 </head>
 <body>
    <div class = "header" >
-     <?php include __DIR__ . "/partials/_header.php"; ?>
-   </div> 
-<main>
-    
-    <?php include __DIR__ . "/partials/browser_item/_items_participating.php"; ?>
-    <?php include __DIR__ . "/partials/browser_item/_other_items.php"; ?>
-  
-</main>
 
-    <<?php include __DIR__ . "/partials/_navbar.php"; ?>
+     <?php include __DIR__ . "/partials/_header.php"; ?>
+   
+    </div> 
+
+<main>
+    <?php include __DIR__ . "/partials/browser_item/_items_participating.php"; ?>
+
+    <?php include __DIR__ . "/partials/browser_item/_other_items.php"; ?>
+
+</main>
+         <?php include __DIR__ . "/partials/_navbar.php"; ?>
+
          <?php include __DIR__ . "/partials/_timebar.php"; ?>
 
-</body>
+        </body>
 </html>
