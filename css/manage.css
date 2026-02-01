@@ -1,0 +1,164 @@
+/* ===== VARIABLES POUR MANAGE IMAGES ===== */
+:root {
+    --bg-card: #1E293B;
+    --bg-body: #0E172A;
+    --border-color: rgba(129, 144, 165, 0.3);
+    --text-main: #F8F9FA;
+    --text-muted: #9CA3AF;
+    --accent-blue: #3B82F6;
+    --accent-red: #EF4444;
+}
+
+/* ===== MANAGE IMAGES PAGE ===== */
+/* Page subtitle */
+.manage-page .page-subtitle {
+    color: var(--text-main);
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin: 0 0 20px 0;
+    padding: 0 5px;
+}
+
+/* Main adjustments */
+.manage-page main {
+    padding: 15px;
+    padding-bottom: 80px;
+}
+
+/* Cards */
+.manage-page .card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 22px;
+    margin-bottom: 22px;
+}
+
+.manage-page .card-title {
+    color: var(--accent-blue);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 0 0 16px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* Form elements */
+.manage-page .form-label {
+    display: block;
+    color: var(--text-main);
+    font-size: 1rem;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.manage-page .file-input {
+    width: 100%;
+    padding: 9px;
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+}
+
+.manage-page .file-input::file-selector-button {
+    padding: 6px 12px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-main);
+    cursor: pointer;
+    margin-right: 8px;
+    font-size: 0.75rem;
+}
+
+.manage-page .file-input::file-selector-button:hover {
+    background-color: var(--accent-blue);
+    border-color: var(--accent-blue);
+}
+
+.manage-page .help-text {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 10px 0;
+}
+
+.manage-page .upload-btn {
+    display: inline-block;
+    padding: 10px 22px;
+    background-color: var(--accent-blue);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.manage-page .upload-btn:hover {
+    background-color: #2563eb;
+}
+
+/* Image grid */
+.manage-page .img-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.manage-page .img-box {
+    width: 115px;
+    background-color: var(--bg-body);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.manage-page .img-thumb {
+    width: 115px;
+    height: 90px;
+    object-fit: cover;
+    display: block;
+}
+
+.manage-page .img-actions {
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px;
+    background-color: var(--bg-body);
+}
+
+.manage-page .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-decoration: none;
+}
+
+.manage-page .action-btn:hover {
+    background-color: var(--accent-blue);
+    color: white;
+}
+
+.manage-page .action-btn.disabled {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+.manage-page .action-btn.del {
+    background-color: var(--accent-red);
+    border-color: var(--accent-red);
+    color: white;
+}
+
+.manage-page .action-btn.del:hover {
+    background-color: #dc2626;
+}
