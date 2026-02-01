@@ -4,6 +4,8 @@ require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once "model/Item.php";
 require_once "utils/AppTime.php";
+require_once "model/ItemPicture.php";
+
 
 
 class ControllerPurchases extends Controller {
