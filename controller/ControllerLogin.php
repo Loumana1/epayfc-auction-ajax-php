@@ -7,6 +7,11 @@ require_once "model/User.php";
 class ControllerLogin extends Controller {
 
     public function index() : void {
+
+        if ($this->user_logged()) {
+            $this->redirect("browser");
+        }
+
         (new View("login"))->show ([
             "mail" => "",
             "errors" => []
@@ -44,13 +49,12 @@ class ControllerLogin extends Controller {
         }
 
          $this->log_user($user);
-         $this->redirect("browse_items"); 
-         // encore a definir pour la redirection 
+         $this->redirect("browser"); 
         }
 
          public function login_as(): void {
         if (!Configuration::is_dev()) {
-            $this->redirect();
+            $this->redirect("login");
         }
 
         
@@ -60,10 +64,10 @@ class ControllerLogin extends Controller {
             $user = User::get_user_by_mail($mail);
             if ($user) {
                 $this->log_user($user);
-                $this->redirect("browse_items");
+                $this->redirect("browser");
                 return;
             }
         }
-        $this->redirect();
+        $this->redirect("login");
     }
 }

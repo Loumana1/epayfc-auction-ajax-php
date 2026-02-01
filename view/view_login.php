@@ -51,7 +51,7 @@
         <a class="btn btn-guest" href="test">Continue as guest</a>
 
         <p class="subscribe">
-            <a href="user/register">New here ? Click here to subscribe !</a>
+            <a href="signup">New here ? Click here to subscribe !</a>
         </p>
 
         <hr class="separator">
@@ -60,12 +60,11 @@
             <div class="debug">
                 <div class="debug-title">For Debug Purpose</div>
 
-                <a href="login/login_as/boverhaegen@epfc.eu">Login as boverhaegen@epfc.eu</a><br>
-                <a href="login/login_as/mamichel@epfc.eu">Login as mamichel@epfc.eu</a><br>
-                <a href="login/login_as/quhouben@epfc.eu">Login as quhouben@epfc.eu</a><br>
-                <a href="login/login_as/xapigeolet@epfc.eu">Login as xapigeolet@epfc.eu</a>
-            
-               
+                <a href="index.php?controller=login&action=login_as&param1=boverhaegen@epfc.eu">Login as boverhaegen@epfc.eu</a><br>
+                <a href="index.php?controller=login&action=login_as&param1=mamichel@epfc.eu">Login as mamichel@epfc.eu</a><br>
+                <a href="index.php?controller=login&action=login_as&param1=quhouben@epfc.eu">Login as quhouben@epfc.eu</a><br>
+                <a href="index.php?controller=login&action=login_as&param1=xapigeolet@epfc.eu">Login as xapigeolet@epfc.eu</a>
+                        
 
                 <a href="setup/install" class="debug-action debug-ok">
                     Restore original data
