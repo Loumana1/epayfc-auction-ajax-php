@@ -25,7 +25,7 @@
     <?php include __DIR__ . "/partials/browser_item/_other_items.php"; ?>
 
 </main>
-         <<?php include __DIR__ . "/partials/_navbar.php"; ?>
+         <?php include __DIR__ . "/partials/_navbar.php"; ?>
 
          <?php include __DIR__ . "/partials/_timebar.php"; ?>
 
