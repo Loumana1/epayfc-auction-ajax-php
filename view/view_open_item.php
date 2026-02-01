@@ -10,6 +10,7 @@ require_once "framework/Configuration.php";
     <base href="<?= $web_root ?>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/open_item.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 </head>
 <body>
@@ -18,6 +19,14 @@ require_once "framework/Configuration.php";
 
 
          <div class="content-wrapper">
+                <?php if (!empty($bid_success_message)): ?>
+                    <div class="bid-success-overlay">
+                        <div class="bid-success-box">
+                            <p class="bid-success-message"><?= htmlspecialchars($bid_success_message) ?></p>
+                            <a href="bid/ack/<?= (int)$item->get_Id() ?>" class="bid-success-ok">OK</a>
+                        </div>
+                    </div>
+                <?php endif; ?>
 
                     <main class="main-content">
 

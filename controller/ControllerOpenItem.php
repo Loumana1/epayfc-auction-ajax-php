@@ -45,7 +45,7 @@ class ControllerOpenItem extends Controller {
         if ($currentUserId) {
             $isHighestBidder = Bid::is_user_highest($currentUserId, $itemId);
         }
-
+     
         
         // -------REDIRECTION SI PAS AUTORISE---------
         if (!$isOpen && !$isOwner && !$isHighestBidder) {
@@ -122,6 +122,7 @@ class ControllerOpenItem extends Controller {
 
 
         $data = [
+            'bid_success_message' => $_SESSION['bid_success_message'] ?? null,
             'bidErrors' => $bidErrors,
             'bidAmount' => $bidAmount,
             'header_title' => 'Item open',

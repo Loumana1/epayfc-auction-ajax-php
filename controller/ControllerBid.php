@@ -65,11 +65,27 @@ class ControllerBid extends Controller {
         // Succès : supprimer les erreurs précédentes
         unset($_SESSION['bid_errors']);
         unset($_SESSION['bid_amount']);
+
+        $buyNowPrice = $item->get_Has_buy_now_price() ? (float)$item->get_Buy_Now_Price() : null;
+        if ($buyNowPrice !== null && abs($amount - $buyNowPrice) < 0.01) {
+            $_SESSION['bid_success_message'] = "You have purchased this item.";
+        } else {
+            $_SESSION['bid_success_message'] = "Your bid has been placed.";
+        }
     }
     
 
        $this->redirect("open_item", "index", $itemId);
     }
 
-                
+    public function ack(): void {
+        $itemId = isset($_GET['param1']) ? $_GET['param1'] : null;
+        unset($_SESSION['bid_success_message']);
+        if (!$itemId) {
+            $this->redirect("browser");
+            return;
+        }
+       
+        $this->redirect("open_item", "index", (string)$itemId);
+    }
 }
