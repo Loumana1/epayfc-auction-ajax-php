@@ -9,14 +9,14 @@ class ControllerDeleteConfirm extends Controller {
     public function index(): void {
         $user = $this->get_user_or_redirect();
         
-        $itemId = $_GET['param1'] ?? null;
+        $item_id = $_GET['param1'] ?? null;
         
-        if (!$itemId || !is_numeric($itemId)) {
+        if (!$item_id || !is_numeric($item_id)) {
             $this->redirect('my_items');
             return;
         }
         
-        $item = item::get_By_Id((int)$itemId);
+        $item = item::get_By_Id((int)$item_id);
         
         if (!$item) {
             $this->redirect('my_items');
@@ -32,7 +32,7 @@ class ControllerDeleteConfirm extends Controller {
    
         if ($item->has_bids_time()) {
             // Plus de message via $_SESSION - redirection simple
-            $this->redirect('open_item', 'index', (string)$itemId);
+            $this->redirect('open_item', 'index', (string)$item_id);
             return;
         }
         $seller = User::get_User_By_Id($item->get_Owner());
@@ -40,9 +40,9 @@ class ControllerDeleteConfirm extends Controller {
         (new View("delete_confirm"))->show([
             'header_title' => 'Delete Item',
             'header_icon' => 'bi-trash',
-            'back_url' => 'open_item/index/' . $itemId,
+            'back_url' => 'open_item/index/' . $item_id,
             'item' => $item,
-            'currentUser' => $user,
+            'current_user' => $user,
             'seller' => $seller 
         ]);
     }
@@ -50,14 +50,14 @@ class ControllerDeleteConfirm extends Controller {
     public function confirm(): void {
         $user = $this->get_user_or_redirect();
         
-        $itemId = $_POST['item_id'] ?? null;
+        $item_id = $_POST['item_id'] ?? null;
         
-        if (!$itemId) {
+        if (!$item_id) {
             $this->redirect('my_items');
             return;
         }
         
-        $item = Item::get_By_Id((int)$itemId);
+        $item = Item::get_By_Id((int)$item_id);
 
 
         if (!$item || $item->get_owner() != $user->get_Id() || $item->has_bids_time()) {
@@ -66,8 +66,8 @@ class ControllerDeleteConfirm extends Controller {
         }
         
         //cascade
-        Item::delete_pictures((int)$itemId);
-        Item::delete((int)$itemId);
+        Item::delete_pictures((int)$item_id);
+        Item::delete((int)$item_id);
 
         $this->redirect('my_items');
     }
