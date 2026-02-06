@@ -31,7 +31,7 @@ class ControllerDeleteConfirm extends Controller {
         
    
         if ($item->has_bids_time()) {
-            $_SESSION['delete_item_blocked_message'] = "You can't deleted this item.";
+            // Plus de message via $_SESSION - redirection simple
             $this->redirect('open_item', 'index', (string)$itemId);
             return;
         }
