@@ -33,7 +33,6 @@ class ControllerUser extends Controller {
 
             if (empty(array_filter($fieldErrors))) {
                 User::update_password($user->get_Id(), password_hash($newPassword, PASSWORD_DEFAULT));
-                $_SESSION['success_message'] = "Password changed successfully.";
                 $this->redirect('profile');
                 return;
             }
