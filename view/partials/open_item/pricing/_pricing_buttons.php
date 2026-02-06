@@ -1,9 +1,6 @@
 <?php
 if (!$showButtons) return;
 ?>
-<?php if (!empty($bidErrors)): ?>
-    <?php include __DIR__ . "/_pricing_errors.php"; ?>
-<?php endif; ?>
 
 <?php if ($item->get_Is_Auction()): ?>
 <form class="bid-form" method="post" action="bid/create">
@@ -14,7 +11,6 @@ if (!$showButtons) return;
                min="<?= $minBidAmount ?>" value="<?= $minBidAmount ?>" 
 
                required 
-                class="<?= !empty($bidErrors) ? 'input-error' : '' ?>"
                <?= $buttonsDisabled ? 'disabled' : '' ?>>
     </div>
     <button type="submit" class="btn-place-bid" <?= $buttonsDisabled ? 'disabled' : '' ?>>

@@ -20,16 +20,8 @@ require_once "framework/Configuration.php";
 
          <div class="content-wrapper">
                 <?php
-                $info_message = $bid_success_message ?? $delete_item_blocked_message ?? $manage_images_blocked_message ?? null;
-                if (!empty($info_message)):
+               
                 ?>
-                    <div class="bid-success-overlay">
-                        <div class="bid-success-box">
-                            <p class="bid-success-message"><?= $info_message?></p>
-                            <a href="bid/ack/<?= (int)$item->get_Id() ?>" class="bid-success-ok">OK</a>
-                        </div>
-                    </div>
-                <?php endif; ?>
 
                     <main class="main-content">
 
