@@ -29,7 +29,7 @@ require_once "framework/Configuration.php";
                             <?php include __DIR__ . "/partials/open_item/_item_details.php"; ?>
                             <?php include __DIR__ . "/partials/open_item/_thumbnails.php"; ?>
 
-                            <?php if (!empty($showBidHistory)): ?>
+                            <?php if (!empty($show_bid_history)): ?>
                                 <?php include __DIR__ . "/partials/open_item/_bid_history.php"; ?>
                             <?php endif; ?>
 

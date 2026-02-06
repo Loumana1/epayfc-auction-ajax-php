@@ -20,26 +20,26 @@ class ControllerBid extends Controller {
 
     public function create(): void {
 
-            $currentUser = $this->get_user_or_false();
-            if (!$currentUser) {
+            $current_user = $this->get_user_or_false();
+            if (!$current_user) {
                 $this->redirect("login");
                 return;
             }
             
 
-            $itemId = isset($_POST['item_id']) ? (int)$_POST['item_id'] : null;
-            $amountStr = isset($_POST['amount']) ? $_POST['amount'] : null;
+            $item_id = isset($_POST['item_id']) ? (int)$_POST['item_id'] : null;
+            $amount_str = isset($_POST['amount']) ? $_POST['amount'] : null;
 
 
-            if ($amountStr) {
-                $amountStr = str_replace(',', '.', $amountStr);
-                $amount = (float)$amountStr;
+            if ($amount_str) {
+                $amount_str = str_replace(',', '.', $amount_str);
+                $amount = (float)$amount_str;
             } else {
                 $amount = null;
             }
             
-            if (!$itemId || !$amount) {
-                $this->redirect("open_item", "index", $itemId);
+            if (!$item_id || !$amount) {
+                $this->redirect("open_item", "index", $item_id);
                 return;
             }
             //CREER VERIFICATION POUR SPAM CLICK PLACE BID
@@ -48,27 +48,17 @@ class ControllerBid extends Controller {
             //TRY CATCH ERROR A CREER 
             
         
-            $item = Item::get_by_id($itemId);
+            $item = Item::get_by_id($item_id);
             if ($item === false) {
-                $this->redirect("open_item", "index", $itemId);
+                $this->redirect("open_item", "index", $item_id);
                 return;
             }
         
-        $bid = new Bid($itemId, $currentUser->get_id(), $amount);
+        $bid = new Bid($item_id, $current_user->get_id(), $amount);
         $errors = $bid->persist();
 
        
-        $this->redirect("open_item", "index", $itemId);
+        $this->redirect("open_item", "index", $item_id);
     }
 
-    public function ack(): void {
-        $itemId = isset($_GET['param1']) ? $_GET['param1'] : null;
-       
-        if (!$itemId) {
-            $this->redirect("browser");
-            return;
-        }
-       
-        $this->redirect("open_item", "index", (string)$itemId);
-    }
 }

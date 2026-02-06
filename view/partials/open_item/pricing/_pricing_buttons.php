@@ -1,5 +1,5 @@
 <?php
-if (!$showButtons) return;
+if (!$show_buttons) return;
 ?>
 
 <?php if ($item->get_Is_Auction()): ?>
@@ -8,12 +8,12 @@ if (!$showButtons) return;
     <div class="bid-input-group">
         <span>€</span>
         <input type="number" name="amount" step="0.01" 
-               min="<?= $minBidAmount ?>" value="<?= $minBidAmount ?>" 
+               min="<?= $min_bid_amount ?>" value="<?= $min_bid_amount ?>" 
 
                required 
-               <?= $buttonsDisabled ? 'disabled' : '' ?>>
+               <?= $buttons_disabled ? 'disabled' : '' ?>>
     </div>
-    <button type="submit" class="btn-place-bid" <?= $buttonsDisabled ? 'disabled' : '' ?>>
+    <button type="submit" class="btn-place-bid" <?= $buttons_disabled ? 'disabled' : '' ?>>
         Place Bid
     </button>
 </form>
@@ -26,13 +26,13 @@ if (!$showButtons) return;
     <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
     
     <?php 
-    $isDirectSaleOnly = $item->get_Is_Direct_Sale() && !$item->get_Is_Auction();
-    $btnClass = $isDirectSaleOnly ? 'btn-place-bid' : 'btn-buy-now';
-    $btnText = $isDirectSaleOnly ? 'BUY NOW' : 'Buy Now at € ' . number_format($item->get_Buy_Now_Price(), 2, ',', '.');
+    $is_direct_sale_only = $item->get_Is_Direct_Sale() && !$item->get_Is_Auction();
+    $btn_class = $is_direct_sale_only ? 'btn-place-bid' : 'btn-buy-now';
+    $btn_text = $is_direct_sale_only ? 'BUY NOW' : 'Buy Now at € ' . number_format($item->get_Buy_Now_Price(), 2, ',', '.');
     ?>
     
-    <button type="submit" class="<?= $btnClass ?>" <?= $buttonsDisabled ? 'disabled' : '' ?>>
-        <?= $btnText ?>
+    <button type="submit" class="<?= $btn_class ?>" <?= $buttons_disabled ? 'disabled' : '' ?>>
+        <?= $btn_text ?>
     </button>
 </form>
 <?php endif; ?>

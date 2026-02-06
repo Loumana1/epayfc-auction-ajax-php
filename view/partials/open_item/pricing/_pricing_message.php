@@ -1,4 +1,4 @@
 <?php
-if (empty($statusMessage)) return;
+if (empty($status_message)) return;
 ?>
-<p class="price-texte-small-grey"><?= $statusMessage ?></p>
+<p class="price-texte-small-grey"><?= $status_message ?></p>

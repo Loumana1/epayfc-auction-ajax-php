@@ -2,7 +2,7 @@
 
     <div class="price-row">
         <label class="price-label">Current Bid €</label>
-        <p class="price-value-current-bid">€ <?= number_format($maxBidTime ?? $minBidAmount, 2, ',', '.') ?></p>
+        <p class="price-value-current-bid">€ <?= number_format($max_bid_time ?? $min_bid_amount, 2, ',', '.') ?></p>
     </div>
     
     <?php if ($item->get_Buy_Now_Price()): ?>

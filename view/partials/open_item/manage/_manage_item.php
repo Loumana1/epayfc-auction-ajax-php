@@ -1,5 +1,5 @@
 <?php
-if (!$isOwner) return;
+if (!$is_owner) return;
 ?>
 
 <div class="owner-section">
@@ -7,7 +7,7 @@ if (!$isOwner) return;
     <div class="owner-actions">
         
         <!-- Edit -->
-        <?php if ($hasActiveBids ||!$isOpen): ?>
+        <?php if ($has_active_bids ||!$is_open): ?>
             <span class="btn-manage-item btn-disabled">
             <i class="bi bi-pencil"></i> Edit Item Details</span>
         <?php else: ?>
@@ -17,7 +17,7 @@ if (!$isOwner) return;
         <?php endif; ?>
         
         <!-- Images -->
-        <?php if (!$isOpen): ?>
+        <?php if (!$is_open): ?>
             <span class="btn-manage-item btn-disabled">
             <i class="bi bi-images"></i> Manage Images
 
@@ -30,7 +30,7 @@ if (!$isOwner) return;
         <?php endif; ?>
         
         <!-- Delete -->
-        <?php if (!$isOpen): ?>
+        <?php if (!$is_open): ?>
             <span class="btn-delete-item btn-disabled">
             <i class="bi bi-trash"></i> Delete Item
 

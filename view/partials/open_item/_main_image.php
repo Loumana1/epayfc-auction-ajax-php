@@ -1,13 +1,6 @@
-<?php
-$mainPicturePath = null;
-if (!empty($pictures)) {
-    $mainPicturePath = $pictures[$selectedImg]['picture_path'] ?? $pictures[0]['picture_path'];
-}
-?>
-
 <section>
-    <?php if ($mainPicturePath): ?>
-        <img src="<?= $mainPicturePath ?>" 
+    <?php if (!empty($main_picture_path)): ?>
+        <img src="<?= $main_picture_path ?>" 
              alt="<?= htmlspecialchars($item->get_Title()) ?>"
              class="main-item-image">
     <?php else: ?>

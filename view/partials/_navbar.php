@@ -4,7 +4,7 @@
         <span>Browse</span>
     </a>
     
-    <?php if ($currentUser): ?>
+    <?php if ($current_user ?? $currentUser ?? null): ?>
         <a href="my_items">
             <i class="bi bi-house"></i>
             <span>My Items</span>
