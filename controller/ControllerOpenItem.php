@@ -5,6 +5,7 @@ require_once "model/Item.php";
 require_once "model/Bid.php";
 require_once "model/User.php";
 require_once "utils/AppTime.php";
+require_once "utils/format.php";
 
 class ControllerOpenItem extends Controller {
 
@@ -39,7 +40,10 @@ class ControllerOpenItem extends Controller {
         
         // -------REDIRECTION SI PAS AUTORISE---------
         if (!$is_open && !$is_owner && !$is_highest_bidder) {
-            (new View("error"))->show(['error' => "This item is only available to the owner or the winner."]);
+            (new View("error"))->show([
+                'error' => "This item is only available to the owner or the winner.",
+                'header_title' => 'Access denied',
+            ]);
             return;
         }
         
@@ -83,11 +87,11 @@ class ControllerOpenItem extends Controller {
     
             if ($is_highest_bidder) {
                 $final_price = $max_bid_time ?? 0;
-                $status_message = "Congratulations! You purchased this item for € " . number_format($final_price, 2, ',', '.');
-   
+                $status_message = "Congratulations! You purchased this item for " . format_euro($final_price);
+
             } elseif ($is_owner) {
                 if ($is_sold) {
-                    $status_message = $highest_bidder_pseudo . " won this item for € " . number_format($max_bid_time, 2, ',', '.');
+                    $status_message = $highest_bidder_pseudo . " won this item for " . format_euro($max_bid_time);
                     
                 } else {
                     $status_message = "This listing ended without a buyer.";
@@ -148,7 +152,6 @@ class ControllerOpenItem extends Controller {
             'page_css' => ['open_item.css'],
         ];
 
-
-            (new View("open_item"))->show($data);
-        }
+        (new View("open_item"))->show($data);
+    }
 }
