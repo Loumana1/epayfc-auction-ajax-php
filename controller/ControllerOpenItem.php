@@ -106,7 +106,12 @@ class ControllerOpenItem extends Controller {
         }
         $main_picture_path = null;
         if (!empty($pictures)) {
-            $main_picture_path = $pictures[$selected_img]['picture_path'] ?? $pictures[0]['picture_path'];
+            if ($selected_img === 0) {
+                $mainPic = $item->get_main_picture();
+                $main_picture_path = $mainPic !== null ? $mainPic->picture_path : $pictures[0]['picture_path'];
+            } else {
+                $main_picture_path = $pictures[$selected_img]['picture_path'] ?? $pictures[0]['picture_path'];
+            }
         }
         $seller = $item->get_seller();
 

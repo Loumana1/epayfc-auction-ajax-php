@@ -2,7 +2,6 @@
 require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once "model/Item.php";
-require_once "model/ItemPicture.php";
 require_once "model/User.php";  
 require_once "utils/AppTime.php";
 
@@ -28,7 +27,7 @@ class ControllerSales extends Controller {
             if (!$item instanceof Item) continue;
             
            
-            $main_picture = ItemPicture::get_main_picture($item->get_Id());
+            $main_picture =$item->get_main_picture();
             
          
             $pictures = $item->get_pictures();
