@@ -65,7 +65,8 @@ class ControllerSales extends Controller {
             'sold_items' => $sold_items,
             'statistics' => $statistics,
             'current_user' => $current_user,
-            'now' => $now
+            'now' => $now,
+            'page_css' => ['sales.css']
         ]);
     }
 }

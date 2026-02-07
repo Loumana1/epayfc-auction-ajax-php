@@ -1,21 +1,3 @@
-<?php
-require_once "utils/AppTime.php";
-require_once "framework/Configuration.php";
-?>
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Sales</title>
-    <base href="<?= $web_root ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">   <!-- PAS browser.css -->
-    <link rel="stylesheet" href="css/sales.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-</head>
-<body>
-<?php include __DIR__ . "/partials/_header.php"; ?>
-
 <div class="content-wrapper">
     <main class="main-content">
 
@@ -29,7 +11,6 @@ require_once "framework/Configuration.php";
             </span>
         </section>
 
-      
         <section class="stats-row">
             <div class="stat-box">
                 <span class="stat-label">TOTAL REVENUE</span>
@@ -48,22 +29,68 @@ require_once "framework/Configuration.php";
             </div>
         </section>
 
-         
         <?php if (!empty($sold_items)): ?>
             <section class="sales-grid">
                 <?php foreach ($sold_items as $item): ?>
-                    <?php include "view/partials/sales/_sale_card.php"; ?>
+                    <div class="sale-card">
+                        <a href="open_item/index/<?= $item['id'] ?>" class="sale-card-link">
+                            <div class="sale-card-image">
+                                <?php if ($item['pic_path']): ?>
+                                    <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" alt="">
+                                <?php else: ?>
+                                    <div class="no-pic">No Image</div>
+                                <?php endif; ?>
+                                <div class="sale-card-labels">
+                                    <?php if ($item['is_auction']): ?>
+                                        <span class="label label-auction"><i class="bi bi-hammer"></i> Auction</span>
+                                    <?php endif; ?>
+                                    <?php if ($item['has_buy_now']): ?>
+                                        <span class="label label-buy-now"><i class="bi bi-bag"></i> Buy Now</span>
+                                    <?php endif; ?>
+                                </div>
+                                <?php if ($item['picture_count'] > 0): ?>
+                                    <span class="picture-badge"><i class="bi bi-images"></i> <?= $item['picture_count'] ?></span>
+                                <?php endif; ?>
+                            </div>
+                            <div class="sale-card-info">
+                                <h3><?= htmlspecialchars($item['title']) ?></h3>
+                                <p class="seller">by <?= htmlspecialchars($item['seller_pseudo']) ?></p>
+                                <div class="pricing">
+                                    <span class="price">€ <?= number_format($item['buy_now_price'] ?? $item['starting_bid'], 2, ',', '.') ?></span>
+                                    <?php if ($item['max_bid']): ?>
+                                        <span class="current-bid">
+                                            Current bid<br>
+                                            <strong>€ <?= number_format($item['max_bid'], 2, ',', '.') ?></strong>
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                                <div class="status"><i class="bi bi-clock"></i> Closed</div>
+                            </div>
+                        </a>
+                        <div class="sale-details">
+                            <div class="detail-row">
+                                <i class="bi bi-currency-dollar"></i>
+                                <span>Final price € <?= number_format($item['final_price'], 2, ',', '.') ?></span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="bi bi-trophy"></i>
+                                <span><?= htmlspecialchars($item['winner_pseudo'] ?? 'Unknown') ?></span>
+                            </div>
+                            <div class="detail-row">
+                                <i class="bi bi-clock-history"></i>
+                                <span>Closed on <?= date('d/m/Y H:i', strtotime($item['closed_at'])) ?></span>
+                            </div>
+                        </div>
+                    </div>
                 <?php endforeach; ?>
             </section>
         <?php else: ?>
-            <?php include "view/partials/sales/_no_sales.php"; ?>
+            <div class="no-sales">
+                <i class="bi bi-inbox"></i>
+                <p>You haven't completed any sales yet.</p>
+                <a href="add_edit_item" class="btn btn-place-bid">Create Your First Listing</a>
+            </div>
         <?php endif; ?>
 
     </main>
 </div>
-
-<?php include "view/partials/_navbar.php"; ?>
-<?php include "view/partials/_timebar.php"; ?>
-
-</body>
-</html>

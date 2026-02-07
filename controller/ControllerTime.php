@@ -10,7 +10,11 @@ class ControllerTime extends Controller {
             $this->redirect();
         }
 
-        (new View("time"))->show();
+        (new View("time"))->show([
+            "header_title" => "App time",
+            "app_time_current" => AppTime::get_current_datetime(),
+            "page_css" => []
+        ]);
     }
 
     private function redirect_back() {

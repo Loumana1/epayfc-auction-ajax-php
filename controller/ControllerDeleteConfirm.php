@@ -43,7 +43,8 @@ class ControllerDeleteConfirm extends Controller {
             'back_url' => 'open_item/index/' . $item_id,
             'item' => $item,
             'current_user' => $user,
-            'seller' => $seller 
+            'seller' => $seller,
+            'page_css' => ['delete_item.css']
         ]);
     }
     

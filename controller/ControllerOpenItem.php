@@ -145,6 +145,7 @@ class ControllerOpenItem extends Controller {
             'item_purchased' => $item_purchased,
             'show_bid_history' => $item->get_Is_Auction(),
             'auction_ended' => !$is_open && $item->get_Is_Auction(),
+            'page_css' => ['open_item.css'],
         ];
 
 
