@@ -24,7 +24,7 @@ class ControllerUser extends Controller {
             'confirm_password' => []
         ];
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['current_password'])) {
             $current_password = $_POST['current_password'] ?? null;
             $new_password = $_POST['new_password'] ?? null;
             $confirm_password = $_POST['confirm_password'] ?? null;

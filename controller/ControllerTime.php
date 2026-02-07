@@ -17,15 +17,8 @@ class ControllerTime extends Controller {
         ]);
     }
 
-    private function redirect_back() {
-        // Redirect back to the same page 
-        $referer = $_SERVER['HTTP_REFERER'] ?? '';
-        if ($referer) {
-            header("Location: " . $referer);
-            die;
-        } else {
-            $this->redirect();
-        }
+    private function redirect_back(): void {
+        $this->redirect();
     }
 
 
