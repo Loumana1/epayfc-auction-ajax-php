@@ -19,6 +19,11 @@ class ControllerLogin extends Controller {
     }
 
     public function login(): void {
+
+          if ($this->user_logged()) {
+            $this->redirect("browser");
+        }
+
         $mail = $_POST["mail"] ?? "";
         $password = $_POST["password"] ?? "";
      
@@ -52,12 +57,16 @@ class ControllerLogin extends Controller {
          $this->redirect("browser"); 
         }
 
-         public function login_as(): void {
+    public function login_as(): void {
+
         if (!Configuration::is_dev()) {
             $this->redirect("login");
         }
+         
+        if ($this->user_logged()) {
+            $this->redirect("browser");
+        }
 
-        
        $mail = $_GET['param1'] ?? "";
 
         if ($mail) {
