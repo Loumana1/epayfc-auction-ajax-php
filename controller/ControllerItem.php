@@ -61,7 +61,11 @@ class ControllerItem extends Controller {
 
             $title = $_POST["title"] ?? "";
             $description = $_POST["description"] ?? null;
-            $duration_days = (int)($_POST["duration_days"] ?? 7);
+            $duration_days = (int)(
+            $_POST["duration_days"]
+            ?? Configuration::get("default_duration_days")
+            );
+
 
             $starting_bid_raw = trim($_POST["starting_bid"] ?? "");
             $buy_now_raw = trim($_POST["buy_now_price"] ?? "");
@@ -128,7 +132,9 @@ class ControllerItem extends Controller {
             "item_id" => $item_id,
             "title" => $item ? $item->get_title() : "",
             "description" => $item ? ($item->get_description() ?? "") : "",
-            "duration_days" => $item ? $item->get_duration_days() : 7,
+            "duration_days" => $item
+                ? $item->get_duration_days()
+                : Configuration::get("default_duration_days"),
             "starting_bid" => $item ? (string)($item->get_starting_bid() ?? "") : "",
             "buy_now_price" => $item ? (string)($item->get_buy_now_price() ?? "") : "",
             "sale_price" => $sale_price,
