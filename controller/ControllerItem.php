@@ -7,8 +7,17 @@ require_once "model/Item.php";
 class ControllerItem extends Controller {
 
     public function index(): void {
-        $this->redirect("item", "add_edit_item");
+
+    
+    $user = $this->get_user_or_false();
+    if (!$user) {
+        $this->redirect("login");
+        return;
     }
+
+    $this->redirect("item", "add_edit_item");
+    }
+
 
     public function my_items(): void {
         $user = $this->get_user_or_false();
@@ -34,6 +43,7 @@ class ControllerItem extends Controller {
 
 
     public function add_edit_item(): void {
+
         $user = $this->get_user_or_false();
         $owner_id = $user ? $user->get_id() : 1;
 
