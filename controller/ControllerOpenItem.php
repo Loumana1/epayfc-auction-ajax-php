@@ -12,146 +12,193 @@ class ControllerOpenItem extends Controller {
     
     public function index(): void {
 
-
-        $item_id = $_GET['param1'] ?? null;
- 
-        if (!$item_id || !ctype_digit($item_id)) {
-            throw new Exception("Invalid item ID: Item does not exist --> '$item_id'");
+ $item = $this->load_item_or_fail();
+        $context = $this->get_user_context($item);
+        
+        if (!$this->check_access($item, $context)) {
+            return;
         }
-
-
+        
+        $data = $this->prepare_view_data($item, $context);
+        (new View("open_item"))->show($data);
+    }
+    
+    // ============ VALIDATION ============
+    
+    private function load_item_or_fail(): Item {
+        $item_id = $_GET['param1'] ?? null;
+        
+        if (!$item_id || !ctype_digit($item_id)) {
+            throw new Exception("Invalid item ID: '$item_id'");
+        }
+        
         $item = Item::get_by_id((int)$item_id);
         if ($item === false) {
             throw new Exception("Item #$item_id not found.");
         }
-
-
-
+        
+        return $item;
+    }
+    
+    // ============ CONTEXTE UTILISATEUR ============
+    
+    private function get_user_context(Item $item): array {
         $current_user = $this->get_user_or_false();
         $current_user_id = $current_user ? $current_user->get_Id() : null;
-        $is_owner = $current_user_id && $item->get_owner() == $current_user_id;
-        $is_open = $item->is_open();  
-
-        $is_highest_bidder = false;
-        if ($current_user_id) {
-            $is_highest_bidder = Bid::is_user_highest($current_user_id, $item_id);
-        }
-     
+        $is_open = $item->is_open();
         
-        // -------REDIRECTION SI PAS AUTORISE---------
-        if (!$is_open && !$is_owner && !$is_highest_bidder) {
+        $is_owner = $current_user_id && $item->get_owner() == $current_user_id;
+        $is_highest_bidder = $current_user_id 
+            ? Bid::is_user_highest($current_user_id, $item->get_Id()) 
+            : false;
+        
+        // État de l'item
+        $has_bids_time = $item->has_bids_time();
+        $max_bid_time = $item->get_max_bid_time();
+        $is_sold = $has_bids_time || $item->has_buy_now_reached_time();
+        
+        return [
+            'current_user' => $current_user,
+            'current_user_id' => $current_user_id,
+            'is_owner' => $is_owner,
+            'is_open' => $is_open,
+            'is_highest_bidder' => $is_highest_bidder,
+            'has_bids_time' => $has_bids_time,
+            'max_bid_time' => $max_bid_time,
+            'is_sold' => $is_sold,
+        ];
+    }
+    
+    // ============ CONTRÔLE ACCES ============
+    
+    private function check_access(Item $item, array $context): bool {
+        if (!$context['is_open'] && !$context['is_owner'] && !$context['is_highest_bidder']) {
             (new View("error"))->show([
                 'error' => "This item is only available to the owner or the winner.",
                 'header_title' => 'Access denied',
             ]);
-            return;
+            return false;
         }
-        
-  
-        // ---------------------------------
-        $has_bids_time = $item->has_bids_time();
-        $max_bid_time = $item->get_max_bid_time();
-        $buy_now_reached_time = $item->has_buy_now_reached_time();
-        $is_sold = $has_bids_time || $buy_now_reached_time;
-        $highest_bidder_pseudo = $item->get_highest_bidder_pseudo();
-        $min_bid_amount = $item->get_min_bid_amount();
-
+        return true;
+    }
     
-        // -------------- BOUTONS -------------------
+    // ========== ETAT DES BOUTONS ============
+    
+    private function get_button_state(array $context): array {
         $show_buttons = true;
         $buttons_disabled = false;
-
-        if (!$is_open) {
+        
+        if (!$context['is_open']) {
             $show_buttons = false;
-        } elseif ($is_owner || !$current_user) {
-      
+        } elseif ($context['is_owner'] || !$context['current_user']) {
             $buttons_disabled = true;
         }
-
-
-        // -------------- MESSAGES -------------
-        $status_message = '';
-
-
-        if ($is_open) {
+        
+        return [
+            'show_buttons' => $show_buttons,
+            'buttons_disabled' => $buttons_disabled,
+        ];
+    }
     
-            if ($is_owner) {
-                $status_message = "You cannot bid on your own listing.";
-
-            } elseif (!$current_user) {
-                $status_message = "Please log in";
-
-            }
-            
-        } else {
+    // ============ MESSAGE DE STATUT ===============
     
-            if ($is_highest_bidder) {
-                $final_price = $max_bid_time ?? 0;
-                $status_message = "Congratulations! You purchased this item for " . format_euro($final_price);
-
-            } elseif ($is_owner) {
-                if ($is_sold) {
-                    $status_message = $highest_bidder_pseudo . " won this item for " . format_euro($max_bid_time);
-                    
-                } else {
-                    $status_message = "This listing ended without a buyer.";
-                    
-                }
+    private function get_status_message(Item $item, array $context): string {
+        if ($context['is_open']) {
+            if ($context['is_owner']) {
+                return "You cannot bid on your own listing.";
             }
+            if (!$context['current_user']) {
+                return "Please log in";
+            }
+            return '';
         }
-
-
-//-------------------------------------
-        $bids = $item->get_bids();
+        
+        // Item fermé
+        if ($context['is_highest_bidder']) {
+            $final_price = $context['max_bid_time'] ?? 0;
+            return "Congratulations! You purchased this item for " . format_euro($final_price);
+        }
+        
+        if ($context['is_owner']) {
+            if ($context['is_sold']) {
+                $pseudo = $item->get_highest_bidder_pseudo();
+                return "$pseudo won this item for " . format_euro($context['max_bid_time']);
+            }
+            return "This listing ended without a buyer.";
+        }
+        
+        return '';
+    }
+    
+    // ======== DONNEES IMAGES ============
+    
+    private function get_picture_data(Item $item): array {
         $pictures = $item->get_pictures();
-        $selected_img = isset($_GET['param2']) && $_GET['param2'] !== '' ? (int) $_GET['param2'] : 0;
+        $selected_img = isset($_GET['param2']) && $_GET['param2'] !== '' 
+            ? (int)$_GET['param2'] 
+            : 0;
+        
         if ($selected_img < 0 || (count($pictures) > 0 && $selected_img >= count($pictures))) {
             $selected_img = 0;
         }
+        
         $main_picture_path = null;
         if (!empty($pictures)) {
             if ($selected_img === 0) {
-                $mainPic = $item->get_main_picture();
-                $main_picture_path = $mainPic !== null ? $mainPic->picture_path : $pictures[0]['picture_path'];
+                $main_pic = $item->get_main_picture();
+                $main_picture_path = $main_pic !== null 
+                    ? $main_pic->picture_path 
+                    : $pictures[0]['picture_path'];
             } else {
-                $main_picture_path = $pictures[$selected_img]['picture_path'] ?? $pictures[0]['picture_path'];
+                $main_picture_path = $pictures[$selected_img]['picture_path'] 
+                    ?? $pictures[0]['picture_path'];
             }
         }
-        $seller = $item->get_seller();
-
-        $has_active_bids = $has_bids_time;
-        $item_purchased = !$is_open && $is_sold;
-
-
-
-        $data = [
+        
+        return [
+            'pictures' => $pictures,
+            'selected_img' => $selected_img,
+            'main_picture_path' => $main_picture_path,
+        ];
+    }
+    
+    // ============== POUR VUE ============
+    
+    private function prepare_view_data(Item $item, array $context): array {
+        $button_state = $this->get_button_state($context);
+        $picture_data = $this->get_picture_data($item);
+        $status_message = $this->get_status_message($item, $context);
+        
+        $is_open = $context['is_open'];
+        $has_bids_time = $context['has_bids_time'];
+        $is_sold = $context['is_sold'];
+        
+        return [
             'header_title' => 'Item open',
             'header_icon' => 'bi-cart-fill',
             'back_url' => 'browser',
             'item' => $item,
-            'item_id' => $item_id,
-            'pictures' => $pictures,
-            'selected_img' => (int) $selected_img,
-            'main_picture_path' => $main_picture_path,
-            'seller' => $seller,
-            'bids' => $bids,
+            'item_id' => $item->get_Id(),
+            'pictures' => $picture_data['pictures'],
+            'selected_img' => $picture_data['selected_img'],
+            'main_picture_path' => $picture_data['main_picture_path'],
+            'seller' => $item->get_seller(),
+            'bids' => $item->get_bids(),
             'is_open' => $is_open,
-            'is_owner' => $is_owner,
-            'current_user' => $current_user,
-            'is_highest_bidder' => $is_highest_bidder,
-            'max_bid_time' => $max_bid_time,
-            'min_bid_amount' => $min_bid_amount,
+            'is_owner' => $context['is_owner'],
+            'current_user' => $context['current_user'],
+            'is_highest_bidder' => $context['is_highest_bidder'],
+            'max_bid_time' => $context['max_bid_time'],
+            'min_bid_amount' => $item->get_min_bid_amount(),
             'has_bids_time' => $has_bids_time,
-            'show_buttons' => $show_buttons,
-            'buttons_disabled' => $buttons_disabled,
+            'show_buttons' => $button_state['show_buttons'],
+            'buttons_disabled' => $button_state['buttons_disabled'],
             'status_message' => $status_message,
-            'has_active_bids' => $has_active_bids,
-            'item_purchased' => $item_purchased,
+            'has_active_bids' => $has_bids_time,
+            'item_purchased' => !$is_open && $is_sold,
             'show_bid_history' => $item->get_Is_Auction(),
             'auction_ended' => !$is_open && $item->get_Is_Auction(),
             'page_css' => ['open_item.css'],
         ];
-
-        (new View("open_item"))->show($data);
     }
 }
