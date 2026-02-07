@@ -103,6 +103,13 @@ class ControllerItem extends Controller {
             $this->redirect("item", "open_item", (string)$new_item->get_id());
         }
 
+        $sale_price = "";
+
+        if ($item && (($item->get_starting_bid() ?? 0) <= 0)) {
+            $sale_price = (string)($item->get_buy_now_price() ?? "");
+        }
+
+
         (new View("add_edit_item"))->show([
             "item_id" => $item_id,
             "title" => $item ? $item->get_title() : "",
@@ -110,7 +117,7 @@ class ControllerItem extends Controller {
             "duration_days" => $item ? $item->get_duration_days() : 7,
             "starting_bid" => $item ? (string)($item->get_starting_bid() ?? "") : "",
             "buy_now_price" => $item ? (string)($item->get_buy_now_price() ?? "") : "",
-            "sale_price" => $item && (($item->get_starting_bid() ?? 0) <= 0) ? (string)($item->get_buy_now_price() ?? "") : "",
+            "sale_price" => $sale_price,
             "errors" => [],
             "currentUser" => $user, 
             "current_page" => "add_item"
