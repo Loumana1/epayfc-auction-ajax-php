@@ -57,7 +57,8 @@ class ControllerItem extends Controller {
             }
         }
 
-        if ($_SERVER["REQUEST_METHOD"] === "POST") {
+        if (!empty($_POST)) {
+
             $title = $_POST["title"] ?? "";
             $description = $_POST["description"] ?? null;
             $duration_days = (int)($_POST["duration_days"] ?? 7);
@@ -79,7 +80,10 @@ class ControllerItem extends Controller {
                 $buy_now_price = $buy_now_raw !== "" ? (float)$buy_now_raw : null;
             }
 
-            $created_at = $item === null ? date("Y-m-d H:i:s") : $item->get_created_at();
+            $created_at = $item === null
+                ? AppTime::get_current_datetime()
+                : $item->get_created_at();
+
 
             $new_item = new Item(
                 $item_id,
