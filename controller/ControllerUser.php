@@ -18,30 +18,30 @@ class ControllerUser extends Controller {
 
     public function change_password(): void {
         $user = $this->get_user_or_redirect();
-        $fieldErrors = [
+        $field_errors = [
             'current_password' => [],
             'new_password' => [],
             'confirm_password' => []
         ];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $currentPassword = $_POST['current_password'] ?? null;
-            $newPassword = $_POST['new_password'] ?? null;
-            $confirmPassword = $_POST['confirm_password'] ?? null;
+            $current_password = $_POST['current_password'] ?? null;
+            $new_password = $_POST['new_password'] ?? null;
+            $confirm_password = $_POST['confirm_password'] ?? null;
 
-            $fieldErrors = User::validate_change_password($user, $currentPassword, $newPassword, $confirmPassword);
+            $field_errors = User::validate_change_password($user, $current_password, $new_password, $confirm_password);
 
-            if (empty(array_filter($fieldErrors))) {
-                User::update_password($user->get_Id(), password_hash($newPassword, PASSWORD_DEFAULT));
+            if (empty(array_filter($field_errors))) {
+                User::update_password($user->get_Id(), password_hash($new_password, PASSWORD_DEFAULT));
                 $this->redirect('profile');
                 return;
             }
         }
 
-        $this->change_password_show_view($user, $fieldErrors);
+        $this->change_password_show_view($user, $field_errors);
     }
 
-    private function change_password_show_view(object $user, array $fieldErrors): void {
+    private function change_password_show_view(object $user, array $field_errors): void {
         (new View("change_password"))->show([
             'header_title' => 'Change password',
             'header_icon' => 'bi-cart-fill',
@@ -49,8 +49,8 @@ class ControllerUser extends Controller {
             'header_right_icon' => 'bi-floppy',
             'header_right_text' => 'Save',
             'header_right_form_id' => 'change-password-form',
-            'fieldErrors' => $fieldErrors,
-            'currentUser' => $user
+            'field_errors' => $field_errors,
+            'current_user' => $user
         ]);
     }
     
