@@ -1,6 +1,4 @@
-<?php
-require_once "framework/Configuration.php";
-?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,10 +34,10 @@ require_once "framework/Configuration.php";
                                     name="current_password" 
                                     placeholder="Enter your current password"
                                     autocomplete="current-password"
-                                    class="<?= !empty($field_errors['current_password']) ? 'input-error' : '' ?>">
-                            <?php if (!empty($field_errors['current_password'])): ?>
+                                    class="<?= !empty($field_errors_current_password) ? 'input-error' : '' ?>">
+                            <?php if (!empty($field_errors_current_password)): ?>
                                 <?php 
-                                $field_errors_to_show = $field_errors['current_password'];
+                                $field_errors_to_show = $field_errors_current_password;
                                 include __DIR__ . "/partials/_field_error.php"; 
                                 ?>
                             <?php endif; ?>
@@ -63,10 +61,10 @@ require_once "framework/Configuration.php";
                                     name="new_password" 
                                     placeholder="Enter your new password"
                                     autocomplete="new-password"
-                                    class="<?= !empty($field_errors['new_password']) ? 'input-error' : '' ?>">
-                            <?php if (!empty($field_errors['new_password'])): ?>
+                                    class="<?= !empty($field_errors_new_password) ? 'input-error' : '' ?>">
+                            <?php if (!empty($field_errors_new_password)): ?>
                                 <?php 
-                                $field_errors_to_show = $field_errors['new_password'];
+                                $field_errors_to_show = $field_errors_new_password;
                                 include __DIR__ . "/partials/_field_error.php"; 
                                 ?>
                             <?php endif; ?>
@@ -82,10 +80,10 @@ require_once "framework/Configuration.php";
                                         name="confirm_password" 
                                         placeholder="Confirm your new password"
                                         autocomplete="new-password"
-                                        class="<?= !empty($field_errors['confirm_password']) ? 'input-error' : '' ?>">
-                            <?php if (!empty($field_errors['confirm_password'])): ?>
+                                        class="<?= !empty($field_errors_confirm_password) ? 'input-error' : '' ?>">
+                            <?php if (!empty($field_errors_confirm_password)): ?>
                                 <?php 
-                                $field_errors_to_show = $field_errors['confirm_password'];
+                                $field_errors_to_show = $field_errors_confirm_password;
                                 include __DIR__ . "/partials/_field_error.php"; 
                                 ?>
                             <?php endif; ?>
