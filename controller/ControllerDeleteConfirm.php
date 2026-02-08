@@ -31,7 +31,6 @@ class ControllerDeleteConfirm extends Controller {
         
    
         if ($item->has_bids_time()) {
-            // Plus de message via $_SESSION - redirection simple
             $this->redirect('open_item', 'index', (string)$item_id);
             return;
         }

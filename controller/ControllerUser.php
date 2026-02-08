@@ -29,10 +29,10 @@ class ControllerUser extends Controller {
             $new_password = $_POST['new_password'] ?? null;
             $confirm_password = $_POST['confirm_password'] ?? null;
 
-            $field_errors = User::validate_change_password($user, $current_password, $new_password, $confirm_password);
+           $field_errors = $user->validate_new_password($current_password, $new_password, $confirm_password);
 
             if (empty(array_filter($field_errors))) {
-                User::update_password($user->get_Id(), password_hash($new_password, PASSWORD_DEFAULT));
+               $user->set_password($new_password);
                 $this->redirect('profile');
                 return;
             }
