@@ -175,40 +175,45 @@ public function get_Starting_Bid(): float {
     
 
 public function is_open(): bool {
-        $now = AppTime::get_current_datetime();
-        $nowDateTime = new DateTime($now);
-        
-       //l'item a commencé 
-       $createdAt = new DateTime($this->created_at);
-       if ($createdAt > $nowDateTime) {
-           return false; }
-            
-        //Direct Sale
-            if ($this->is_direct_sale && !$this->is_auction) {
-                if ($this->end_at) {
-                    $endAtDateTime = new DateTime($this->end_at);
-                    if ($endAtDateTime <= $nowDateTime) {
-                        return false; 
-                    }
-                }
-                        return !$this->has_bids_time(); 
-                    
-            }
-            
-            //  Auction
-            if ($this->end_at) {
-                $endAtDateTime = new DateTime($this->end_at);
-                $isBeforeEnd = $endAtDateTime > $nowDateTime;
-                
-                // pour tenir compte de AppTime
-                $buyNowReachedTime = $this->has_buy_now_reached_time();
-                
-                return $isBeforeEnd && !$buyNowReachedTime;
-            }
+    if (!$this->has_started()) {
         return false;
     }
+    if ($this->is_direct_sale && !$this->is_auction) {
+        return $this->is_direct_sale_open();
+    }
+    if ($this->end_at !== null && $this->end_at !== '') {
+        return $this->is_auction_open();
+    }
+    return false;
+    }
 
-
+    private function has_started(): bool {
+        $now = AppTime::get_current_datetime();
+        $now_dt = new DateTime($now);
+        $created_dt = new DateTime($this->created_at);
+        return $created_dt <= $now_dt;
+    }
+    
+    private function is_direct_sale_open(): bool {
+        $now = AppTime::get_current_datetime();
+        $now_dt = new DateTime($now);
+        if ($this->end_at !== null && $this->end_at !== '') {
+            $end_dt = new DateTime($this->end_at);
+            if ($end_dt <= $now_dt) {
+                return false;
+            }
+        }
+        return !$this->has_bids_time();
+    }
+    
+    private function is_auction_open(): bool {
+        $now = AppTime::get_current_datetime();
+        $now_dt = new DateTime($now);
+        $end_dt = new DateTime($this->end_at);
+        $is_before_end = $end_dt > $now_dt;
+        $buy_now_reached = $this->has_buy_now_reached_time();
+        return $is_before_end && !$buy_now_reached;
+    }
 
    
 
@@ -247,6 +252,12 @@ public function is_open(): bool {
         $bids = $this->get_bids();
         return !empty($bids) ? $bids[0]['pseudo'] : null;
     }
+
+    //intance 
+    public function is_user_highest_bidder(int $user_id): bool
+        {
+            return Bid::is_user_highest($user_id, $this->id);
+        }
     
     public function get_min_bid_amount(): float {
         $maxBid = $this->get_max_bid_time();
@@ -379,41 +390,43 @@ public function delete(): void {
     }
 
     public static function get_sales_statistics(int $userId, string $now): array {
+    $stats = self::get_sales_stats_core($userId, $now);
+    $stats['loyal_bidder'] = self::get_loyal_bidder_for_seller($userId, $now);
+    return $stats;
+    }
 
-        $query = "SELECT 
-                    COUNT(*) as sales_count,
-                    COALESCE(SUM(max_bid), 0) as total_revenue,
-                    COALESCE(AVG(max_bid), 0) as average_ticket
-                  FROM v_items_status 
-                  WHERE owner = :user_id
-                  AND has_bids = 1
-                  AND (end_at <= :now OR buy_now_reached = 1)";
-                  
-        $result = self::execute($query, ['user_id' => $userId, 'now' => $now]);
-        $stats = $result->fetch();
         
+    private static function get_sales_stats_core(int $userId, string $now): array {
+    $query = "SELECT 
+                COUNT(*) as sales_count,
+                COALESCE(SUM(max_bid), 0) as total_revenue,
+                COALESCE(AVG(max_bid), 0) as average_ticket
+            FROM v_items_status 
+            WHERE owner = :user_id
+            AND has_bids = 1
+            AND (end_at <= :now OR buy_now_reached = 1)";
+    $row = self::execute($query, ['user_id' => $userId, 'now' => $now])->fetch();
+    return [
+        'sales_count' => (int)($row['sales_count'] ?? 0),
+        'total_revenue' => (float)($row['total_revenue'] ?? 0),
+        'average_ticket' => (float)($row['average_ticket'] ?? 0),
+    ];
+    }
 
-        $query_loyal = "SELECT u.pseudo, COUNT(*) as win_count
-                        FROM bids b
-                        JOIN v_items_status v ON b.item = v.id
-                        JOIN users u ON b.owner = u.id
-                        WHERE v.owner = :user_id
-                        AND v.has_bids = 1
-                        AND (v.end_at <= :now OR v.buy_now_reached = 1)
-                        AND b.amount = v.max_bid
-                        GROUP BY b.owner, u.pseudo
-                        ORDER BY win_count DESC
-                        LIMIT 1";
-        
-        $loyal_result = self::execute($query_loyal, ['user_id' => $userId, 'now' => $now]);
-        $loyal_bidder = $loyal_result->fetch();
-        
-        return [
-            'sales_count' => (int)$stats['sales_count'],
-            'total_revenue' => (float)$stats['total_revenue'],
-            'average_ticket' => (float)$stats['average_ticket'],
-            'loyal_bidder' => $loyal_bidder ? $loyal_bidder['pseudo'] : null
-        ];
+    private static function get_loyal_bidder_for_seller(int $userId, string $now): ?string {
+        $query = "SELECT u.pseudo, COUNT(*) as win_count
+                FROM bids b
+                JOIN v_items_status v ON b.item = v.id
+                JOIN users u ON b.owner = u.id
+                WHERE v.owner = :user_id
+                AND v.has_bids = 1
+                AND (v.end_at <= :now OR v.buy_now_reached = 1)
+                AND b.amount = v.max_bid
+                GROUP BY b.owner, u.pseudo
+                ORDER BY win_count DESC
+                LIMIT 1";
+        $row = self::execute($query, ['user_id' => $userId, 'now' => $now])->fetch();
+        return $row ? $row['pseudo'] : null;
     }
 
     private static function title_exists_for_owner(string $title, int $owner, ?int $exclude_id): bool {

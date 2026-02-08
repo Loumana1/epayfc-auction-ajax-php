@@ -36,7 +36,6 @@ class Bid extends Model {
         require_once "model/Item.php";
         $errors = [];
         $now = AppTime::get_current_datetime();
-$now_date_time = new DateTime($now);
         
     
         $item = Item::get_by_id($this->item_id);
