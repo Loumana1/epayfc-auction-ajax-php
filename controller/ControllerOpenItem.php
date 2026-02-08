@@ -31,7 +31,7 @@ private function load_item_or_fail(): ?Item {
     $item_id = $_GET['param1'] ?? null;
     
     if (!$item_id || !ctype_digit($item_id)) {
-        $this->show_error("Invalid input : '$item_id'", "Invalid Request");
+        $this->show_error("Invalid url : '$item_id'", "Invalid Request");
         return null;
     }
     
@@ -174,6 +174,15 @@ private function load_item_or_fail(): ?Item {
         $picture_data = $this->get_picture_data($item);
         $status_message = $this->get_status_message($item, $context);
         
+
+            // Déterminer l'URL de retour
+        $from = $_GET['param3'] ?? null;
+        $back_url = match($from) {
+            'sales' => 'sales',
+            'my_items' => 'my_items',
+            'purchases' => 'purchases',
+            default => 'browser'
+        };
         $is_open = $context['is_open'];
         $has_bids_time = $context['has_bids_time'];
         $is_sold = $context['is_sold'];
@@ -181,7 +190,7 @@ private function load_item_or_fail(): ?Item {
         return [
             'header_title' => 'Item open',
             'header_icon' => 'bi-cart-fill',
-            'back_url' => 'browser',
+            'back_url' => $back_url,
             'item' => $item,
             'item_id' => $item->get_Id(),
             'pictures' => $picture_data['pictures'],

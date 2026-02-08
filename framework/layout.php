@@ -1,3 +1,10 @@
+<?php
+if (!empty($no_header_footer)) {
+    require $view_content_file;
+    return;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>

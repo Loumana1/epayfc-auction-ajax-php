@@ -50,7 +50,7 @@
                     $closed_at_formatted = $closed_at ? date('d/m/Y H:i', strtotime($closed_at)) : '';
                     ?>
                     <div class="sale-card">
-                        <a href="open_item/index/<?= $item->get_Id() ?>" class="sale-card-link">
+                     <a href="open_item/index/<?= $item->get_Id() ?>/0/sales" class="sale-card-link">
                             <div class="sale-card-image">
                                 <?php if ($thumb_url): ?>
                                     <img src="<?= $thumb_url ?>" alt="">
