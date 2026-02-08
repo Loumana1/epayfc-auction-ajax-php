@@ -14,10 +14,9 @@ class ItemPicture extends Model
         $this->priority = $priority;
     }
 
-    // Récupère la photo principale d'un item
-    public static function get_main_picture(int $itemId): ?ItemPicture
+    public static function get_main_picture(int $item_id): ?ItemPicture
     {
-        $query = self::execute("SELECT * FROM item_pictures WHERE item = :id AND priority = 1", ["id" => $itemId]);
+        $query = self::execute("SELECT * FROM item_pictures WHERE item = :id AND priority = 1", ["id" => $item_id]);
         $data = $query->fetch();
         if ($data) {
             return new ItemPicture($data['item'], $data['picture_path'], $data['priority']);
@@ -25,12 +24,11 @@ class ItemPicture extends Model
         return null;
     }
 
-    // Récupère toutes les images d'un item ordonnées par priorité
-    public static function get_all_by_item(int $itemId): array
+    public static function get_all_by_item(int $item_id): array
     {
         $query = self::execute(
             "SELECT * FROM item_pictures WHERE item = :id ORDER BY priority ASC",
-            ["id" => $itemId]
+            ["id" => $item_id]
         );
         $pictures = [];
         while ($data = $query->fetch()) {
@@ -39,98 +37,90 @@ class ItemPicture extends Model
         return $pictures;
     }
 
-    // Récupère la prochaine priorité disponible pour un item
-    public static function get_next_priority(int $itemId): int
+    public static function get_next_priority(int $item_id): int
     {
         $query = self::execute(
             "SELECT MAX(priority) as max_priority FROM item_pictures WHERE item = :id",
-            ["id" => $itemId]
+            ["id" => $item_id]
         );
         $data = $query->fetch();
         return ($data && $data['max_priority']) ? $data['max_priority'] + 1 : 1;
     }
 
-    // Ajoute une nouvelle image avec la priorité suivante
-    public static function add(int $itemId, string $picturePath): bool
+    public static function add(int $item_id, string $picture_path): bool
     {
-        $priority = self::get_next_priority($itemId);
+        $priority = self::get_next_priority($item_id);
         $query = self::execute(
             "INSERT INTO item_pictures (item, priority, picture_path) VALUES (:item, :priority, :path)",
-            ["item" => $itemId, "priority" => $priority, "path" => $picturePath]
+            ["item" => $item_id, "priority" => $priority, "path" => $picture_path]
         );
         return $query !== false;
     }
 
-    // Supprime une image et réorganise les priorités
-    public static function delete(int $itemId, int $priority): bool
+    public static function delete(int $item_id, int $priority): bool
     {
-        // Récupérer le chemin de l'image pour la supprimer du disque
         $query = self::execute(
             "SELECT picture_path FROM item_pictures WHERE item = :item AND priority = :priority",
-            ["item" => $itemId, "priority" => $priority]
+            ["item" => $item_id, "priority" => $priority]
         );
         $data = $query->fetch();
 
         if (!$data)
             return false;
 
-        // Supprimer de la base de données
         self::execute(
             "DELETE FROM item_pictures WHERE item = :item AND priority = :priority",
-            ["item" => $itemId, "priority" => $priority]
+            ["item" => $item_id, "priority" => $priority]
         );
 
-        // Réorganiser les priorités (décaler toutes les images après)
         self::execute(
             "UPDATE item_pictures SET priority = priority - 1 WHERE item = :item AND priority > :priority",
-            ["item" => $itemId, "priority" => $priority]
+            ["item" => $item_id, "priority" => $priority]
         );
 
         return true;
     }
 
-    // Déplace une image vers la gauche (échange avec celle de priorité - 1)
-    public static function move_left(int $itemId, int $priority): bool
+    public static function move_left(int $item_id, int $priority): bool
     {
         if ($priority <= 1)
             return false;
-        return self::swap_priorities($itemId, $priority, $priority - 1);
+        return self::swap_priorities($item_id, $priority, $priority - 1);
     }
 
-    // Déplace une image vers la droite (échange avec celle de priorité + 1)
-    public static function move_right(int $itemId, int $priority): bool
+    public static function move_right(int $item_id, int $priority): bool
     {
-        $maxPriority = self::get_next_priority($itemId) - 1;
-        if ($priority >= $maxPriority)
+        $max_priority = self::get_next_priority($item_id) - 1;
+        if ($priority >= $max_priority)
             return false;
-        return self::swap_priorities($itemId, $priority, $priority + 1);
+        return self::swap_priorities($item_id, $priority, $priority + 1);
     }
 
-    // Échange les priorités de deux images
-    private static function swap_priorities(int $itemId, int $priority1, int $priority2): bool
+    private static function swap_priorities(int $item_id, int $priority1, int $priority2): bool
     {
-        // Utiliser une priorité temporaire pour éviter les conflits de clé primaire
-        $tempPriority = 9999;
+        $temp_priority = self::get_temp_priority();
 
-        // Image 1 -> temp
         self::execute(
             "UPDATE item_pictures SET priority = :temp WHERE item = :item AND priority = :p1",
-            ["temp" => $tempPriority, "item" => $itemId, "p1" => $priority1]
+            ["temp" => $temp_priority, "item" => $item_id, "p1" => $priority1]
         );
 
-        // Image 2 -> priority1
         self::execute(
             "UPDATE item_pictures SET priority = :p1 WHERE item = :item AND priority = :p2",
-            ["p1" => $priority1, "item" => $itemId, "p2" => $priority2]
+            ["p1" => $priority1, "item" => $item_id, "p2" => $priority2]
         );
 
-        // temp -> priority2
         self::execute(
             "UPDATE item_pictures SET priority = :p2 WHERE item = :item AND priority = :temp",
-            ["p2" => $priority2, "item" => $itemId, "temp" => $tempPriority]
+            ["p2" => $priority2, "item" => $item_id, "temp" => $temp_priority]
         );
 
         return true;
     }
 
+    private static function get_temp_priority(): int
+    {
+        $config = parse_ini_file("config/dev.ini");
+        return (int)($config['temp_priority'] ?? 9999);
+    }
 }

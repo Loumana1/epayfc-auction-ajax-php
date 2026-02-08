@@ -1,13 +1,13 @@
 <!-- User Info Card -->
         <div class="user-card">
-            <?php if (!empty($currentUser->picture_path)): ?>
-                <img src="<?= $web_root . $currentUser->picture_path ?>" alt="Profile" class="user-avatar">
+            <?php if (!empty($current_user->picture_path)): ?>
+                <img src="<?= $web_root . $current_user->picture_path ?>" alt="Profile" class="user-avatar">
             <?php else: ?>
                 <div class="user-avatar-placeholder">👤</div>
             <?php endif; ?>
-            <h2 class="user-name"><?= htmlspecialchars($currentUser->full_name) ?></h2>
-            <p class="user-pseudo">@<?= htmlspecialchars($currentUser->pseudo) ?></p>
-            <p class="user-email"><?= htmlspecialchars($currentUser->get_email()) ?></p>
+            <h2 class="user-name"><?= htmlspecialchars($current_user->full_name) ?></h2>
+            <p class="user-pseudo">@<?= htmlspecialchars($current_user->pseudo) ?></p>
+            <p class="user-email"><?= htmlspecialchars($current_user->get_email()) ?></p>
         </div>
 
 <!-- My Activities Section -->
