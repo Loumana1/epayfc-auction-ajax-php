@@ -27,9 +27,12 @@ class ControllerProfilePicture extends Controller {
         $file = $_FILES["picture"];
 
         
-        if ($file["size"] > 2 * 1024 * 1024) {
+        $max_size = (int) Configuration::get("max_profile_picture_size");
+
+        if ($file["size"] > $max_size) {
             $this->redirect("profile_picture");
         }
+
 
         
         $allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -48,13 +51,13 @@ class ControllerProfilePicture extends Controller {
         };
 
        
-        $userDir = "uploads/users/" . $user->get_id();
-        if (!is_dir($userDir)) {
-            mkdir($userDir, 0777, true);
+        $user_dir = "uploads/users/" . $user->get_id();
+        if (!is_dir($user_dir)) {
+            mkdir($user_dir, 0777, true);
         }
 
-        $path = "$userDir/profile.$ext";
-        $thumbPath = "$userDir/profile_thumbnail.$ext";
+        $path = "$user_dir/profile.$ext";
+        $thumb_path = "$user_dir/profile_thumbnail.$ext";
 
       
         if ($user->get_picture_path()) {
@@ -64,7 +67,7 @@ class ControllerProfilePicture extends Controller {
 
        
         move_uploaded_file($file["tmp_name"], $path);
-        copy($path, $thumbPath);
+        copy($path, $thumb_path);
 
        
         $user->set_picture_path($path);
