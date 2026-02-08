@@ -13,22 +13,13 @@
 
 <body class="edit-profile-page">
 
-    <div class="top-header">
-
-        <?php include __DIR__ . "/partials/_header.php"; ?>
-
-        <button type="submit" form="edit-form" class="save-btn">💾</button>
-
-    </div>
+        <button type="submit" form="edit-form" class="save-btn"><i class="bi bi-save me-1"></i> Save</button>
 
     <main>
             <?php include __DIR__ . "/partials/edit_profile/_edit_profile.php"; ?>
 
     </main>
 
-        <?php include __DIR__ . "/partials/_navbar.php"; ?>
-
-        <?php include __DIR__ . "/partials/_timebar.php"; ?>
 
 </body>
 

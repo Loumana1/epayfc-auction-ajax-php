@@ -626,6 +626,16 @@ public function delete(): void {
             "top_seller" => $top ? $top["pseudo"] : null
         ];
     }
+    public function is_user_highest_bidder(int $userId): bool
+    {
+        return Bid::is_user_highest($userId, $this->id);
+    }
+
+    public function user_has_bid(int $userId): bool
+    {
+        return Bid::user_has_bid($userId, $this->id);
+    }
+
 
 
 }

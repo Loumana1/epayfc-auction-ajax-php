@@ -13,21 +13,11 @@
 
 <body class="profile-page">
 
-    <div class="header">
-
-        <?php include __DIR__ . "/partials/_header.php"; ?>
-
-    </div>
-
     <main>
 
         <?php include __DIR__ . "/partials//profile/_profile.php"; ?>
     
     </main>
-
-        <?php include __DIR__ . "/partials/_navbar.php"; ?>
-
-        <?php include __DIR__ . "/partials/_timebar.php"; ?>
     
 </body>
 

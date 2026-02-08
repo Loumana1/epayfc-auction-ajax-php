@@ -15,20 +15,12 @@
 
 <body class="manage-page">
 
-    <div class = "header" >
-     <?php include __DIR__ . "/partials/_header.php"; ?>
-    </div> 
-
     <main>
         <h1 class="page-subtitle">Manage Images for "<?= htmlspecialchars($item->get_Title()) ?>"</h1>
         
              <?php include __DIR__ . "/partials/manage_images/_manage_images.php"; ?>
 
     </main>
-
-        <?php include __DIR__ . "/partials/_navbar.php"; ?>
-
-         <?php include __DIR__ . "/partials/_timebar.php"; ?>
         
 </body>
 </html>
