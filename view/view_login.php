@@ -48,7 +48,8 @@
             <button class="btn btn-login" type="submit">Login</button>
         </form>
 
-        <a class="btn btn-guest" href="test">Continue as guest</a>
+        <a class="btn btn-guest" href="browser">Continue as guest</a>
+
 
         <p class="subscribe">
             <a href="signup">New here ? Click here to subscribe !</a>

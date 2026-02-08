@@ -6,8 +6,11 @@ body {
 }
 
 .purchases-page {
-    padding: 24px;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 96px 32px 120px; 
 }
+
 
 /* HEADER */
 
@@ -250,4 +253,72 @@ body {
 .item-footer i {
     margin-right: 6px;
 }
+
+.page-content {
+    margin-top: -12px;
+}
+.page-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+    margin-bottom: 6px;
+}
+
+.page-title-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 24px;
+    margin-bottom: 6px;
+}
+
+.badge-count {
+    display: inline-flex;
+    align-items: center;
+    background: #3b82f6;
+    color: #ffffff; 
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1;
+}
+
+.page-subtitle {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 28px;
+}
+
+.page-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 24px 0 28px;
+}
+
+.page-title {
+    margin: 0;
+    font-size: 28px;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.page-subtitle {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #9ca3af;
+}
+
+.page-right {
+    font-size: 13px;
+    color: #9ca3af;
+    margin-top: 6px;
+    white-space: nowrap;
+}
+
+
+
 

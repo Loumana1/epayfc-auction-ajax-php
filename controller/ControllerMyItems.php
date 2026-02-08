@@ -47,7 +47,11 @@ class ControllerMyItems extends Controller {
             "closed_unsold_items" => $closed_unsold,
             "sold_items" => $sold,
             "currentUser" => $user, 
-            "current_page" => "my_items" 
+            "current_page" => "my_items",
+            "header_title"      => "My items",
+            "header_subtitle"   => "Items you are currently selling",
+            "back_url"          => "browser",
+            
         ]);
     }
 }

@@ -14,7 +14,8 @@
 <div class="page">
 
     <header class="top-bar">
-        <a href="test/index" class="back">
+        <a href="item/my_items" class="back">
+            
             <i class="bi bi-arrow-left"></i>
         </a>
 

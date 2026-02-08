@@ -416,54 +416,48 @@ public static function delete(int $itemId): void {
         return (int)$q->fetchColumn() > 0;
     }
 
-
     public function validate(): array {
-        $errors = [];
+    $errors = [];
 
-        $title = trim($this->title);
-        $min = (int)Configuration::get("title_min_length", 3);
-        $max = (int)Configuration::get("title_max_length", 255);
-
-        if (strlen($title) < $min || strlen($title) > $max) {
-            $errors["title"] = "Title length must be between $min and $max characters.";
-        } else if (self::title_exists_for_owner($title, $this->owner, $this->id)) {
-            $errors["title"] = "You already have an item with this title.";
-        }
-
-        if ($this->description !== null && trim($this->description) !== "" && strlen(trim($this->description)) < 3) {
-            $errors["description"] = "Description must be at least 3 characters.";
-        }
-
-        if ($this->duration_days < 1 || $this->duration_days > 365) {
-            $errors["duration_days"] = "Duration must be between 1 and 365 days.";
-        }
-
-        $sb = $this->starting_bid;
-        $bn = $this->buy_now_price;
-
-        $sb_is_auction = ($sb !== null && $sb > 0);
-
-        if ($sb !== null && $sb < 0) {
-            $errors["starting_bid"] = "Starting bid must be greater than 0.";
-        }
-
-        if ($bn !== null && $bn <= 0) {
-            $errors["buy_now_price"] = "Buy now price must be greater than 0.";
-        }
-
-        if ($sb_is_auction) {
-            if ($bn !== null && $bn <= $sb) {
-                $errors["buy_now_price"] = "Buy now price must be greater than the starting bid.";
-            }
-        } else {
-            // vente directe : starting_bid null ou 0 => buy_now obligatoire
-            if ($bn === null) {
-                $errors["buy_now_price"] = "Sale price is required for a direct sale.";
-            }
-        }
-
-        return $errors;
+    
+    $title = trim($this->title);
+    if (strlen($title) < 3 || strlen($title) > 50) {
+        $errors["title"] = "Title length must be between 3 and 50 characters.";
+    } elseif (self::title_exists_for_owner($title, $this->owner, $this->id)) {
+        $errors["title"] = "You already have an item with this title.";
     }
+
+    
+    if ($this->description !== null && trim($this->description) !== "" && strlen(trim($this->description)) < 3) {
+        $errors["description"] = "Description must be at least 3 characters.";
+    }
+
+    
+    if ($this->duration_days < 1 || $this->duration_days > 365) {
+        $errors["duration_days"] = "Duration must be between 1 and 365 days.";
+    }
+
+    $sb = $this->starting_bid;
+    $bn = $this->buy_now_price;
+
+    
+    if ($sb !== null && $sb > 0) {
+        if ($bn !== null && $bn <= $sb) {
+            $errors["buy_now_price"] = "Buy now price must be greater than the starting bid.";
+        }
+    }
+    
+    else {
+        if ($bn === null || $bn <= 0) {
+            $errors["buy_now_price"] = "Sale price is required for a direct sale.";
+        }
+    }
+
+    return $errors;
+}
+
+
+
 
     public function persist(): array {
         $errors = $this->validate();

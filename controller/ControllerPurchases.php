@@ -46,8 +46,17 @@ class ControllerPurchases extends Controller {
         (new View("purchases"))->show([
             "items" => $items,
             "stats" => $stats,
-            "currentUser" => $user 
+            "currentUser" => $user,
+
+            "header_title"        => "My purchases",
+            "header_icon"         => "bi-cart4",
+            "header_subtitle"     => "Track the gear you've successfully secured.",
+            "back_url" => "profile",
+            "header_right_icon"   => "bi-bag-check",
+            "header_right_text"   => $stats["count"] . " purchases"
         ]);
+
+
     }
 }
 

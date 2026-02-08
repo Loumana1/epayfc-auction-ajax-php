@@ -13,8 +13,10 @@ class ControllerProfilePicture extends Controller {
         (new View("profile_picture"))->show([
             "currentUser" => $user,
             "header_title" => "Manage profile picture",
-            "header_icon" => "bi-cart-fill" 
+            "header_icon"  => "bi-person-circle",
+            "back_url"     => "profile"
         ]);
+
     }
 
     public function upload(): void {
@@ -66,12 +68,21 @@ class ControllerProfilePicture extends Controller {
         }
 
        
-        move_uploaded_file($file["tmp_name"], $path);
+        if (!move_uploaded_file($file["tmp_name"], $path)) {
+            $this->redirect("profile_picture");
+        }
+
         copy($path, $thumb_path);
 
-       
+        if ($user->get_picture_path()) {
+            @unlink($user->get_picture_path());
+            @unlink(str_replace("profile.", "profile_thumbnail.", $user->get_picture_path()));
+        }
+
         $user->set_picture_path($path);
         $user->save_picture();
+
+        $_SESSION["user"] = User::get_User_By_Id($user->get_Id());
 
         $this->redirect("profile_picture");
     }

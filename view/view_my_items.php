@@ -1,3 +1,9 @@
+<?php
+require_once "model/ItemPicture.php";
+?>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,7 +11,7 @@
     <title>My items</title>
     <base href="<?= $web_root ?>">
     <link rel="stylesheet" href="css/my_items.css">
-    <link rel="stylesheet" href="./css/styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
@@ -13,9 +19,8 @@
 
 <div class="my-items-page">
 
-    <header class="page-header">
-        <h1>My items 🛒</h1>
-    </header>
+    <?php require_once "view/partials/_header.php"; ?>
+
 
     <?php
     function euro(float $v): string {
@@ -42,74 +47,19 @@
 
             <div class="items-grid">
                 <?php foreach ($active_items as $item): ?>
-
                     <?php
                     $pic = ItemPicture::get_main_picture($item->get_id());
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
-
-                    <div class="item-card">
+                    <div class="item-card"
+                         onclick="window.location='open_item/index/<?= $item->get_id() ?>'">
 
                         <div class="image-wrapper">
                             <img src="<?= $img ?>" alt="">
-
                             <span class="images-count">
                                 <i class="bi bi-images"></i>
                                 <?= count($item->get_pictures()) ?> images
                             </span>
-
-                            <?php if ($item->get_is_auction()): ?>
-                                <span class="badge auction">Auction</span>
-                            <?php endif; ?>
-
-                            <?php if ($item->get_has_buy_now_price()): ?>
-                                <span class="badge buy-now">Buy Now</span>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="item-body">
-                            <h3><?= $item->get_title() ?></h3>
-                            <p class="seller">by <?= $item->get_seller()->get_pseudo() ?></p>
-
-                            <div class="price">
-                                <?php if ($item->get_max_bid_time()): ?>
-                                    <span class="main"><?= euro($item->get_max_bid_time()) ?></span>
-                                    <span class="sub">Current bid</span>
-                                <?php else: ?>
-                                    <span class="main"><?= euro($item->get_buy_now_price() ?? $item->get_starting_bid()) ?></span>
-                                <?php endif; ?>
-                            </div>
-
-                            <div class="time">
-                                <i class="bi bi-clock"></i>
-                                <?= time_left($item->get_end_at()) ?>
-                            </div>
-                        </div>
-
-                    </div>
-
-                <?php endforeach; ?>
-            </div>
-        </section>
-    <?php endif; ?>
-
-    <?php if (!empty($closed_unsold_items)): ?>
-        <section class="items-section">
-            <h2>Closed · Unsold Items</h2>
-
-            <div class="items-grid">
-                <?php foreach ($closed_unsold_items as $item): ?>
-
-                    <?php
-                    $pic = ItemPicture::get_main_picture($item->get_id());
-                    $img = $pic ? $pic->picture_path : "assets/no-image.png";
-                    ?>
-
-                    <div class="item-card closed">
-
-                        <div class="image-wrapper">
-                            <img src="<?= $img ?>" alt="">
-                            <span class="badge closed">Closed</span>
                         </div>
 
                         <div class="item-body">
@@ -117,41 +67,69 @@
 
                             <div class="price">
                                 <span class="main">
-                                    <?= euro($item->get_starting_bid()) ?>
+                                    <?= euro($item->get_max_bid_time() ?? $item->get_starting_bid()) ?>
                                 </span>
-                                <span class="sub">No bids</span>
                             </div>
+
+                            <div class="time">
+                                <i class="bi bi-clock"></i>
+                                <?= time_left($item->get_end_at()) ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    <?php endif; ?>
+
+    <!-- CLOSED UNSOLD -->
+    <?php if (!empty($closed_unsold_items)): ?>
+        <section class="items-section">
+            <h2>Closed · Unsold Items</h2>
+
+            <div class="items-grid">
+                <?php foreach ($closed_unsold_items as $item): ?>
+                    <?php
+                    $pic = ItemPicture::get_main_picture($item->get_id());
+                    $img = $pic ? $pic->picture_path : "assets/no-image.png";
+                    ?>
+                    <div class="item-card closed"
+                         onclick="window.location='open_item/index/<?= $item->get_id() ?>'">
+
+                        <div class="image-wrapper">
+                            <img src="<?= $img ?>" alt="">
+                        </div>
+
+                        <div class="item-body">
+                            <h3><?= $item->get_title() ?></h3>
 
                             <div class="time ended">
                                 <i class="bi bi-x-circle"></i>
                                 Not sold
                             </div>
                         </div>
-
                     </div>
-
                 <?php endforeach; ?>
             </div>
         </section>
     <?php endif; ?>
 
+    <!-- SOLD ITEMS -->
     <?php if (!empty($sold_items)): ?>
         <section class="items-section">
             <h2>Sold Items</h2>
 
             <div class="items-grid">
                 <?php foreach ($sold_items as $item): ?>
-
                     <?php
                     $pic = ItemPicture::get_main_picture($item->get_id());
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
-
-                    <div class="item-card sold">
+                    <div class="item-card sold"
+                         onclick="window.location='open_item/index/<?= $item->get_id() ?>'">
 
                         <div class="image-wrapper">
                             <img src="<?= $img ?>" alt="">
-                            <span class="badge sold">Sold</span>
                         </div>
 
                         <div class="item-body">
@@ -169,21 +147,16 @@
                                 Sold
                             </div>
                         </div>
-
                     </div>
-
                 <?php endforeach; ?>
             </div>
         </section>
     <?php endif; ?>
 
-
-
 </div>
 
 <?php include __DIR__ . "/partials/_navbar.php"; ?>
 <?php include __DIR__ . "/partials/_timebar.php"; ?>
-
 
 </body>
 </html>

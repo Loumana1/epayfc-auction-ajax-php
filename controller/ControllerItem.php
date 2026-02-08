@@ -67,7 +67,8 @@ class ControllerItem extends Controller {
                 return;
             }
 
-            $this->redirect("item", "open_item", (string)$new_item->get_id());
+            $this->redirect("item", "my_items");
+
         }
 
         $view_data = $this->get_add_edit_view_data($item, $item_id);
@@ -92,6 +93,12 @@ class ControllerItem extends Controller {
             $this->redirect();
         }
 
+       
+        if ($item->has_bids_time()) {
+            $this->redirect("item", "open_item", (string)$item_id);
+        }
+
+
         return $item;
     }
 
@@ -111,6 +118,7 @@ class ControllerItem extends Controller {
         $sale_price_raw = trim($_POST["sale_price"] ?? "");
         $is_direct_sale = ($sale_price_raw !== "");
 
+
         if ($is_direct_sale) {
             $starting_bid = 0.0;
             $buy_now_price = (float)$sale_price_raw;
@@ -118,6 +126,7 @@ class ControllerItem extends Controller {
             $starting_bid = $starting_bid_raw !== "" ? (float)$starting_bid_raw : null;
             $buy_now_price = $buy_now_raw !== "" ? (float)$buy_now_raw : null;
         }
+
 
         $created_at = $existing_item === null
             ? AppTime::get_current_datetime()
