@@ -13,8 +13,10 @@ class ControllerProfilePicture extends Controller {
         (new View("profile_picture"))->show([
             "currentUser" => $user,
             "header_title" => "Manage profile picture",
-            "header_icon" => "bi-cart-fill" 
+            "header_icon"  => "bi-person-circle",
+            "back_url"     => "profile"
         ]);
+
     }
 
     public function upload(): void {
@@ -27,9 +29,12 @@ class ControllerProfilePicture extends Controller {
         $file = $_FILES["picture"];
 
         
-        if ($file["size"] > 2 * 1024 * 1024) {
+        $max_size = (int) Configuration::get("max_profile_picture_size");
+
+        if ($file["size"] > $max_size) {
             $this->redirect("profile_picture");
         }
+
 
         
         $allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
@@ -48,13 +53,13 @@ class ControllerProfilePicture extends Controller {
         };
 
        
-        $userDir = "uploads/users/" . $user->get_id();
-        if (!is_dir($userDir)) {
-            mkdir($userDir, 0777, true);
+        $user_dir = "uploads/users/" . $user->get_id();
+        if (!is_dir($user_dir)) {
+            mkdir($user_dir, 0777, true);
         }
 
-        $path = "$userDir/profile.$ext";
-        $thumbPath = "$userDir/profile_thumbnail.$ext";
+        $path = "$user_dir/profile.$ext";
+        $thumb_path = "$user_dir/profile_thumbnail.$ext";
 
       
         if ($user->get_picture_path()) {
@@ -63,12 +68,21 @@ class ControllerProfilePicture extends Controller {
         }
 
        
-        move_uploaded_file($file["tmp_name"], $path);
-        copy($path, $thumbPath);
+        if (!move_uploaded_file($file["tmp_name"], $path)) {
+            $this->redirect("profile_picture");
+        }
 
-       
+        copy($path, $thumb_path);
+
+        if ($user->get_picture_path()) {
+            @unlink($user->get_picture_path());
+            @unlink(str_replace("profile.", "profile_thumbnail.", $user->get_picture_path()));
+        }
+
         $user->set_picture_path($path);
         $user->save_picture();
+
+        $_SESSION["user"] = User::get_User_By_Id($user->get_Id());
 
         $this->redirect("profile_picture");
     }

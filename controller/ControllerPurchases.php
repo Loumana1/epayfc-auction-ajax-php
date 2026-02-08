@@ -12,11 +12,11 @@ class ControllerPurchases extends Controller {
     public function index(): void {
 
         $user = $this->get_user_or_redirect();
-        $userId = $user->get_id();
+        $userid = $user->get_id();
         $now = AppTime::get_current_datetime();
 
         
-        $items = Item::get_purchased_items_by_user($userId, $now);
+        $items = Item::get_purchased_items_by_user($userid, $now);
 
         
         $total = 0;
@@ -34,20 +34,29 @@ class ControllerPurchases extends Controller {
         }
 
         arsort($sellers);
-        $topSeller = array_key_first($sellers);
+        $top_seller = array_key_first($sellers);
 
         $stats = [
             "count" => $count,
             "total" => $total,
             "average" => $count > 0 ? $total / $count : 0,
-            "top_seller" => $topSeller
+            "top_seller" => $top_seller
         ];
 
         (new View("purchases"))->show([
             "items" => $items,
             "stats" => $stats,
-            "currentUser" => $user 
+            "currentUser" => $user,
+
+            "header_title"        => "My purchases",
+            "header_icon"         => "bi-cart4",
+            "header_subtitle"     => "Track the gear you've successfully secured.",
+            "back_url" => "profile",
+            "header_right_icon"   => "bi-bag-check",
+            "header_right_text"   => $stats["count"] . " purchases"
         ]);
+
+
     }
 }
 
