@@ -253,11 +253,7 @@ public function is_open(): bool {
         return !empty($bids) ? $bids[0]['pseudo'] : null;
     }
 
-    //intance 
-    public function is_user_highest_bidder(int $user_id): bool
-        {
-            return Bid::is_user_highest($user_id, $this->id);
-        }
+
     
     public function get_min_bid_amount(): float {
         $maxBid = $this->get_max_bid_time();
