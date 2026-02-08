@@ -13,7 +13,7 @@
 
 <body class="edit-profile-page">
 
-        <button type="submit" form="edit-form" class="save-btn"><i class="bi bi-save me-1"></i> Save</button>
+        <button type="submit" form="edit-form" class="save-btn"><i class="bi bi-save me-1"></i></button>
 
     <main>
             <?php include __DIR__ . "/partials/edit_profile/_edit_profile.php"; ?>

@@ -19,7 +19,7 @@ class ControllerProfile extends Controller
 
         (new View("profile"))->show([
             'current_user_id' => $current_user_id,
-            'currentUser' => $current_user, // Changé ici pour corriger l'erreur de la vue
+            'current_user' => $current_user, // Utilise snake_case ici pour la vue
             'header_title' => 'Profile',
             'header_icon' => 'bi-cart-fill'
         ]);
