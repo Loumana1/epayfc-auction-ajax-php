@@ -12,7 +12,9 @@ class ControllerOpenItem extends Controller {
     
     public function index(): void {
 
- $item = $this->load_item_or_fail();
+        $item = $this->load_item_or_fail();
+
+         if ($item === null) return;
         $context = $this->get_user_context($item);
         
         if (!$this->check_access($item, $context)) {
@@ -25,20 +27,22 @@ class ControllerOpenItem extends Controller {
     
     // ============ VALIDATION ============
     
-    private function load_item_or_fail(): Item {
-        $item_id = $_GET['param1'] ?? null;
-        
-        if (!$item_id || !ctype_digit($item_id)) {
-            throw new Exception("Invalid item ID: '$item_id'");
-        }
-        
-        $item = Item::get_by_id((int)$item_id);
-        if ($item === false) {
-            throw new Exception("Item #$item_id not found.");
-        }
-        
-        return $item;
+private function load_item_or_fail(): ?Item {
+    $item_id = $_GET['param1'] ?? null;
+    
+    if (!$item_id || !ctype_digit($item_id)) {
+        $this->show_error("Invalid input : '$item_id'", "Invalid Request");
+        return null;
     }
+    
+    $item = Item::get_by_id((int)$item_id);
+    if ($item === false) {
+        $this->show_error("Item #$item_id not found.", "Item Not Found");
+        return null;
+    }
+    
+    return $item;
+}
     
     // ============ CONTEXTE UTILISATEUR ============
     
@@ -76,6 +80,7 @@ class ControllerOpenItem extends Controller {
             (new View("error"))->show([
                 'error' => "This item is only available to the owner or the winner.",
                 'header_title' => 'Access denied',
+                    'page_css' => ['error.css'],
             ]);
             return false;
         }

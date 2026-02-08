@@ -71,4 +71,15 @@ abstract class Controller {
     //tout controlleur doit posséder une méthode index, c'est son action
     //par défaut
     public abstract function index(): void;
+
+    
+        // Affiche une page d'erreur stylisée avec CSS
+    protected function show_error(string $message, string $title = 'Error'): void {
+    require_once 'View.php';
+    (new View("error"))->show([
+        'error' => $message,
+        'header_title' => $title,
+        'page_css' => ['error.css'],
+    ]);
+}
 }
