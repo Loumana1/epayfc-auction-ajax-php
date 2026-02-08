@@ -6,6 +6,8 @@ abstract class Model {
 
     private static ?PDO $pdo = null;
 
+
+    //
     //se connecte à la DB et renvoie son instance PDO
     //si on est déjà connecté, renvoie l'instance existante
     private static function connect(): PDO {

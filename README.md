@@ -8,6 +8,7 @@ En développement, donnez les permissions d'écriture aux dossiers uploads et da
 * `sudo chmod -R 777 database`
 
 ## Notes de version itération 1
+Le site web est complet et fcontionel, nous avons eu quelques soucis avec le fait de d'utiliser le css de maniere utniforme. 
 
 ### Liste des utilisateurs et mots de passes
 

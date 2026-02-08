@@ -1,0 +1,27 @@
+<main class="delete-confirm-container">
+    <div class="delete-confirm-box">
+
+        <div class="icon-delete-container">
+            <i class="bi bi-trash"></i>
+        </div>
+
+        <h2>Are you sure?</h2>
+
+        <hr class="divider-line">
+
+        <p>Do you really want to delete item
+            <strong>"<?= $item->get_Title() ?>"</strong>
+            by <strong><?= $seller ? $seller->get_FullName() : 'unknown' ?></strong>
+            and all of its dependencies?
+        </p>
+        <p>This process cannot be undone.</p>
+
+        <div class="action-buttons">
+            <a href="open_item/index/<?= $item->get_Id() ?>" class="btn btn-cancel">Cancel</a>
+            <form method="post" action="delete_confirm/confirm" style="display: inline;">
+                <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+                <button type="submit" class="btn btn-delete">Delete</button>
+            </form>
+        </div>
+    </div>
+</main>
