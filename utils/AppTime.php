@@ -51,4 +51,5 @@ class AppTime {
         $dt->modify($offset . " seconds");
         return $dt->format("Y-m-d H:i:s");
     }
+    public static function get_current_timestamp(): int { return time() + self::get_offset(); }
 }
