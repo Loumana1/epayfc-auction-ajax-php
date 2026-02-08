@@ -8,22 +8,22 @@ class ControllerEditProfile extends Controller
 {
     public function index(): void
     {
-        $currentUser = $this->get_user_or_false();
-        $currentUserId = $currentUser ? $currentUser->get_Id() : null;
+        $current_user = $this->get_user_or_false();
+        $current_user_id = $current_user ? $current_user->get_Id() : null;
 
-        if (!$currentUser) {
+        if (!$current_user) {
             $this->redirect("profile");
             return;
         }
 
         (new View("edit_profile"))->show([
-    'current_user_id' => $currentUserId,
-    'currentUser' => $currentUser,
+    'current_user_id' => $current_user_id,
+    'currentUser' => $current_user,
     'user' => [                         
-        'full_name' => $currentUser->full_name,
-        'pseudo' => $currentUser->pseudo,
-        'email' => $currentUser->get_email(),
-        'iban' => $currentUser->iban ?? ''
+        'full_name' => $current_user->full_name,
+        'pseudo' => $current_user->pseudo,
+        'email' => $current_user->get_email(),
+        'iban' => $current_user->iban ?? ''
     ],
     'header_title' => 'Edit Profile',
     'header_icon' => 'bi-person-fill',
@@ -34,14 +34,14 @@ class ControllerEditProfile extends Controller
 
     public function save(): void
     {
-        $currentUser = $this->get_user_or_false();
+        $current_user = $this->get_user_or_false();
 
-    if (!$currentUser) {
+    if (!$current_user) {
         $this->redirect("profile");
         return;
     }
 
-    $userId = $currentUser->get_Id();
+    $userId = $current_user->get_Id();
 
         $full_name = $_POST['full_name'] ?? '';
         $pseudo = $_POST['pseudo'] ?? '';
@@ -105,12 +105,12 @@ class ModelEditProfile extends \Model
         ];
     }
 
-    public static function update_user(int $userId, string $full_name, string $pseudo, string $email, string $iban): bool
+    public static function update_user(int $user_ud, string $full_name, string $pseudo, string $email, string $iban): bool
     {
         $query = self::execute(
             "UPDATE users SET full_name = :full_name, pseudo = :pseudo, email = :email, iban = :iban WHERE id = :id",
             [
-                'id' => $userId,
+                'id' => $user_ud,
                 'full_name' => $full_name,
                 'pseudo' => $pseudo,
                 'email' => $email,
