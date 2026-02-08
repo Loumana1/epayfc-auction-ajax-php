@@ -8,17 +8,17 @@ class ControllerProfile extends Controller
 {
     public function index(): void
     {
-        $currentUser = $this->get_user_or_false();
-        $currentUserId = $currentUser ? $currentUser->get_Id() : null;
+        $current_user = $this->get_user_or_false();
+        $current_user_id = $current_user ? $current_user->get_Id() : null;
 
-        if (!$currentUser) {
+        if (!$current_user) {
             $this->redirect("browser");
             return;
         }
 
         (new View("profile"))->show([
-            'current_user_id' => $currentUserId,
-            'currentUser' => $currentUser,
+            'current_user_id' => $current_user_id,
+            'currentUser' => $current_user,
             'header_title' => 'Profile',
             'header_icon' => 'bi-cart-fill'
         ]);

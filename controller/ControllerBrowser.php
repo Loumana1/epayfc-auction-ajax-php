@@ -11,12 +11,12 @@ require_once 'model/User.php';
 class ControllerBrowser extends Controller {
 
     public function index(): void {
-        $currentUser = $this->get_user_or_false();
-        $currentUserId = $currentUser ? $currentUser->get_Id() : -1;
+        $current_user = $this->get_user_or_false();
+        $current_user_id = $current_user ? $current_user->get_Id() : -1;
         $now = AppTime::get_current_datetime();
 
-        $participating_items_raw = Item::get_Item_Participating($currentUserId,$now);
-        $available_items_raw = Item::get_Item_Available($currentUserId, $now);
+        $participating_items_raw = Item::get_Item_Participating($current_user_id,$now);
+        $available_items_raw = Item::get_Item_Available($current_user_id, $now);
     
 
         $participating_items = [];
@@ -25,17 +25,17 @@ class ControllerBrowser extends Controller {
             if (!$item instanceof Item)
                 continue;
 
-            $mainPicture = ItemPicture::get_main_picture($item->get_Id());
+            $main_picture = ItemPicture::get_main_picture($item->get_Id());
 
             // Récupérer le pseudo du vendeur
-            $sellerPseudo = Item::get_User_Pseudo_By_Id($item->get_owner());
+            $seller_pseudo = Item::get_User_Pseudo_By_Id($item->get_owner());
 
             $participating_items[] = [
                 'id' => $item->get_Id(),
                 'title' => $item->get_Title(),
-                'pic_path' => $mainPicture?->picture_path,
+                'pic_path' => $main_picture?->picture_path,
                 'picture_count' => 0, // Set to 0 to avoid view errors
-                'seller_pseudo' => $sellerPseudo,
+                'seller_pseudo' => $seller_pseudo,
                 'buy_now_price' => $item->get_Buy_Now_Price(),
                 'starting_bid' => $item->get_Starting_Bid(),
                 'max_bid' => $item->get_max_bid_time(),
@@ -43,8 +43,8 @@ class ControllerBrowser extends Controller {
                 'time_remaining' => $this->calculate_time_remaining($item->get_End_At()),
                 'is_auction' => $item->get_Is_Auction(),
                 'has_buy_now' => $item->get_Has_buy_now_price(),
-                'is_highest_bidder' => Item::is_Highest_Bidder($currentUserId, $item->get_Id()),
-                'has_bid' => Item::has_Bid_On_Item($currentUserId, $item->get_Id()),
+                'is_highest_bidder' => Item::is_Highest_Bidder($current_user_id, $item->get_Id()),
+                'has_bid' => Item::has_Bid_On_Item($current_user_id, $item->get_Id()),
                 'is_owner' => $item->get_owner(),
                 'description' => $item->get_Description()
             ];
@@ -85,8 +85,8 @@ class ControllerBrowser extends Controller {
         (new View("browser"))->show([
             'participating_items' => $participating_items,
             'available_items' => $available_items,
-            'current_user_id' => $currentUserId,
-            'currentUser' => $currentUser,
+            'current_user_id' => $current_user_id,
+            'currentUser' => $current_user,
             'header_title' => 'Browser',
             'header_icon' => 'bi-cart-fill'
         ]);
