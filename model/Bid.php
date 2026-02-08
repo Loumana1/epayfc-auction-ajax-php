@@ -36,7 +36,6 @@ class Bid extends Model {
         require_once "model/Item.php";
         $errors = [];
         $now = AppTime::get_current_datetime();
-$now_date_time = new DateTime($now);
         
     
         $item = Item::get_by_id($this->item_id);
@@ -91,7 +90,7 @@ $now_date_time = new DateTime($now);
     }
     
  
-    public static function get_by_item(int $itemId): array {
+    public static function get_by_item(int $item_id): array {
         $now = AppTime::get_current_datetime();
         $query = self::execute(
             "SELECT b.*, u.pseudo, u.picture_path
@@ -99,31 +98,31 @@ $now_date_time = new DateTime($now);
              JOIN users u ON b.owner = u.id
              WHERE b.item = :item_id AND b.created_at <= :now
              ORDER BY b.amount DESC, b.created_at DESC",
-            ['item_id' => $itemId, 'now' => $now]
+            ['item_id' => $item_id, 'now' => $now]
         );
         return $query->fetchAll();
     }
     
-    public static function user_has_bid(int $userId, int $itemId): bool {
+    public static function user_has_bid(int $user_id, int $item_id): bool {
         $now = AppTime::get_current_datetime();
         $query = self::execute(
             "SELECT COUNT(*) FROM bids
              WHERE owner = :user_id AND item = :item_id AND created_at <= :now",
-            ['user_id' => $userId, 'item_id' => $itemId, 'now' => $now]
+            ['user_id' => $user_id, 'item_id' => $item_id, 'now' => $now]
         );
         return $query->fetchColumn() > 0;
     }
     
-    public static function is_user_highest(int $userId, int $itemId): bool {
+    public static function is_user_highest(int $user_id, int $item_id): bool {
         $now = AppTime::get_current_datetime();
         $query = self::execute(
             "SELECT owner FROM bids
              WHERE item = :item_id AND created_at <= :now
              ORDER BY amount DESC, created_at DESC LIMIT 1",
-            ['item_id' => $itemId, 'now' => $now]
+            ['item_id' => $item_id, 'now' => $now]
         );
         $highestId = $query->fetchColumn();
-        return $highestId !== false && (int)$highestId === $userId;
+        return $highestId !== false && (int)$highestId === $user_id;
     }
 
      public static function exists_recent_duplicate(

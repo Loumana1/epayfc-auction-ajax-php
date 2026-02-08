@@ -75,8 +75,8 @@ class User extends Model {
     }
 
     // choper info de l'utilisateur courant
-    public static function get_User_By_Id(int $userId): User|false {
-    $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
+    public static function get_User_By_Id(int $user_id): User|false {
+    $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $user_id]);
     $data = $query->fetch();
     if ($data === false) { 
         return false;
@@ -142,7 +142,7 @@ public function has_Picture(): bool {
     return $errors;
     }
 
-//=========================CHANGE PASSWORD=================
+        //=========================CHANGE PASSWORD=================
     public static function validate_passwords(string $password, string $password_confirm): array {
         $errors = self::validate_password($password);
         if ($password !== $password_confirm) {
@@ -162,63 +162,68 @@ public function get_hashed_password(): ?string {
     return $data ? $data['password'] : null;
 }
 
-public static function update_password(int $userId, string $hashedPassword): void {
-    self::execute(
-        "UPDATE users SET password = :password WHERE id = :id",
-        ['password' => $hashedPassword, 'id' => $userId]
-    );
-}
-
-
-public static function validate_change_password(
-    self $user,
-    ?string $current_password,
-    ?string $new_password,
-    ?string $confirm_password ): array {
-    
-    $field_errors = [
-        'current_password' => [],
-        'new_password' => [],
-        'confirm_password' => []
-    ];
-
-    $field_errors['current_password'] = self::validate_current_password($user, $current_password);
-
-    if ($new_password && $confirm_password) {
-        self::categorize_password_errors(
-            self::validate_passwords($new_password, $confirm_password),
-            $field_errors
+    public static function update_password(int $user_id, string $hashed_password): void {
+        self::execute(
+            "UPDATE users SET password = :password WHERE id = :id",
+            ['password' => $hashed_password, 'id' => $user_id]
         );
-    } else {
-        if (!$new_password) {
-            $field_errors['new_password'][] = "Please enter a new password.";
-        }
-        if (!$confirm_password) {
-            $field_errors['confirm_password'][] = "Please confirm your new password.";
-        }
+    }
+    public function set_password(string $new_password): void {
+        self::execute(
+            "UPDATE users SET password = :password WHERE id = :id",
+            ['password' => password_hash($new_password, PASSWORD_DEFAULT), 'id' => $this->id]
+        );
     }
 
-    return $field_errors;
-}
 
-private static function validate_current_password(self $user, ?string $current_password): array {
-    $errors = [];
-    $hashed_password = $user->get_hashed_password();
-    if (!$current_password || !$hashed_password || !password_verify($current_password, $hashed_password)) {
-        $errors[] = "Current password is incorrect.";
-    }
-    return $errors;
-}
+    public function validate_new_password(
+        ?string $current,
+        ?string $new,
+        ?string $confirm
+    ): array {
+        $field_errors = [
+            'current_password' => [],
+            'new_password' => [],
+            'confirm_password' => []
+        ];
 
-private static function categorize_password_errors(array $validation_errors, array &$field_errors): void {
-    foreach ($validation_errors as $error) {
-        if (strpos($error, 'twice the same') !== false) {
-            $field_errors['confirm_password'][] = $error;
+        $field_errors['current_password'] = self::validate_current_password($this, $current);
+
+        if ($new !== null && $new !== '' && $confirm !== null && $confirm !== '') {
+            self::categorize_password_errors(
+                self::validate_passwords($new, $confirm),
+                $field_errors
+            );
         } else {
-            $field_errors['new_password'][] = $error;
+            if ($new === null || $new === '') {
+                $field_errors['new_password'][] = "Please enter a new password.";
+            }
+            if ($confirm === null || $confirm === '') {
+                $field_errors['confirm_password'][] = "Please confirm your new password.";
+            }
+        }
+
+        return $field_errors;
+    }
+
+    private static function validate_current_password(self $user, ?string $current_password): array {
+        $errors = [];
+        $hashed_password = $user->get_hashed_password();
+        if (!$current_password || !$hashed_password || !password_verify($current_password, $hashed_password)) {
+            $errors[] = "Current password is incorrect.";
+        }
+        return $errors;
+    }
+
+    private static function categorize_password_errors(array $validation_errors, array &$field_errors): void {
+        foreach ($validation_errors as $error) {
+            if (strpos($error, 'twice the same') !== false) {
+                $field_errors['confirm_password'][] = $error;
+            } else {
+                $field_errors['new_password'][] = $error;
+            }
         }
     }
-}
 // ============ SIGN UP METHODS ============
 
     public static function email_exists(string $email): bool

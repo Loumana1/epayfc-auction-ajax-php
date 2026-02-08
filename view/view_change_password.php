@@ -8,6 +8,7 @@
                 <div class="password-section-header">
                     <h3 class="password-section-title">Current Password</h3>
                 </div>
+                
                 <div class="password-section-content">
                     <div class="form-group">
                         <label for="current_password">Current Password <span class="required">*</span></label>

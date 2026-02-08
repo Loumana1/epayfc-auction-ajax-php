@@ -19,7 +19,7 @@
             <?= date('d/m/Y H:i:s', strtotime($item->get_Created_At())) ?>
              </strong>
         </p>
-        <p<?= !empty($auctionEnded) ? ' class="ended"' : '' ?>>Ends:<strong> 
+        <p<?= !empty($auction_ended) ? ' class="ended"' : '' ?>>Ends:<strong> 
             <?= $item->get_End_At() ? date('d/m/Y H:i:s', strtotime($item->get_End_At())) : 'N/A' ?>
         </strong></p>
     </div>
