@@ -4,6 +4,7 @@ require_once "utils/AppTime.php";
 require_once "model/Bid.php";
 require_once "model/User.php";
 require_once "framework/Configuration.php";
+require_once "model/ItemPicture.php";
 
 
 class Item extends Model{
@@ -269,34 +270,43 @@ public function is_open(): bool {
 
 
 
-    public static function delete_pictures(int $itemId): void {
+    public static function delete_pictures_by_id(int $itemId): void {
 
-    //supp dans bd 
-    $query = self::execute(
-        "SELECT picture_path FROM item_pictures WHERE item = :id",
-        ['id' => $itemId]
-    );
-    $pictures = $query->fetchAll();
-    
-    foreach ($pictures as $pic) {
-        $path = $pic['picture_path'];
-        $thumbPath = str_replace('.jpg', '_thumbnail.jpg', $path);
-        if (file_exists($path)) unlink($path);
-        if (file_exists($thumbPath)) unlink($thumbPath);
-    }
-    //supp dans les ficheirb
-    
-    self::execute(
-        "DELETE FROM item_pictures WHERE item = :id",
-        ['id' => $itemId]
-    );
+        //supp dans bd 
+        $query = self::execute(
+            "SELECT picture_path FROM item_pictures WHERE item = :id",
+            ['id' => $itemId]
+        );
+        $pictures = $query->fetchAll();
+        
+        foreach ($pictures as $pic) {
+            $path = $pic['picture_path'];
+            $thumbPath = str_replace('.jpg', '_thumbnail.jpg', $path);
+            if (file_exists($path)) unlink($path);
+            if (file_exists($thumbPath)) unlink($thumbPath);
+        }
+        //supp dans les ficheirb
+        
+        self::execute(
+            "DELETE FROM item_pictures WHERE item = :id",
+            ['id' => $itemId]
+        );
 }
 
-public static function delete(int $itemId): void {
+public function delete_pictures():void  {
+    self::delete_pictures_by_id($this->id);
+}
+
+
+public static function delete_by_id(int $itemId): void {
     self::execute(
         "DELETE FROM items WHERE id = :id",
         ['id' => $itemId]
     );
+}
+
+public function delete(): void {
+    self::delete_by_id($this->id);
 }
     public static function get_Item_Participating(int $userId, string $now): array {
         $query = "SELECT * FROM v_items_status 
@@ -316,8 +326,11 @@ public static function delete(int $itemId): void {
         return self::queryToItems($query, ['user_id' => $userId, 'now' => $now]);
     }
 
-    public static function get_main_picture(int $itemId): ?ItemPicture {
-        $query = self::execute("SELECT * FROM item_pictures WHERE item = :id AND priority = 1", ["id" => $itemId]);
+    public function get_main_picture(): ?ItemPicture {
+        $query = self::execute(
+            "SELECT * FROM item_pictures WHERE item = :id AND priority = 1",
+            ["id" => $this->id]
+        );
         $data = $query->fetch();
         if ($data) {
             return new ItemPicture($data['item'], $data['picture_path'], $data['priority']);

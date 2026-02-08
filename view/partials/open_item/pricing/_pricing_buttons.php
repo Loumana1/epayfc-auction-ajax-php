@@ -28,7 +28,7 @@ if (!$show_buttons) return;
     <?php 
     $is_direct_sale_only = $item->get_Is_Direct_Sale() && !$item->get_Is_Auction();
     $btn_class = $is_direct_sale_only ? 'btn-place-bid' : 'btn-buy-now';
-    $btn_text = $is_direct_sale_only ? 'BUY NOW' : 'Buy Now at € ' . number_format($item->get_Buy_Now_Price(), 2, ',', '.');
+    $btn_text = $is_direct_sale_only ? 'BUY NOW' : 'Buy Now at ' . format_euro($item->get_Buy_Now_Price());
     ?>
     
     <button type="submit" class="<?= $btn_class ?>" <?= $buttons_disabled ? 'disabled' : '' ?>>

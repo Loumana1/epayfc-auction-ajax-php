@@ -13,6 +13,7 @@ class ControllerLogin extends Controller {
         }
 
         (new View("login"))->show ([
+            "no_header_footer" => true, 
             "mail" => "",
             "errors" => []
         ]);
@@ -25,6 +26,7 @@ class ControllerLogin extends Controller {
 
         if ($mail === "" || $password === "") {
             (new View("login"))->show([
+                "no_header_footer" => true,
                 "mail" => $mail,
                 "errors" => ["Mail and Password are required."]
             ]);
@@ -34,6 +36,7 @@ class ControllerLogin extends Controller {
         $user = User::get_user_by_mail($mail);
         if (!$user) {
             (new View("login"))->show([
+                "no_header_footer" => true,
                 "mail" => $mail,
                 "errors" => ["Unknown user."]
             ]);
@@ -42,6 +45,7 @@ class ControllerLogin extends Controller {
 
         if (!$user->check_password($password)) {
             (new View("login"))->show([
+                "no_header_footer" => true,
                 "mail" => $mail,
                 "errors" => ["Incorrect Pasword."]
             ]);

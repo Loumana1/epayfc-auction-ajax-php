@@ -24,7 +24,7 @@ class ControllerUser extends Controller {
             'confirm_password' => []
         ];
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (isset($_POST['current_password'])) {
             $current_password = $_POST['current_password'] ?? null;
             $new_password = $_POST['new_password'] ?? null;
             $confirm_password = $_POST['confirm_password'] ?? null;
@@ -49,8 +49,11 @@ class ControllerUser extends Controller {
             'header_right_icon' => 'bi-floppy',
             'header_right_text' => 'Save',
             'header_right_form_id' => 'change-password-form',
-            'field_errors' => $field_errors,
-            'current_user' => $user
+            'field_errors_current_password' => $field_errors['current_password'] ?? [],
+            'field_errors_new_password'     => $field_errors['new_password'] ?? [],
+            'field_errors_confirm_password' => $field_errors['confirm_password'] ?? [],
+            'current_user' => $user,
+            'page_css' => ['change_password.css']
         ]);
     }
     

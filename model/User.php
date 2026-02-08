@@ -74,23 +74,23 @@ class User extends Model {
         return $this->id;
     }
 
-           // choper info de l'utilisateur courant
-           public static function get_User_By_Id(int $userId): User|false {
-            $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
-            $data = $query->fetch();
-            if ($data === false) { 
-                return false;
-            } else {
-                return new User($data["id"],
-                 $data["full_name"],
-                  $data["pseudo"],
-                   $data["email"],
-                    $data["role"], 
-                    $data["picture_path"], 
-                    $data["iban"],
-                    $data["password"] ?? null);
-            }
-        }
+    // choper info de l'utilisateur courant
+    public static function get_User_By_Id(int $userId): User|false {
+    $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
+    $data = $query->fetch();
+    if ($data === false) { 
+        return false;
+    } else {
+        return new User($data["id"],
+            $data["full_name"],
+            $data["pseudo"],
+            $data["email"],
+            $data["role"], 
+            $data["picture_path"], 
+            $data["iban"],
+            $data["password"] ?? null);
+    }
+}
 
     public function get_Pseudo(): string {
         return $this->pseudo;
@@ -111,11 +111,6 @@ public function has_Picture(): bool {
     return !empty($this->picture_path);
 }
 
-public function get_user_or_false () {
-
-    return null;
-
-}
 
 
     private static function validate_password(string $password): array {
@@ -147,7 +142,7 @@ public function get_user_or_false () {
     return $errors;
     }
 
-
+//=========================CHANGE PASSWORD=================
     public static function validate_passwords(string $password, string $password_confirm): array {
         $errors = self::validate_password($password);
         if ($password !== $password_confirm) {
@@ -175,41 +170,54 @@ public static function update_password(int $userId, string $hashedPassword): voi
 }
 
 
-public static function validate_change_password(self $user, ?string $currentPassword, ?string $newPassword, ?string $confirmPassword): array {
-    $fieldErrors = [
+public static function validate_change_password(
+    self $user,
+    ?string $current_password,
+    ?string $new_password,
+    ?string $confirm_password ): array {
+    
+    $field_errors = [
         'current_password' => [],
         'new_password' => [],
         'confirm_password' => []
     ];
 
-    $hashedPassword = $user->get_hashed_password();
-    if (!$currentPassword || !$hashedPassword || !password_verify($currentPassword, $hashedPassword)) {
-        $fieldErrors['current_password'][] = "Current password is incorrect.";
-    }
+    $field_errors['current_password'] = self::validate_current_password($user, $current_password);
 
-    if ($newPassword !== null && $newPassword !== '' && $confirmPassword !== null && $confirmPassword !== '') {
-        $validationErrors = self::validate_passwords($newPassword, $confirmPassword);
-        foreach ($validationErrors as $error) {
-            if (strpos($error, 'twice the same') !== false) {
-                $fieldErrors['confirm_password'][] = $error;
-            } elseif (strpos($error, 'length') !== false || strpos($error, '8 and 16') !== false) {
-                $fieldErrors['new_password'][] = $error;
-            } elseif (strpos($error, 'uppercase') !== false || strpos($error, 'number') !== false || strpos($error, 'punctuation') !== false) {
-                $fieldErrors['new_password'][] = $error;
-            } else {
-                $fieldErrors['new_password'][] = $error;
-            }
-        }
+    if ($new_password && $confirm_password) {
+        self::categorize_password_errors(
+            self::validate_passwords($new_password, $confirm_password),
+            $field_errors
+        );
     } else {
-        if (!$newPassword) {
-            $fieldErrors['new_password'][] = "Please enter a new password.";
+        if (!$new_password) {
+            $field_errors['new_password'][] = "Please enter a new password.";
         }
-        if (!$confirmPassword) {
-            $fieldErrors['confirm_password'][] = "Please confirm your new password.";
+        if (!$confirm_password) {
+            $field_errors['confirm_password'][] = "Please confirm your new password.";
         }
     }
 
-    return $fieldErrors;
+    return $field_errors;
+}
+
+private static function validate_current_password(self $user, ?string $current_password): array {
+    $errors = [];
+    $hashed_password = $user->get_hashed_password();
+    if (!$current_password || !$hashed_password || !password_verify($current_password, $hashed_password)) {
+        $errors[] = "Current password is incorrect.";
+    }
+    return $errors;
+}
+
+private static function categorize_password_errors(array $validation_errors, array &$field_errors): void {
+    foreach ($validation_errors as $error) {
+        if (strpos($error, 'twice the same') !== false) {
+            $field_errors['confirm_password'][] = $error;
+        } else {
+            $field_errors['new_password'][] = $error;
+        }
+    }
 }
 // ============ SIGN UP METHODS ============
 

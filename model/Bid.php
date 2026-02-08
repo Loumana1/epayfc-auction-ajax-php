@@ -1,6 +1,7 @@
 <?php
 require_once "framework/Model.php";
 require_once "utils/AppTime.php";
+require_once "utils/format.php";
 class Bid extends Model {
     
     private ?int $id;
@@ -35,7 +36,7 @@ class Bid extends Model {
         require_once "model/Item.php";
         $errors = [];
         $now = AppTime::get_current_datetime();
-        $nowDateTime = new DateTime($now);
+$now_date_time = new DateTime($now);
         
     
         $item = Item::get_by_id($this->item_id);
@@ -55,9 +56,10 @@ class Bid extends Model {
         }
         
 
-        $minBid = $item->get_min_bid_amount();
-        if ($this->amount < $minBid) {
-            $errors[] = "Le montant minimum est " . number_format($minBid, 2);
+        $min_bid = $item->get_min_bid_amount();
+        if ($this->amount < $min_bid) {
+            $errors[] = "Le montant minimum est " . format_euro($min_bid);
+
         }
         
         return $errors;
@@ -122,5 +124,29 @@ class Bid extends Model {
         );
         $highestId = $query->fetchColumn();
         return $highestId !== false && (int)$highestId === $userId;
+    }
+
+     public static function exists_recent_duplicate(
+        int $item_id, 
+        int $user_id, 
+        float $amount
+    ): bool {
+        $now = AppTime::get_current_datetime();
+        
+        $query = self::execute(
+            "SELECT COUNT(*) FROM bids 
+             WHERE item = :item_id 
+             AND owner = :user_id 
+             AND amount = :amount 
+             AND created_at >= DATE_SUB(:now, INTERVAL 5 SECOND)",
+            [
+                'item_id' => $item_id,
+                'user_id' => $user_id,
+                'amount' => $amount,
+                'now' => $now
+            ]
+        );
+        
+        return $query->fetchColumn() > 0;
     }
 }

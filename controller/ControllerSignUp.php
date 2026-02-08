@@ -59,6 +59,7 @@ class ControllerSignup extends Controller
         }
 
         (new View("signup"))->show([
+            "no_header_footer" => true,
             "email" => $email,
             "full_name" => $full_name,
             "pseudo" => $pseudo,
