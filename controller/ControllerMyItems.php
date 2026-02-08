@@ -13,11 +13,11 @@ class ControllerMyItems extends Controller {
 
         
         $user = $this->get_user_or_redirect();
-        $userId = $user->get_id();
+        $userid = $user->get_id();
 
         $now = AppTime::get_current_datetime();
 
-        $items = Item::get_items_by_owner($userId);
+        $items = Item::get_items_by_owner($userid);
 
 
         // découpage en 3 catégories
