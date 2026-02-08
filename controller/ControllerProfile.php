@@ -9,7 +9,7 @@ class ControllerProfile extends Controller
     public function index(): void
     {
         $current_user = $this->get_user_or_false();
-        
+
         if (!$current_user) {
             $this->redirect("login");
             return;
@@ -19,7 +19,7 @@ class ControllerProfile extends Controller
 
         (new View("profile"))->show([
             'current_user_id' => $current_user_id,
-            'currentUser' => $current_user, // Changé ici pour corriger l'erreur de la vue
+            'current_user' => $current_user,
             'header_title' => 'Profile',
             'header_icon' => 'bi-cart-fill'
         ]);
