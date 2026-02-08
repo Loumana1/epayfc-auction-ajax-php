@@ -85,6 +85,7 @@ class ControllerBid extends Controller {
         
         try {
             $errors = $bid->persist();
+            //je pourrrais creer erreur stylisé 
      
         } catch (Exception $e) {
 

@@ -2,7 +2,6 @@
 require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once "model/Item.php";
-require_once "model/Bid.php";
 require_once "model/User.php";
 require_once "utils/AppTime.php";
 require_once "utils/format.php";
@@ -53,7 +52,7 @@ private function load_item_or_fail(): ?Item {
         
         $is_owner = $current_user_id && $item->get_owner() == $current_user_id;
         $is_highest_bidder = $current_user_id 
-            ? Bid::is_user_highest($current_user_id, $item->get_Id()) 
+            ? $item->is_user_highest_bidder($current_user_id) 
             : false;
         
         // État de l'item
