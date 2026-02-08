@@ -8,16 +8,18 @@ require_once 'model/User.php';
 
 
 
-class ControllerBrowser extends Controller {
+class ControllerBrowser extends Controller
+{
 
-    public function index(): void {
-        $current_user = $this->get_user_or_false();
-        $current_user_id = $current_user ? $current_user->get_Id() : -1;
+    public function index(): void
+    {
+        $currentUser = $this->get_user_or_false();
+        $currentUserId = $currentUser ? $currentUser->get_Id() : -1;
         $now = AppTime::get_current_datetime();
 
-        $participating_items_raw = Item::get_Item_Participating($current_user_id,$now);
-        $available_items_raw = Item::get_Item_Available($current_user_id, $now);
-    
+        $participating_items_raw = $this->get_participating_items($currentUserId, $now);
+        $available_items_raw = $this->get_available_items($currentUserId, $now);
+
 
         $participating_items = [];
         foreach ($participating_items_raw as $item) {
@@ -25,17 +27,17 @@ class ControllerBrowser extends Controller {
             if (!$item instanceof Item)
                 continue;
 
-            $main_picture = ItemPicture::get_main_picture($item->get_Id());
+            $mainPicture = $item->get_main_picture();
 
             // Récupérer le pseudo du vendeur
-            $seller_pseudo = Item::get_User_Pseudo_By_Id($item->get_owner());
+            $sellerPseudo = $item->get_seller()->get_Pseudo();
 
             $participating_items[] = [
                 'id' => $item->get_Id(),
                 'title' => $item->get_Title(),
-                'pic_path' => $main_picture?->picture_path,
+                'pic_path' => $mainPicture?->picture_path,
                 'picture_count' => 0, // Set to 0 to avoid view errors
-                'seller_pseudo' => $seller_pseudo,
+                'seller_pseudo' => $sellerPseudo,
                 'buy_now_price' => $item->get_Buy_Now_Price(),
                 'starting_bid' => $item->get_Starting_Bid(),
                 'max_bid' => $item->get_max_bid_time(),
@@ -43,8 +45,8 @@ class ControllerBrowser extends Controller {
                 'time_remaining' => $this->calculate_time_remaining($item->get_End_At()),
                 'is_auction' => $item->get_Is_Auction(),
                 'has_buy_now' => $item->get_Has_buy_now_price(),
-                'is_highest_bidder' => Item::is_Highest_Bidder($current_user_id, $item->get_Id()),
-                'has_bid' => Item::has_Bid_On_Item($current_user_id, $item->get_Id()),
+                'is_highest_bidder' => $item->is_user_highest_bidder($currentUserId),
+                'has_bid' => $item->user_has_bid($currentUserId),
                 'is_owner' => $item->get_owner(),
                 'description' => $item->get_Description()
             ];
@@ -57,10 +59,10 @@ class ControllerBrowser extends Controller {
             if (!$item instanceof Item)
                 continue;
 
-            $mainPicture = ItemPicture::get_main_picture($item->get_Id());
+            $mainPicture = $item->get_main_picture();
 
             // Récupérer le pseudo du vendeur
-            $sellerPseudo = Item::get_User_Pseudo_By_Id($item->get_owner());
+            $sellerPseudo = $item->get_seller()->get_Pseudo();
 
             $available_items[] = [
                 'id' => $item->get_Id(),
@@ -80,18 +82,18 @@ class ControllerBrowser extends Controller {
                 'description' => $item->get_Description()
             ];
         }
-        
-        
+
+
         (new View("browser"))->show([
             'participating_items' => $participating_items,
             'available_items' => $available_items,
-            'current_user_id' => $current_user_id,
-            'currentUser' => $current_user,
+            'current_user_id' => $currentUserId,
+            'currentUser' => $currentUser,
             'header_title' => 'Browser',
             'header_icon' => 'bi-cart-fill'
         ]);
 
-    } 
+    }
     // Calcule le temps restant jusqu'à end_at
     private function calculate_time_remaining(string $end_at): string
     {
@@ -108,6 +110,15 @@ class ControllerBrowser extends Controller {
         $hours = $diff->h;
 
         return $days . "d " . $hours . "h";
-    } 
+    }
+    private function get_participating_items(int $userId, string $now): array
+    {
+        return Item::get_Item_Participating($userId, $now);
+    }
+
+    private function get_available_items(int $userId, string $now): array
+    {
+        return Item::get_Item_Available($userId, $now);
+    }
 
 }
