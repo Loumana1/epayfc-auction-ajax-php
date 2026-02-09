@@ -57,30 +57,30 @@ class ControllerLogin extends Controller {
             return;
         }
 
-         $this->log_user($user);
-         $this->redirect("browser"); 
-        }
+         $this->log_user($user, "browser");
+        return;
+    }
 
     public function login_as(): void {
 
         if (!Configuration::is_dev()) {
             $this->redirect("login");
         }
-         
+
         if ($this->user_logged()) {
             $this->redirect("browser");
         }
 
-       $mail = $_GET['param1'] ?? "";
+        $mail = $_GET['param1'] ?? "";
 
         if ($mail) {
             $user = User::get_user_by_mail($mail);
             if ($user) {
-                $this->log_user($user);
-                $this->redirect("browser");
-                return;
+                $this->log_user($user, "browser");
             }
         }
+    
         $this->redirect("login");
     }
+
 }
