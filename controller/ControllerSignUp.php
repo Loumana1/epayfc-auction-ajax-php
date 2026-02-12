@@ -6,14 +6,14 @@ require_once "model/User.php";
 
 class ControllerSignup extends Controller
 {
-
     public function index(): void
     {
-        $this->register();
-    }
+        $current_user = $this->get_user_or_false();
+        if ($current_user) {
+            $this->redirect("profile");
+            return;
+        }
 
-    public function register(): void
-    {
         $errors = [
             'email' => [],
             'full_name' => [],
@@ -26,7 +26,7 @@ class ControllerSignup extends Controller
         $full_name = "";
         $pseudo = "";
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!empty($_POST)) {
             $email = trim($_POST["email"] ?? "");
             $full_name = trim($_POST["full_name"] ?? "");
             $pseudo = trim($_POST["pseudo"] ?? "");
@@ -35,22 +35,20 @@ class ControllerSignup extends Controller
 
             $errors = User::validate_signup($email, $full_name, $pseudo, $password, $password_confirm);
 
-            // Check if there are any errors
-            $hasErrors = false;
-            foreach ($errors as $fieldErrors) {
-                if (!empty($fieldErrors)) {
-                    $hasErrors = true;
+            $has_errors = false;
+            foreach ($errors as $field_errors) {
+                if (!empty($field_errors)) {
+                    $has_errors = true;
                     break;
                 }
             }
 
-            if (!$hasErrors) {
-                // Registration successful
+            if (!$has_errors) {
                 $user = User::signup($email, $full_name, $pseudo, $password);
 
                 if ($user) {
-                    $_SESSION['success_message'] = "Registration successful! Please log in.";
-                    $this->redirect("login");
+                    $this->log_user($user);
+                    $this->redirect("profile");
                     return;
                 } else {
                     $errors['email'][] = "Registration failed. Please try again.";
@@ -59,10 +57,16 @@ class ControllerSignup extends Controller
         }
 
         (new View("signup"))->show([
+            "no_header_footer" => true,
             "email" => $email,
             "full_name" => $full_name,
             "pseudo" => $pseudo,
             "errors" => $errors
         ]);
+    }
+
+    public function register(): void
+    {
+        $this->index();
     }
 }

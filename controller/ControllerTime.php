@@ -10,18 +10,15 @@ class ControllerTime extends Controller {
             $this->redirect();
         }
 
-        (new View("time"))->show();
+        (new View("time"))->show([
+            "header_title" => "App time",
+            "app_time_current" => AppTime::get_current_datetime(),
+            "page_css" => []
+        ]);
     }
 
-    private function redirect_back() {
-        // Redirect back to the same page 
-        $referer = $_SERVER['HTTP_REFERER'] ?? '';
-        if ($referer) {
-            header("Location: " . $referer);
-            die;
-        } else {
-            $this->redirect();
-        }
+    private function redirect_back(): void {
+        $this->redirect();
     }
 
 

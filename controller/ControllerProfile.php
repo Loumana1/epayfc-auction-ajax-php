@@ -8,17 +8,18 @@ class ControllerProfile extends Controller
 {
     public function index(): void
     {
-        $currentUser = $this->get_user_or_false();
-        $currentUserId = $currentUser ? $currentUser->get_Id() : null;
+        $current_user = $this->get_user_or_false();
 
-        if (!$currentUser) {
-            $this->redirect("browser");
+        if (!$current_user) {
+            $this->redirect("login");
             return;
         }
 
+        $current_user_id = $current_user->get_Id();
+
         (new View("profile"))->show([
-            'current_user_id' => $currentUserId,
-            'currentUser' => $currentUser,
+            'current_user_id' => $current_user_id,
+            'current_user' => $current_user,
             'header_title' => 'Profile',
             'header_icon' => 'bi-cart-fill'
         ]);
@@ -26,19 +27,22 @@ class ControllerProfile extends Controller
 
     public function logout(): void
     {
-        // Déconnexion
-        $_SESSION = array();
+        $current_user = $this->get_user_or_false();
+        if (!$current_user) {
+            $this->redirect("login");
+            return;
+        }
+
         session_destroy();
-        $this->redirect("browser");
+        $this->redirect("login");
     }
 }
 
-// Classe helper pour les requêtes profile
 class ModelProfile extends \Model
 {
-    public static function get_user_data(int $userId): ?array
+    public static function get_user_data(int $user_id): ?array
     {
-        $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $userId]);
+        $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $user_id]);
         $data = $query->fetch();
 
         if ($data === false) {

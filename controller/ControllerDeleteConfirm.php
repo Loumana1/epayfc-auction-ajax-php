@@ -16,7 +16,7 @@ class ControllerDeleteConfirm extends Controller {
             return;
         }
         
-        $item = item::get_By_Id((int)$item_id);
+        $item = Item::get_by_id((int)$item_id);
         
         if (!$item) {
             $this->redirect('my_items');
@@ -31,7 +31,6 @@ class ControllerDeleteConfirm extends Controller {
         
    
         if ($item->has_bids_time()) {
-            // Plus de message via $_SESSION - redirection simple
             $this->redirect('open_item', 'index', (string)$item_id);
             return;
         }
@@ -43,7 +42,8 @@ class ControllerDeleteConfirm extends Controller {
             'back_url' => 'open_item/index/' . $item_id,
             'item' => $item,
             'current_user' => $user,
-            'seller' => $seller 
+            'seller' => $seller,
+            'page_css' => ['delete_item.css']
         ]);
     }
     
@@ -57,7 +57,7 @@ class ControllerDeleteConfirm extends Controller {
             return;
         }
         
-        $item = Item::get_By_Id((int)$item_id);
+        $item = Item::get_by_id((int)$item_id);
 
 
         if (!$item || $item->get_owner() != $user->get_Id() || $item->has_bids_time()) {
@@ -66,8 +66,8 @@ class ControllerDeleteConfirm extends Controller {
         }
         
         //cascade
-        Item::delete_pictures((int)$item_id);
-        Item::delete((int)$item_id);
+        $item->delete_pictures();
+        $item->delete();
 
         $this->redirect('my_items');
     }

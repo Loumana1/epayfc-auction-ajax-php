@@ -2,17 +2,23 @@
 
     <div class="price-row">
         <label class="price-label">Current Bid €</label>
-        <p class="price-value-current-bid">€ <?= number_format($max_bid_time ?? $min_bid_amount, 2, ',', '.') ?></p>
+        <p class="price-value-current-bid">
+            <?= format_euro($max_bid_time ?? $min_bid_amount) ?>
+        </p>
     </div>
     
     <?php if ($item->get_Buy_Now_Price()): ?>
         <div class="price-row">
             <label class="price-label">Buy Now</label>
-            <p class="price-value">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
+            <p class="price-value">
+                <?= format_euro($item->get_Buy_Now_Price()) ?>
+            </p>
         </div>
     <?php else: ?>
         <div class="price-row">
-            <label class="price-texte-small-grey">Starting Bid € <?= number_format($item->get_Starting_Bid(), 2, ',', '.') ?></label>
+            <label class="price-texte-small-grey">
+                Starting Bid <?= format_euro($item->get_Starting_Bid()) ?>
+            </label>
         </div>
     <?php endif; ?>
 
@@ -20,6 +26,8 @@
 
     <div class="price-row">
         <label class="price-label">Price</label>
-        <p class="price-value-current-bid">€ <?= number_format($item->get_Buy_Now_Price(), 2, ',', '.') ?></p>
+        <p class="price-value-current-bid">
+            <?= format_euro($item->get_Buy_Now_Price()) ?>
+        </p>
     </div>
 <?php endif; ?>

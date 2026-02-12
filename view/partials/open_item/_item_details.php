@@ -14,7 +14,13 @@
     <p class="item-description"><?= $item->get_Description() ?? 'No description' ?></p>
     
     <div class="item-dates">
-        <p>start:<strong><?= date('d/m/Y H:i:s', strtotime($item->get_Created_At())) ?></strong></p>
-        <p<?= !empty($auctionEnded) ? ' class="ended"' : '' ?>>Ends:<strong> <?= $item->get_End_At() ? date('d/m/Y H:i:s', strtotime($item->get_End_At())) : 'N/A' ?></strong></p>
+        <p>start:
+            <strong>
+            <?= date('d/m/Y H:i:s', strtotime($item->get_Created_At())) ?>
+             </strong>
+        </p>
+        <p<?= !empty($auction_ended) ? ' class="ended"' : '' ?>>Ends:<strong> 
+            <?= $item->get_End_At() ? date('d/m/Y H:i:s', strtotime($item->get_End_At())) : 'N/A' ?>
+        </strong></p>
     </div>
 </section>

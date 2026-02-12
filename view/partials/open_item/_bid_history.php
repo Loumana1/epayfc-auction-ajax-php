@@ -12,9 +12,13 @@
                 <div class="bid-row">
                     <div class="bid-info">
                         <span class="bidder-name"><?= $bid['pseudo'] ?></span>
-                        <span class="bid-date"><?= date('d/m/Y H:i:s', strtotime($bid['created_at'])) ?></span>
+                        <span class="bid-date">
+                            <?= date('d/m/Y H:i:s', strtotime($bid['created_at'])) ?>
+                        </span>
                     </div>
-                    <span class="bid-amount">€ <?= number_format($bid['amount'], 2, ',', '.') ?></span>
+                    <span class="bid-amount">
+                        <?= format_euro($bid['amount']) ?>
+                    </span>
                 </div>
             <?php endforeach; ?>
         </div>
