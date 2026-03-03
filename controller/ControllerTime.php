@@ -5,20 +5,23 @@ require_once "utils/AppTime.php";
 
 class ControllerTime extends Controller {
 
-    public function index(): void {
+       public function index(): void {
         if (!Configuration::is_dev()) {
             $this->redirect();
         }
 
-        (new View("time"))->show([
-            "header_title" => "App time",
-            "app_time_current" => AppTime::get_current_datetime(),
-            "page_css" => []
-        ]);
+        (new View("time"))->show();
     }
 
-    private function redirect_back(): void {
-        $this->redirect();
+    private function redirect_back() {
+        // Redirect back to the same page 
+        $referer = $_SERVER['HTTP_REFERER'] ?? '';
+        if ($referer) {
+            header("Location: " . $referer);
+            die;
+        } else {
+            $this->redirect();
+        }
     }
 
 
