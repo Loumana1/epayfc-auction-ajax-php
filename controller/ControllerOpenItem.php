@@ -85,7 +85,6 @@ private function load_item_or_fail(): ?Item {
         }
         return true;
     }
-    
     // ========== ETAT DES BOUTONS ============
     
     private function get_button_state(array $context): array {
@@ -152,10 +151,10 @@ private function load_item_or_fail(): ?Item {
                 $main_pic = $item->get_main_picture();
                 $main_picture_path = $main_pic !== null 
                     ? $main_pic->picture_path 
-                    : $pictures[0]['picture_path'];
+                    : $pictures[0]->picture_path;
             } else {
-                $main_picture_path = $pictures[$selected_img]['picture_path'] 
-                    ?? $pictures[0]['picture_path'];
+                $main_picture_path = $pictures[$selected_img]->picture_path 
+                    ?? $pictures[0]->picture_path;
             }
         }
         

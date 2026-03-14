@@ -217,13 +217,6 @@ public function is_open(): bool {
         return $this->_cached_bids;
     }
     
-    public function get_pictures(): array {
-        $query = self::execute(
-            "SELECT * FROM item_pictures WHERE item = :id ORDER BY priority ASC",
-            ['id' => $this->id]
-        );
-        return $query->fetchAll();
-    }
     
     public function get_seller(): User {
         return User::get_User_By_Id($this->owner);
