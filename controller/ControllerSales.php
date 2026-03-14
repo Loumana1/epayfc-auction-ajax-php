@@ -6,6 +6,7 @@ require_once "model/Item.php";
 require_once "model/User.php";  
 require_once "utils/AppTime.php";
 require_once "utils/format.php";
+require_once "model/Bid.php";
 
 class ControllerSales extends Controller {
 
@@ -13,7 +14,7 @@ class ControllerSales extends Controller {
 
         $current_user = $this->get_user_or_redirect();
         $user_id = $current_user->get_Id();
-        $web_root = Configuration::get("web_root");
+        
         
         $now = AppTime::get_current_datetime();
         
@@ -28,7 +29,7 @@ class ControllerSales extends Controller {
                 if (!$item instanceof Item) {
                     continue;
                 }
-                $sale_cards[] = $this->build_sale_card_data($item, $web_root);
+                $sale_cards[] = $this->build_sale_card_data($item);
             }
 
     
@@ -44,15 +45,16 @@ class ControllerSales extends Controller {
         ]);
 }
 
-private function build_sale_card_data(Item $item, string $web_root): array {
+private function build_sale_card_data(Item $item): array {
     $main_pic = $item->get_main_picture();
     $pic_path = $main_pic ? $main_pic->picture_path : null;
-    $closed_at = $item->get_End_At();
+
+    $closed_at = $item->get_sold_at();
 
     return [
         'item_id' => $item->get_Id(),
-        'thumb_url' => $pic_path ? $web_root . str_replace('.jpg', '_thumbnail.jpg', $pic_path) : '',
-        'picture_count' => count($item->get_pictures()),
+        'thumb_url' => $pic_path ?  str_replace('.jpg', '_thumbnail.jpg', $pic_path) : '',
+        'picture_count' => count(ItemPicture::get_all_by_item($item->get_Id())),
         'title' => $item->get_Title(),
         'seller_pseudo' => $item->get_seller()->get_Pseudo(),
         'display_price' => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),

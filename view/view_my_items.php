@@ -58,7 +58,7 @@ require_once "model/ItemPicture.php";
                             <img src="<?= $img ?>" alt="">
                             <span class="images-count">
                                 <i class="bi bi-images"></i>
-                                <?= count($item->get_pictures()) ?> images
+                                <?= count(ItemPicture::get_all_by_item($item->get_Id())) ?> images
                             </span>
                         </div>
 

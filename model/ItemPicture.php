@@ -123,4 +123,25 @@ class ItemPicture extends Model
         $config = parse_ini_file("config/dev.ini");
         return (int)($config['temp_priority'] ?? 9999);
     }
+    
+    //supprime toutes les images d'un item
+    public static function delete_all_by_item(int $itemId): void {
+        $query = self::execute(
+            "SELECT picture_path FROM item_pictures WHERE item = :id",
+            ['id' => $itemId]
+        );
+        $pictures = $query->fetchAll();
+    
+        foreach ($pictures as $pic) {
+            $path = $pic['picture_path'];
+            $thumbPath = str_replace('.jpg', '_thumbnail.jpg', $path);
+            if (file_exists($path)) unlink($path);
+            if (file_exists($thumbPath)) unlink($thumbPath);
+        }
+    
+        self::execute(
+            "DELETE FROM item_pictures WHERE item = :id",
+            ['id' => $itemId]
+        );
+    }
 }

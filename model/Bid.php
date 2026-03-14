@@ -125,27 +125,4 @@ class Bid extends Model {
         return $highestId !== false && (int)$highestId === $user_id;
     }
 
-     public static function exists_recent_duplicate(
-        int $item_id, 
-        int $user_id, 
-        float $amount
-    ): bool {
-        $now = AppTime::get_current_datetime();
-        
-        $query = self::execute(
-            "SELECT COUNT(*) FROM bids 
-             WHERE item = :item_id 
-             AND owner = :user_id 
-             AND amount = :amount 
-             AND created_at >= DATE_SUB(:now, INTERVAL 5 SECOND)",
-            [
-                'item_id' => $item_id,
-                'user_id' => $user_id,
-                'amount' => $amount,
-                'now' => $now
-            ]
-        );
-        
-        return $query->fetchColumn() > 0;
-    }
 }

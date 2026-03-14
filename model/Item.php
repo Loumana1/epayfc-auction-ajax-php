@@ -175,44 +175,35 @@ public function get_Starting_Bid(): float {
     
 
 public function is_open(): bool {
-    if (!$this->has_started()) {
+    $now_dt = new DateTime(AppTime::get_current_datetime());
+
+    if (!$this->has_started($now_dt)) {
         return false;
     }
     if ($this->is_direct_sale && !$this->is_auction) {
-        return $this->is_direct_sale_open();
+        return $this->is_direct_sale_open($now_dt);
     }
     if ($this->end_at !== null && $this->end_at !== '') {
-        return $this->is_auction_open();
+        return $this->is_auction_open($now_dt);
     }
     return false;
     }
 
-    private function has_started(): bool {
-        $now = AppTime::get_current_datetime();
-        $now_dt = new DateTime($now);
-        $created_dt = new DateTime($this->created_at);
-        return $created_dt <= $now_dt;
+    private function has_started(DateTime $now_dt): bool {
+        return new DateTime($this->created_at) <= $now_dt;
     }
     
-    private function is_direct_sale_open(): bool {
-        $now = AppTime::get_current_datetime();
-        $now_dt = new DateTime($now);
-        if ($this->end_at !== null && $this->end_at !== '') {
-            $end_dt = new DateTime($this->end_at);
-            if ($end_dt <= $now_dt) {
-                return false;
-            }
+    private function is_direct_sale_open(DateTime $now_dt): bool {
+    if ($this->end_at !== null && $this->end_at !== '') {
+        if (new DateTime($this->end_at) <= $now_dt) {
+            return false;
         }
+    }
         return !$this->has_bids_time();
     }
     
-    private function is_auction_open(): bool {
-        $now = AppTime::get_current_datetime();
-        $now_dt = new DateTime($now);
-        $end_dt = new DateTime($this->end_at);
-        $is_before_end = $end_dt > $now_dt;
-        $buy_now_reached = $this->has_buy_now_reached_time();
-        return $is_before_end && !$buy_now_reached;
+    private function is_auction_open(DateTime $now_dt): bool {
+        return new DateTime($this->end_at) > $now_dt && !$this->has_buy_now_reached_time();
     }
 
    
@@ -226,13 +217,6 @@ public function is_open(): bool {
         return $this->_cached_bids;
     }
     
-    public function get_pictures(): array {
-        $query = self::execute(
-            "SELECT * FROM item_pictures WHERE item = :id ORDER BY priority ASC",
-            ['id' => $this->id]
-        );
-        return $query->fetchAll();
-    }
     
     public function get_seller(): User {
         return User::get_User_By_Id($this->owner);
@@ -271,38 +255,6 @@ public function is_open(): bool {
         $maxBid = $this->get_max_bid_time();
         return $maxBid !== null && $maxBid >= $this->buy_now_price;
     }
-
-
-
-
-
-
-    public static function delete_pictures_by_id(int $itemId): void {
-
-        //supp dans bd 
-        $query = self::execute(
-            "SELECT picture_path FROM item_pictures WHERE item = :id",
-            ['id' => $itemId]
-        );
-        $pictures = $query->fetchAll();
-        
-        foreach ($pictures as $pic) {
-            $path = $pic['picture_path'];
-            $thumbPath = str_replace('.jpg', '_thumbnail.jpg', $path);
-            if (file_exists($path)) unlink($path);
-            if (file_exists($thumbPath)) unlink($thumbPath);
-        }
-        //supp dans les ficheirb
-        
-        self::execute(
-            "DELETE FROM item_pictures WHERE item = :id",
-            ['id' => $itemId]
-        );
-}
-
-public function delete_pictures():void  {
-    self::delete_pictures_by_id($this->id);
-}
 
 
 public static function delete_by_id(int $itemId): void {
@@ -346,34 +298,7 @@ public function delete(): void {
     }
 
 
-    public static function get_User_Pseudo_By_Id(int $userId): string {
-        $query = self::execute("SELECT pseudo FROM users WHERE id = :id", ['id' => $userId]);
-        $data = $query->fetch();
-        return $data ? $data['pseudo'] : '';
-    }
-    public static function is_Highest_Bidder(int $userId, int $itemId): bool {
-        $query = "SELECT owner FROM bids 
-                  WHERE item = :item_id 
-                  AND amount = (SELECT MAX(amount) FROM bids WHERE item = :item_id)
-                  ORDER BY created_at DESC
-                  LIMIT 1";
 
-        $query_result = self::execute($query, ['item_id' => $itemId]);
-        $data = $query_result->fetch();
-
-        return $data && (int)$data["owner"] === $userId;
-    }
-
-    // Vérifie si l'utilisateur a fait une enchère sur un item
-    public static function has_Bid_On_Item(int $userId, int $itemId): bool {
-        $query = "SELECT COUNT(*) as count FROM bids 
-                  WHERE owner = :user_id AND item = :item_id";
-
-        $query_result = self::execute($query, ['user_id' => $userId, 'item_id' => $itemId]);
-        $data = $query_result->fetch();
-
-        return $data && (int)$data["count"] > 0;
-    }
 
 
     public static function get_sold_items_by_owner(int $userId, string $now): array {
@@ -424,6 +349,16 @@ public function delete(): void {
         $row = self::execute($query, ['user_id' => $userId, 'now' => $now])->fetch();
         return $row ? $row['pseudo'] : null;
     }
+
+    public function get_sold_at(): ?string {
+    if ($this->buy_now_reached || ($this->is_direct_sale && $this->has_bids_time())) {
+        $bids = $this->get_bids();
+        if (!empty($bids)) {
+            return $bids[0]['created_at'];
+        }
+    }
+    return $this->end_at;
+}
 
     private static function title_exists_for_owner(string $title, int $owner, ?int $exclude_id): bool {
         $sql = "SELECT COUNT(*) FROM items WHERE title = :title AND owner = :owner";
@@ -544,13 +479,7 @@ public function delete(): void {
         ]);
     }
 
-    public function get_has_bids(): bool {
-        return (bool)$this->has_bids;
-    }
 
-    public function get_buy_now_reached(): bool {
-        return (bool)$this->buy_now_reached;
-    }
 
     public static function get_items_by_owner(int $userId): array {
         $query = "
@@ -584,51 +513,6 @@ public function delete(): void {
     }
 
 
-    public static function get_purchase_statistics(int $userId, string $now): array {
-
-        $query = "
-            SELECT 
-                COUNT(*) as purchase_count,
-                COALESCE(SUM(max_bid), 0) as total_spent,
-                COALESCE(AVG(max_bid), 0) as average_ticket
-            FROM v_items_status
-            WHERE has_bids = 1
-            AND (end_at <= :now OR buy_now_reached = 1)
-            AND id IN (
-                SELECT item FROM bids
-                WHERE owner = :user_id
-            )
-        ";
-
-        $stats = self::execute($query, [
-            "user_id" => $userId,
-            "now" => $now
-        ])->fetch();
-
-        
-        $topSellerQuery = "
-            SELECT u.pseudo, COUNT(*) as cnt
-            FROM bids b
-            JOIN v_items_status v ON v.id = b.item
-            JOIN users u ON u.id = v.owner
-            WHERE b.owner = :user_id
-            AND b.amount = v.max_bid
-            GROUP BY v.owner, u.pseudo
-            ORDER BY cnt DESC
-            LIMIT 1
-        ";
-
-        $top = self::execute($topSellerQuery, [
-            "user_id" => $userId
-        ])->fetch();
-
-        return [
-            "count" => (int)$stats["purchase_count"],
-            "total" => (float)$stats["total_spent"],
-            "average" => (float)$stats["average_ticket"],
-            "top_seller" => $top ? $top["pseudo"] : null
-        ];
-    }
     public function is_user_highest_bidder(int $userId): bool
     {
         return Bid::is_user_highest($userId, $this->id);
