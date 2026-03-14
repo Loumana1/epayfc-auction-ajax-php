@@ -346,34 +346,7 @@ public function delete(): void {
     }
 
 
-    public static function get_User_Pseudo_By_Id(int $userId): string {
-        $query = self::execute("SELECT pseudo FROM users WHERE id = :id", ['id' => $userId]);
-        $data = $query->fetch();
-        return $data ? $data['pseudo'] : '';
-    }
-    public static function is_Highest_Bidder(int $userId, int $itemId): bool {
-        $query = "SELECT owner FROM bids 
-                  WHERE item = :item_id 
-                  AND amount = (SELECT MAX(amount) FROM bids WHERE item = :item_id)
-                  ORDER BY created_at DESC
-                  LIMIT 1";
 
-        $query_result = self::execute($query, ['item_id' => $itemId]);
-        $data = $query_result->fetch();
-
-        return $data && (int)$data["owner"] === $userId;
-    }
-
-    // Vérifie si l'utilisateur a fait une enchère sur un item
-    public static function has_Bid_On_Item(int $userId, int $itemId): bool {
-        $query = "SELECT COUNT(*) as count FROM bids 
-                  WHERE owner = :user_id AND item = :item_id";
-
-        $query_result = self::execute($query, ['user_id' => $userId, 'item_id' => $itemId]);
-        $data = $query_result->fetch();
-
-        return $data && (int)$data["count"] > 0;
-    }
 
 
     public static function get_sold_items_by_owner(int $userId, string $now): array {
@@ -434,6 +407,7 @@ public function delete(): void {
     }
     return $this->end_at;
 }
+
     private static function title_exists_for_owner(string $title, int $owner, ?int $exclude_id): bool {
         $sql = "SELECT COUNT(*) FROM items WHERE title = :title AND owner = :owner";
         $params = ["title" => $title, "owner" => $owner];
@@ -553,13 +527,7 @@ public function delete(): void {
         ]);
     }
 
-    public function get_has_bids(): bool {
-        return (bool)$this->has_bids;
-    }
 
-    public function get_buy_now_reached(): bool {
-        return (bool)$this->buy_now_reached;
-    }
 
     public static function get_items_by_owner(int $userId): array {
         $query = "
@@ -593,51 +561,6 @@ public function delete(): void {
     }
 
 
-    public static function get_purchase_statistics(int $userId, string $now): array {
-
-        $query = "
-            SELECT 
-                COUNT(*) as purchase_count,
-                COALESCE(SUM(max_bid), 0) as total_spent,
-                COALESCE(AVG(max_bid), 0) as average_ticket
-            FROM v_items_status
-            WHERE has_bids = 1
-            AND (end_at <= :now OR buy_now_reached = 1)
-            AND id IN (
-                SELECT item FROM bids
-                WHERE owner = :user_id
-            )
-        ";
-
-        $stats = self::execute($query, [
-            "user_id" => $userId,
-            "now" => $now
-        ])->fetch();
-
-        
-        $topSellerQuery = "
-            SELECT u.pseudo, COUNT(*) as cnt
-            FROM bids b
-            JOIN v_items_status v ON v.id = b.item
-            JOIN users u ON u.id = v.owner
-            WHERE b.owner = :user_id
-            AND b.amount = v.max_bid
-            GROUP BY v.owner, u.pseudo
-            ORDER BY cnt DESC
-            LIMIT 1
-        ";
-
-        $top = self::execute($topSellerQuery, [
-            "user_id" => $userId
-        ])->fetch();
-
-        return [
-            "count" => (int)$stats["purchase_count"],
-            "total" => (float)$stats["total_spent"],
-            "average" => (float)$stats["average_ticket"],
-            "top_seller" => $top ? $top["pseudo"] : null
-        ];
-    }
     public function is_user_highest_bidder(int $userId): bool
     {
         return Bid::is_user_highest($userId, $this->id);
