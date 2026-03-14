@@ -425,6 +425,15 @@ public function delete(): void {
         return $row ? $row['pseudo'] : null;
     }
 
+    public function get_sold_at(): ?string {
+    if ($this->buy_now_reached || ($this->is_direct_sale && $this->has_bids_time())) {
+        $bids = $this->get_bids();
+        if (!empty($bids)) {
+            return $bids[0]['created_at'];
+        }
+    }
+    return $this->end_at;
+}
     private static function title_exists_for_owner(string $title, int $owner, ?int $exclude_id): bool {
         $sql = "SELECT COUNT(*) FROM items WHERE title = :title AND owner = :owner";
         $params = ["title" => $title, "owner" => $owner];

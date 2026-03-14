@@ -75,12 +75,7 @@ class ControllerBid extends Controller {
     // ============ TRAITEMENT ENCHÈRE ============
     
     private function process_bid(Item $item, object $user, float $amount): void {
-        // Protection contre le spam click
-        if ($this->is_duplicate_bid($item->get_Id(), $user->get_id(), $amount)) {
-            $this->redirect("open_item", "index", $item->get_Id());
-            return;
-        }
-        
+
         $bid = new Bid($item->get_Id(), $user->get_id(), $amount);
         
         try {
@@ -94,10 +89,7 @@ class ControllerBid extends Controller {
         $this->redirect("open_item", "index", $item->get_Id());
     }
 
-    // ============ PROTECTION SPAMCLICK============
-        
-    private function is_duplicate_bid(int $item_id, int $user_id, float $amount): bool {
-        return Bid::exists_recent_duplicate($item_id, $user_id, $amount);
-    }
+
+
 
 }

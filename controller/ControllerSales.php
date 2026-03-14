@@ -6,6 +6,7 @@ require_once "model/Item.php";
 require_once "model/User.php";  
 require_once "utils/AppTime.php";
 require_once "utils/format.php";
+require_once "model/Bid.php";
 
 class ControllerSales extends Controller {
 
@@ -47,7 +48,8 @@ class ControllerSales extends Controller {
 private function build_sale_card_data(Item $item, string $web_root): array {
     $main_pic = $item->get_main_picture();
     $pic_path = $main_pic ? $main_pic->picture_path : null;
-    $closed_at = $item->get_End_At();
+
+    $closed_at = $item->get_sold_at();
 
     return [
         'item_id' => $item->get_Id(),
