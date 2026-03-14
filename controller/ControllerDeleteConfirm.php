@@ -3,7 +3,7 @@ require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once  "model/Item.php";
 require_once "model/User.php";
-
+require_once "model/ItemPicture.php";
 class ControllerDeleteConfirm extends Controller {
 
     public function index(): void {
@@ -66,7 +66,8 @@ class ControllerDeleteConfirm extends Controller {
         }
         
         //cascade
-        $item->delete_pictures();
+        ItemPicture::delete_all_by_item($item->get_Id());
+
         $item->delete();
 
         $this->redirect('my_items');

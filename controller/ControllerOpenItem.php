@@ -137,7 +137,7 @@ private function load_item_or_fail(): ?Item {
     // ======== DONNEES IMAGES ============
     
     private function get_picture_data(Item $item): array {
-        $pictures = $item->get_pictures();
+        $pictures = ItemPicture::get_all_by_item($item->get_Id());
         $selected_img = isset($_GET['param2']) && $_GET['param2'] !== '' 
             ? (int)$_GET['param2'] 
             : 0;

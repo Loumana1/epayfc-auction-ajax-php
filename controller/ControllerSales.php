@@ -54,7 +54,7 @@ private function build_sale_card_data(Item $item, string $web_root): array {
     return [
         'item_id' => $item->get_Id(),
         'thumb_url' => $pic_path ? $web_root . str_replace('.jpg', '_thumbnail.jpg', $pic_path) : '',
-        'picture_count' => count($item->get_pictures()),
+        'picture_count' => count(ItemPicture::get_all_by_item($item->get_Id())),
         'title' => $item->get_Title(),
         'seller_pseudo' => $item->get_seller()->get_Pseudo(),
         'display_price' => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),

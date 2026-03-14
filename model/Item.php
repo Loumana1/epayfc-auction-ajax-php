@@ -175,44 +175,35 @@ public function get_Starting_Bid(): float {
     
 
 public function is_open(): bool {
-    if (!$this->has_started()) {
+    $now_dt = new DateTime(AppTime::get_current_datetime());
+
+    if (!$this->has_started($now_dt)) {
         return false;
     }
     if ($this->is_direct_sale && !$this->is_auction) {
-        return $this->is_direct_sale_open();
+        return $this->is_direct_sale_open($now_dt);
     }
     if ($this->end_at !== null && $this->end_at !== '') {
-        return $this->is_auction_open();
+        return $this->is_auction_open($now_dt);
     }
     return false;
     }
 
-    private function has_started(): bool {
-        $now = AppTime::get_current_datetime();
-        $now_dt = new DateTime($now);
-        $created_dt = new DateTime($this->created_at);
-        return $created_dt <= $now_dt;
+    private function has_started(DateTime $now_dt): bool {
+        return new DateTime($this->created_at) <= $now_dt;
     }
     
-    private function is_direct_sale_open(): bool {
-        $now = AppTime::get_current_datetime();
-        $now_dt = new DateTime($now);
-        if ($this->end_at !== null && $this->end_at !== '') {
-            $end_dt = new DateTime($this->end_at);
-            if ($end_dt <= $now_dt) {
-                return false;
-            }
+    private function is_direct_sale_open(DateTime $now_dt): bool {
+    if ($this->end_at !== null && $this->end_at !== '') {
+        if (new DateTime($this->end_at) <= $now_dt) {
+            return false;
         }
+    }
         return !$this->has_bids_time();
     }
     
-    private function is_auction_open(): bool {
-        $now = AppTime::get_current_datetime();
-        $now_dt = new DateTime($now);
-        $end_dt = new DateTime($this->end_at);
-        $is_before_end = $end_dt > $now_dt;
-        $buy_now_reached = $this->has_buy_now_reached_time();
-        return $is_before_end && !$buy_now_reached;
+    private function is_auction_open(DateTime $now_dt): bool {
+        return new DateTime($this->end_at) > $now_dt && !$this->has_buy_now_reached_time();
     }
 
    
@@ -271,38 +262,6 @@ public function is_open(): bool {
         $maxBid = $this->get_max_bid_time();
         return $maxBid !== null && $maxBid >= $this->buy_now_price;
     }
-
-
-
-
-
-
-    public static function delete_pictures_by_id(int $itemId): void {
-
-        //supp dans bd 
-        $query = self::execute(
-            "SELECT picture_path FROM item_pictures WHERE item = :id",
-            ['id' => $itemId]
-        );
-        $pictures = $query->fetchAll();
-        
-        foreach ($pictures as $pic) {
-            $path = $pic['picture_path'];
-            $thumbPath = str_replace('.jpg', '_thumbnail.jpg', $path);
-            if (file_exists($path)) unlink($path);
-            if (file_exists($thumbPath)) unlink($thumbPath);
-        }
-        //supp dans les ficheirb
-        
-        self::execute(
-            "DELETE FROM item_pictures WHERE item = :id",
-            ['id' => $itemId]
-        );
-}
-
-public function delete_pictures():void  {
-    self::delete_pictures_by_id($this->id);
-}
 
 
 public static function delete_by_id(int $itemId): void {
