@@ -523,6 +523,14 @@ public function delete(): void {
         return Bid::user_has_bid($userId, $this->id);
     }
 
+    public function get_picture_count(): int {
+        $query = self::execute(
+            "SELECT COUNT(*) FROM item_pictures WHERE item = :id",
+            ["id" => $this->id]
+        );
+        return (int)$query->fetchColumn();
+    }
+
 
 
 }

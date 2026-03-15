@@ -36,8 +36,7 @@ class ControllerBrowser extends Controller
                 'id' => $item->get_Id(),
                 'title' => $item->get_Title(),
                 'pic_path' => $main_picture?->picture_path,
-                'picture_count' => 0, // Set to 0 to avoid view errors
-                'seller_pseudo' => $seller_pseudo,
+                'picture_count' => $item->get_picture_count(),                'seller_pseudo' => $seller_pseudo,
                 'buy_now_price' => $item->get_Buy_Now_Price(),
                 'starting_bid' => $item->get_Starting_Bid(),
                 'max_bid' => $item->get_max_bid_time(),
@@ -68,8 +67,7 @@ class ControllerBrowser extends Controller
                 'id' => $item->get_Id(),
                 'title' => $item->get_Title(),
                 'pic_path' => $mainPicture?->picture_path,
-                'picture_count' => 0, // Set to 0 to avoid view errors
-                'seller_pseudo' => $sellerPseudo,
+                'picture_count' => $item->get_picture_count(),                'seller_pseudo' => $sellerPseudo,
                 'buy_now_price' => $item->get_Buy_Now_Price(),
                 'starting_bid' => $item->get_Starting_Bid(),
                 'max_bid' => $item->get_max_bid_time(),
