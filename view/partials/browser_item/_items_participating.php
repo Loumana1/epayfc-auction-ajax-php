@@ -30,7 +30,9 @@
                                 </div>
                                 <div class="item-details">
                                     <?php if ($item['picture_count'] > 0): ?>
-                                        <span class="picture-count"><?= $item['picture_count'] ?> image<?= $item['picture_count'] > 1 ? 's' : '' ?></span>
+                                        <span class="picture-count">
+                                            <i class="bi bi-images"></i>
+                                            <?= $item['picture_count'] ?> image<?= $item['picture_count'] > 1 ? 's' : '' ?></span>
                                     <?php endif; ?>
                                     
                                     <span class="seller">Listed by <?= htmlspecialchars($item['seller_pseudo']) ?></span>

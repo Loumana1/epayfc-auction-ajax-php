@@ -37,6 +37,7 @@
                                 <?php if ($item['picture_count'] > 0): ?>
                                     <?php $plural = $item['picture_count'] > 1 ? 's' : ''; ?>
                                     <span class="picture-count">
+                                        <i class="bi bi-images"></i>
                                         <?= $item['picture_count'] ?> image<?= $plural ?>
                                     </span>
                                 <?php endif; ?>
