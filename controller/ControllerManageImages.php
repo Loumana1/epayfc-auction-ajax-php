@@ -42,15 +42,17 @@ class ControllerManageImages extends Controller
     public function upload(): void
     {
         $current_user = $this->get_user_or_false();
-        if (!$current_user)
+        if (!$current_user){
+            $this->redirect("login");
             return;
+        }
 
-        $item_id = $_POST['item_id'] ?? null;
+        $item_id =$_GET['param1'] ?? $_POST['item_id'] ?? null;
         if (!$item_id)
             return;
 
         if (!empty($_FILES['images']['name'][0])) {
-            $upload_dir = 'public/uploads/';
+            $upload_dir = 'uploads/items/'. $item_id . '/';
             if (!is_dir($upload_dir)) {
                 mkdir($upload_dir, 0755, true);
             }
