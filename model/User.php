@@ -347,5 +347,23 @@ public function get_hashed_password(): ?string {
         );
     }
 
+    // Vérifie si un autre utilisateur (donc pas moi) utilise déjà ce pseudo
+    public static function is_pseudo_taken_by_other(string $pseudo, int $current_id): bool {
+        $query = self::execute(
+            "SELECT COUNT(*) FROM users WHERE pseudo = :pseudo AND id != :id",
+            ["pseudo" => $pseudo, "id" => $current_id]
+        );
+        return (int)$query->fetchColumn() > 0;
+    }
+
+    // Vérifie si un autre utilisateur utilise déjà cet email (règle métier cruciale)
+    public static function is_email_taken_by_other(string $email, int $current_id): bool {
+        $query = self::execute(
+            "SELECT COUNT(*) FROM users WHERE email = :email AND id != :id",
+            ["email" => $email, "id" => $current_id]
+        );
+        return (int)$query->fetchColumn() > 0;
+    }
+
 
 }

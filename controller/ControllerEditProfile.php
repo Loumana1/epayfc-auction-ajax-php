@@ -59,7 +59,12 @@ class ControllerEditProfile extends Controller
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Invalid email format";
         }
-
+        if (!empty(trim($pseudo)) && ModelEditProfile::is_pseudo_taken(trim($pseudo), $user_id)) {
+            $errors[] = "Username is already taken by another user.";
+        }
+        if (!empty(trim($email)) && ModelEditProfile::is_email_taken(trim($email), $user_id)) {
+            $errors[] = "Email is already used by another user.";
+        }
         if (empty($errors)) {
             ModelEditProfile::update_user($user_id, $full_name, $pseudo, $email, $iban);
             $this->redirect("profile");
@@ -89,6 +94,18 @@ class ModelEditProfile extends \Model
         $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $user_id]);
         $data = $query->fetch();
         return $data ?: null;
+    }
+
+    public static function is_pseudo_taken(string $pseudo, int $user_id): bool
+    {
+        $query = self::execute("SELECT COUNT(*) FROM users WHERE pseudo = :pseudo AND id != :id", ['pseudo' => $pseudo, 'id' => $user_id]);
+        return (int)$query->fetchColumn() > 0;
+    }
+
+    public static function is_email_taken(string $email, int $user_id): bool
+    {
+        $query = self::execute("SELECT COUNT(*) FROM users WHERE email = :email AND id != :id", ['email' => $email, 'id' => $user_id]);
+        return (int)$query->fetchColumn() > 0;
     }
 
     public static function update_user(int $user_id, string $full_name, string $pseudo, string $email, string $iban): bool
