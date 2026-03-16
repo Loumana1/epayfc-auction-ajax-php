@@ -59,9 +59,13 @@ class ControllerEditProfile extends Controller
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = "Invalid email format";
         }
+         if (!empty(trim($full_name)) && ModelEditProfile::is_full_name_taken(trim($full_name), $user_id)) {
+            $errors[] = "Full name is already taken by another user.";
+        }
         if (!empty(trim($pseudo)) && ModelEditProfile::is_pseudo_taken(trim($pseudo), $user_id)) {
             $errors[] = "Username is already taken by another user.";
         }
+       
         if (!empty(trim($email)) && ModelEditProfile::is_email_taken(trim($email), $user_id)) {
             $errors[] = "Email is already used by another user.";
         }
@@ -105,6 +109,12 @@ class ModelEditProfile extends \Model
     public static function is_email_taken(string $email, int $user_id): bool
     {
         $query = self::execute("SELECT COUNT(*) FROM users WHERE email = :email AND id != :id", ['email' => $email, 'id' => $user_id]);
+        return (int)$query->fetchColumn() > 0;
+    }
+
+    public static function is_full_name_taken(string $full_name, int $user_id): bool
+    {
+        $query = self::execute("SELECT COUNT(*) FROM users WHERE full_name = :full_name AND id != :id", ['full_name' => $full_name, 'id' => $user_id]);
         return (int)$query->fetchColumn() > 0;
     }
 
