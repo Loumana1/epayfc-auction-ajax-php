@@ -164,6 +164,36 @@ private function load_item_or_fail(): ?Item {
             'main_picture_path' => $main_picture_path,
         ];
     }
+    public function pictures_service(): void {
+        $user = $this->get_user_or_false();
+        $item_id = $_GET['param1'] ?? null;
+        if (!$item_id || !ctype_digit($item_id)) {
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid item ID']);
+            return;
+        }
+
+
+        $item = Item::get_by_id((int)$item_id);
+        if ($item === false) {
+            http_response_code(404);
+            echo json_encode(['error' => 'Item not found']);
+            return;
+        }
+   
+        $pictures = ItemPicture::get_all_by_item($item->get_Id());
+        $result = [];
+        foreach ($pictures as $pic) {
+            $result[] = [
+                'path' => $pic->picture_path,
+                'thumbnail' => str_replace('.jpg', '_thumbnail.jpg', $pic->picture_path),
+                'priority' => $pic->priority
+            ];
+        }
+    
+        header('Content-Type: application/json');
+        echo json_encode($result);
+    }
     
     // ============== POUR VUE ============
     
@@ -211,6 +241,7 @@ private function load_item_or_fail(): ?Item {
             'show_bid_history' => $item->get_Is_Auction(),
             'auction_ended' => !$is_open && $item->get_Is_Auction(),
             'page_css' => ['open_item.css'],
+            'page_js' => ['open_item.js']
         ];
     }
 }
