@@ -16,6 +16,47 @@
 * {
     box-sizing: border-box;
 }
+/* search bar */
+/* search bar */
+.search-bar {
+    position: relative;
+    max-width: 500px;
+    margin: 1rem auto;
+    padding: 0 1rem;
+}
+
+.search-input {
+    width: 100%;
+    /* On met un grand padding à droite (2.5rem) pour l'icône, et normal à gauche (1rem) */
+    padding: 0.75rem 2.5rem 0.75rem 1rem; 
+    background-color: var(--bg-card); /* Fond sombre adapté */
+    color: var(--text-main); /* Texte clair */
+    border: 1px solid var(--border-color); /* Bordure discrète */
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* Optionnel : pour que le texte "Search" soit bien gris */
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-input:focus {
+    border-color: var(--accent-blue);
+    /* Lueur bleue quand on clique dessus */
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); 
+}
+
+.search-icon {
+    position: absolute;
+    right: 1.6rem; /* On place l'icône à droite */
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none; /* Permet de cliquer "à travers" l'icône sans bloquer l'input */
+}
 
 body {
     background-color: var(--bg-body);
