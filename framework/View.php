@@ -16,8 +16,7 @@ class View {
         if (file_exists($this->file)) {
             extract($data);
             $web_root = Configuration::get("web_root");
-            $view_content_file = __DIR__ . "/../" . $this->file;
-            require __DIR__ . "/layout.php";
+            require $this->file;
         } else {
             throw new Exception("File '$this->file' does'nt exist");
         }

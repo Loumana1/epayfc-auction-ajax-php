@@ -1,3 +1,4 @@
+<!---
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,12 +9,15 @@
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
+-->
+<?php ob_start(); ?>
 
-<body>
+
+
+
 
 <div class="purchases-page">
 
-    <?php require_once "view/partials/_header.php"; ?>
         <div class="page-top-row">
             <div class="page-left">
                 <h1 class="page-title">My Purchases</h1>
@@ -113,7 +117,9 @@
 
 </div>
 
-<?php require_once "view/partials/_navbar.php"; ?>
 
-</body>
-</html>
+    
+
+<?php $content = ob_get_clean(); ?>
+<?php require "view_layout.php"; ?>
+

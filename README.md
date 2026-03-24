@@ -44,6 +44,8 @@ Le site web est complet et fcontionel, nous avons eu quelques soucis avec le fai
 
 ...
 
+modification du framework : Utilisation de l'erreur stylisé. 
+
 ## Notes de version itération 3
 
 ...

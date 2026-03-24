@@ -1,3 +1,5 @@
+<?php ob_start(); ?>
+
 <main class="delete-confirm-container">
     <div class="delete-confirm-box">
 
@@ -25,3 +27,5 @@
         </div>
     </div>
 </main>
+<?php $content = ob_get_clean(); ?>
+<?php require "view_layout.php"; ?>

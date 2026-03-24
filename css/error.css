@@ -8,9 +8,8 @@
 }
 
 .error-icon-wrapper {
-    width: 150px;
-    /* Était 250px */
-    height: 150px;
+    width: 100px;
+    height: 100px;
     background: #c24132;
     border-radius: 50%;
     display: flex;
@@ -20,12 +19,12 @@
 }
 
 .error-icon-wrapper i {
-    font-size: 5rem;
+    font-size: 4rem;
     color: white;
 }
 
 .error-oops {
-    font-size: 4rem;
+    font-size: 3rem;
     font-weight: 800;
     color: #e74c3c;
     margin: 0;
@@ -39,6 +38,7 @@
     border-radius: 16px;
     padding: 30px;
     width: 100%;
+    min-height: 140px;
 
 }
 
@@ -50,20 +50,6 @@
     font-size: 1.2rem;
     color: white;
     overflow-x: auto;
-    min-height: 60px;
+    min-height: 100px;
 }
 
-.btn-error-browse {
-    margin-top: 120px;
-    padding: 14px 40px;
-    background: #c24132;
-    color: white;
-    text-decoration: none;
-    border-radius: 10px;
-    font-weight: 600;
-}
-
-.btn-error-browse:hover {
-
-    background: #602020c1;
-}

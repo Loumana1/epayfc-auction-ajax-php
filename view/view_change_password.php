@@ -1,3 +1,6 @@
+
+<?php ob_start(); ?>
+
 <?php $form_id = 'change-password-form'; ?>
 <div class="content-wrapper">
     <main class="main-content change-password-container">
@@ -77,3 +80,5 @@
 
     </main>
 </div>
+<?php $content = ob_get_clean(); ?>
+<?php require "view_layout.php"; ?>
