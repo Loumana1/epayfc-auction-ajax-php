@@ -1,3 +1,6 @@
+
+<?php ob_start(); ?>
+
 <?php $sales_count = (int)($statistics['sales_count'] ?? 0); ?>
 <div class="content-wrapper">
     <main class="main-content">
@@ -12,19 +15,21 @@
             </span>
         </section>
 
-        <?php require __DIR__ . "/partials/sales/_sales_stats.php"; ?>
+        <?php require "partials/sales/_sales_stats.php"; ?>
 
         <?php if (!empty($sale_cards)): ?>
             <section class="sales-grid">
                 <?php foreach ($sale_cards as $card): ?>
-                        <?php require __DIR__ . "/partials/sales/_sale_card.php"; ?>
+                        <?php require "partials/sales/_sale_card.php"; ?>
                
                 <?php endforeach; ?>
             </section>
         <?php else: ?>
-            <?php require __DIR__ . "/partials/sales/_no_sales.php"; ?>
+            <?php require "partials/sales/_no_sales.php"; ?>
         <?php endif; ?>
 
 
     </main>
 </div>
+<?php $content = ob_get_clean(); ?>
+<?php require "view_layout.php"; ?>

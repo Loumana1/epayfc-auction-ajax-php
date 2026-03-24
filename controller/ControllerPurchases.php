@@ -48,6 +48,7 @@ class ControllerPurchases extends Controller {
             "stats" => $stats,
             "currentUser" => $user,
 
+            'page_css' => ['purchases.css'],
             "header_title"        => "My purchases",
             "header_icon"         => "bi-cart4",
             "header_subtitle"     => "Track the gear you've successfully secured.",
