@@ -6,7 +6,6 @@ require_once "model/Item.php";
 require_once "model/User.php";  
 require_once "utils/AppTime.php";
 require_once "utils/format.php";
-require_once "model/Bid.php";
 
 class ControllerSales extends Controller {
 
@@ -24,6 +23,7 @@ class ControllerSales extends Controller {
       
         $sold_items = Item::get_sold_items_by_owner($user_id, $now);
 
+    
           $sale_cards = [];
             foreach ($sold_items as $item) {
                 if (!$item instanceof Item) {
@@ -32,6 +32,7 @@ class ControllerSales extends Controller {
                 $sale_cards[] = $this->build_sale_card_data($item);
             }
 
+            $sales_count = (int)($statistics['sales_count'] ?? 0); 
     
             (new View("sales"))->show([
             'header_title' => 'Sales',
@@ -41,16 +42,17 @@ class ControllerSales extends Controller {
              'sale_cards' => $sale_cards,
             'current_user' => $current_user,
             'now' => $now,
-            'page_css' => ['sales.css']
+            'page_css' => ['sales.css'],
+            'sales_count' => $sales_count
         ]);
 }
 
 private function build_sale_card_data(Item $item): array {
-    $main_pic = $item->get_main_picture();
+    $main_pic = ItemPicture::get_main_picture($item->get_Id());
     $pic_path = $main_pic ? $main_pic->picture_path : null;
 
     $closed_at = $item->get_sold_at();
-
+   
     return [
         'item_id' => $item->get_Id(),
         'thumb_url' => $pic_path ?  str_replace('.jpg', '_thumbnail.jpg', $pic_path) : '',
