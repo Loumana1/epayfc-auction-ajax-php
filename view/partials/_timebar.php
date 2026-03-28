@@ -1,6 +1,4 @@
-<?php
-require_once __DIR__ . "/../../utils/AppTime.php";
-?>
+
 <nav class="navBar navBar-time">
     <div class="time-display">
         <i class="bi bi-clock"></i>
@@ -8,9 +6,7 @@ require_once __DIR__ . "/../../utils/AppTime.php";
     </div>
     <div class="time-controls">
 
-    <a href="<?= $web_root?>" class="time-btn time-btn-home">
-            <i class="bi bi-house-fill"></i> Home
-        </a>
+
     <a href="setup" class="time-btn time-btn-setup" >
             <i class="bi bi-database-fill-gear"></i> Setup
         </a>
@@ -29,16 +25,7 @@ require_once __DIR__ . "/../../utils/AppTime.php";
             <input type="hidden" name="unit" value="week">
             <button type="submit" class="time-btn">+1week</button>
         </form>
-        <form method="post" action="time/advance" style="display: inline;">
-            <input type="hidden" name="amount" value="1">
-            <input type="hidden" name="unit" value="month">
-            <button type="submit" class="time-btn">+1month</button>
-        </form>
-        <form method="post" action="time/advance" style="display: inline;">
-            <input type="hidden" name="amount" value="-1">
-            <input type="hidden" name="unit" value="month">
-            <button type="submit" class="time-btn">-1month</button>
-        </form>
+
         <form method="post" action="time/reset" style="display: inline;">
             <button type="submit" class="time-btn time-btn-reset">
                 <i class="bi bi-arrow-clockwise"></i> Reset

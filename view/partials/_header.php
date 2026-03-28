@@ -1,5 +1,6 @@
 <?php
 // Variables attendues
+//Est ce oke de faire ca dans vue ? 
 $header_title = $header_title ?? 'Page';
 $header_icon = $header_icon ?? 'bi-house';
 $back_url = $back_url ?? null ;
