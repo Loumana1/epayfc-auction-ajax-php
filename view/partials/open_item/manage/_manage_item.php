@@ -7,7 +7,7 @@ if (!$is_owner) return;
     <div class="owner-actions">
         
         <!-- Edit -->
-        <?php if ($has_active_bids ||!$is_open): ?>
+        <?php if ($has_bids_time ||!$is_open): ?>
             <span class="btn-manage-item btn-disabled">
             <i class="bi bi-pencil"></i> Edit Item Details</span>
         <?php else: ?>

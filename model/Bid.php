@@ -2,6 +2,7 @@
 require_once "framework/Model.php";
 require_once "utils/AppTime.php";
 require_once "utils/format.php";
+require_once "model/Item.php";
 class Bid extends Model {
     
     private ?int $id;
@@ -33,10 +34,13 @@ class Bid extends Model {
     
 
     public function validate(): array {
-        require_once "model/Item.php";
+
         $errors = [];
         $now = AppTime::get_current_datetime();
         
+      //  tous necessaire !! 
+      //  quelqu'un peut envoyer un POST directement (curl, Postman)
+      // On reverifie
     
         $item = Item::get_by_id($this->item_id);
         if ($item === false) {
@@ -46,21 +50,25 @@ class Bid extends Model {
         
 
         if ($item->get_owner() == $this->owner_id) {
-            $errors[] = "Vous ne pouvez pas enchérir sur votre propre annonce";
+            $errors[] = "You cannot bid on your own items ";
         }
         
 
         if (!$item->is_open()) {
-            $errors[] = "Cette annonce est fermée";
+            $errors[] = "This listing is closed";
         }
         
 
         $min_bid = $item->get_min_bid_amount();
         if ($this->amount < $min_bid) {
-            $errors[] = "Le montant minimum est " . format_euro($min_bid);
+            $errors[] = "Minimum bid is  " . format_euro($min_bid);
 
         }
-        
+        $max_bid = 99999999.99;
+        if ($this->amount > $max_bid) {
+            $errors[] = "Maximum bid is " . format_euro($max_bid);
+        }
+                
         return $errors;
     }
     

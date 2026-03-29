@@ -27,7 +27,9 @@ class ControllerBrowser extends Controller
             if (!$item instanceof Item)
                 continue;
 
-            $main_picture = ItemPicture::get_main_picture($current_user_id);
+        //Peut etre remplacé par 
+        //$main_picture = ItemPicture::get_main_picture($current_user_id);
+            $main_picture = $item->get_main_picture();
 
             // Récupérer le pseudo du vendeur
             $seller_pseudo = $item->get_seller()->get_Pseudo();

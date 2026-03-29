@@ -76,11 +76,7 @@ private function load_item_or_fail(): ?Item {
     
     private function check_access(Item $item, array $context): bool {
         if (!$context['is_open'] && !$context['is_owner'] && !$context['is_highest_bidder']) {
-            (new View("error"))->show([
-                'error' => "This item is only available to the owner or the winner.",
-                'header_title' => 'Access denied',
-                    'page_css' => ['error.css'],
-            ]);
+            $this->show_error("This item is only available to the owner or the winner.", "Access denied");
             return false;
         }
         return true;
@@ -148,7 +144,7 @@ private function load_item_or_fail(): ?Item {
         $main_picture_path = null;
         if (!empty($pictures)) {
             if ($selected_img === 0) {
-                $main_pic = $item->get_main_picture();
+                $main_pic = ItemPicture::get_main_picture($item->get_Id());
                 $main_picture_path = $main_pic !== null 
                     ? $main_pic->picture_path 
                     : $pictures[0]->picture_path;
@@ -165,7 +161,6 @@ private function load_item_or_fail(): ?Item {
         ];
     }
     public function pictures_service(): void {
-        $user = $this->get_user_or_false();
         $item_id = $_GET['param1'] ?? null;
         if (!$item_id || !ctype_digit($item_id)) {
             http_response_code(400);
@@ -211,10 +206,20 @@ private function load_item_or_fail(): ?Item {
             'purchases' => 'purchases',
             default => 'browser'
         };
+
         $is_open = $context['is_open'];
         $has_bids_time = $context['has_bids_time'];
         $is_sold = $context['is_sold'];
         
+      
+        $is_direct_sale_only = $item->get_Is_Direct_Sale() && !$item->get_Is_Auction();
+        $btn_class = $is_direct_sale_only ? 'btn-place-bid' : 'btn-buy-now';
+        $btn_text = $is_direct_sale_only ? 'BUY NOW' : 'Buy Now at ' . format_euro($item->get_Buy_Now_Price());
+        
+
+
+
+
         return [
             'header_title' => 'Item open',
             'header_icon' => 'bi-cart-fill',
@@ -236,12 +241,13 @@ private function load_item_or_fail(): ?Item {
             'show_buttons' => $button_state['show_buttons'],
             'buttons_disabled' => $button_state['buttons_disabled'],
             'status_message' => $status_message,
-            'has_active_bids' => $has_bids_time,
             'item_purchased' => !$is_open && $is_sold,
             'show_bid_history' => $item->get_Is_Auction(),
             'auction_ended' => !$is_open && $item->get_Is_Auction(),
+            'buy_now_btn_class' => $btn_class,
+            'buy_now_btn_text'  =>  $btn_text,
             'page_css' => ['open_item.css'],
-            'page_js' => ['open_item.js']
+            'page_js' => ['open_item.js', 'bid.js']
         ];
     }
 }

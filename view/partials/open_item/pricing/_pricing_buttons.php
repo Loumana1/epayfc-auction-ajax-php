@@ -1,6 +1,7 @@
 <?php
 if (!$show_buttons) return;
 ?>
+<div id="bid-feedback" class="bid-feedback" style="display:none;"></div>
 
 <?php if ($item->get_Is_Auction()): ?>
 <form class="bid-form" method="post" action="bid/create">
@@ -25,14 +26,10 @@ if (!$show_buttons) return;
     <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
     <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
     
-    <?php 
-    $is_direct_sale_only = $item->get_Is_Direct_Sale() && !$item->get_Is_Auction();
-    $btn_class = $is_direct_sale_only ? 'btn-place-bid' : 'btn-buy-now';
-    $btn_text = $is_direct_sale_only ? 'BUY NOW' : 'Buy Now at ' . format_euro($item->get_Buy_Now_Price());
-    ?>
+
     
-    <button type="submit" class="<?= $btn_class ?>" <?= $buttons_disabled ? 'disabled' : '' ?>>
-        <?= $btn_text ?>
+    <button type="submit" class="<?= $buy_now_btn_class ?>" <?= $buttons_disabled ? 'disabled' : '' ?>>
+        <?= $buy_now_btn_text  ?>
     </button>
 </form>
 <?php endif; ?>
