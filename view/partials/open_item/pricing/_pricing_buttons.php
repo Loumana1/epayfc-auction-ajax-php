@@ -3,9 +3,9 @@ if (!$show_buttons) return;
 ?>
 <div id="bid-feedback" class="bid-feedback" style="display:none;"></div>
 
-<?php if ($item->get_Is_Auction()): ?>
+<?php if ($is_auction): ?>
 <form class="bid-form" method="post" action="bid/create">
-    <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
+    <input type="hidden" name="item_id" value="<?= $item_id ?>">
     <div class="bid-input-group">
         <span>€</span>
         <input type="number" name="amount" step="0.01" 
@@ -21,10 +21,10 @@ if (!$show_buttons) return;
 <?php endif; ?>
 
 
-<?php if ($item->get_Has_buy_now_price()): ?>
+<?php if ($has_buy_now_price): ?>
 <form method="post" action="bid/create">
-    <input type="hidden" name="item_id" value="<?= $item->get_Id() ?>">
-    <input type="hidden" name="amount" value="<?= $item->get_Buy_Now_Price() ?>">
+    <input type="hidden" name="item_id" value="<?= $item_id ?>">
+    <input type="hidden" name="amount" value="<?= $buy_now_price?>">
     
 
     
