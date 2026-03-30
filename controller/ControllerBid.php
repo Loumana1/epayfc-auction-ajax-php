@@ -76,7 +76,7 @@ class ControllerBid extends Controller {
     private function process_bid(Item $item, object $user, float $amount): void {
 
         $bid = new Bid($item->get_Id(), $user->get_id(), $amount);
-        $errors = $bid->persist();
+        $errors = $bid->persist($item);
 
         $is_ajax = ($_POST['format'] ?? '') === 'json';
 
@@ -88,7 +88,7 @@ class ControllerBid extends Controller {
             } else {
                 echo json_encode([
                     'success' => true, 
-                    'message' => 'You bidded ' . format_euro($amount)
+                    'message' => 'You successfully bidded ' . format_euro($amount)
                 ]);
             }
             return;

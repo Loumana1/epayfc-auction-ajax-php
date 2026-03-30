@@ -33,21 +33,17 @@ class Bid extends Model {
     public function get_created_at(): string { return $this->created_at; }
     
 
-    public function validate(): array {
+    public function validate(?Item $item): array {
 
         $errors = [];
         $now = AppTime::get_current_datetime();
         
       //  tous necessaire !! 
-      //  quelqu'un peut envoyer un POST directement (curl, Postman)
-      // On reverifie
+      //  quelqu'un peut envoyer un POST directement 
+      // faut reverifier directement ici au cas ou 
     
-        $item = Item::get_by_id($this->item_id);
-        if ($item === false) {
-            $errors[] = "Item introuvable";
-            return $errors;
-        }
-        
+    
+  
 
         if ($item->get_owner() == $this->owner_id) {
             $errors[] = "You cannot bid on your own items ";
@@ -73,8 +69,8 @@ class Bid extends Model {
     }
     
 
-    public function persist(): array {
-        $errors = $this->validate();
+    public function persist(?Item $item = null): array {
+        $errors = $this->validate($item);
         if (!empty($errors)) {
             return $errors;
         }

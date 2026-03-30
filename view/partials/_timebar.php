@@ -1,4 +1,6 @@
-
+<?php
+require_once "utils/AppTime.php";
+?>
 <nav class="navBar navBar-time">
     <div class="time-display">
         <i class="bi bi-clock"></i>

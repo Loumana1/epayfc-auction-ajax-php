@@ -240,8 +240,10 @@ public function is_open(): bool {
 
     
     public function get_min_bid_amount(): float {
-        $maxBid = $this->get_max_bid_time();
-        return $maxBid ? $maxBid + 0.01 : $this->starting_bid;
+        $highest_bid = $this->get_max_bid_time();
+        return $highest_bid
+        ? $highest_bid + 0.01
+        : round((float) $this->starting_bid, 2);
     }
 
 
@@ -267,6 +269,7 @@ public static function delete_by_id(int $itemId): void {
 public function delete(): void {
     self::delete_by_id($this->id);
 }
+
     public static function get_Item_Participating(int $userId, string $now): array {
         $query = "SELECT * FROM v_items_status 
         WHERE id IN (SELECT item FROM bids WHERE owner = :user_id)
