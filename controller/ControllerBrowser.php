@@ -90,7 +90,9 @@ class ControllerBrowser extends Controller
             'current_user_id' => $current_user_id,
             'currentUser' => $current_user,
             'header_title' => 'Browser',
-            'header_icon' => 'bi-cart-fill'
+            'header_icon' => 'bi-cart-fill',
+            'page_css' => ['browser.css'],
+            'page_js' => ['search_filter.js']
         ]);
 
     }
@@ -121,4 +123,5 @@ class ControllerBrowser extends Controller
         return Item::get_Item_Available($user_id, $now);
     }
 
-}
+} 
+?>

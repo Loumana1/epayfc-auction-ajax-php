@@ -3,7 +3,10 @@
         <div class="item-list"> 
             <?php if (!empty($participating_items)): ?>
                 <?php foreach ($participating_items as $item): ?>
-                    <div class="item-card"> 
+                    <div class="item-card"
+                    data-title="<?= htmlspecialchars($item['title']?? '') ?>"
+                    data-seller="<?= htmlspecialchars($item['seller_pseudo']?? '') ?>"
+                    data-description="<?= htmlspecialchars($item['description']?? '') ?>"> 
                         <a href="open_item/index/<?= $item['id'] ?>">
                             <?php if ($item['pic_path']): ?>
                                 <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" class="item-image">

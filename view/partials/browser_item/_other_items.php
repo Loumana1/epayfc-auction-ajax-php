@@ -7,7 +7,10 @@
                 $precision = (int)($config['Rules']['decimal_precision'] ?? 2); 
             ?>
             <?php foreach ($available_items as $item): ?>
-                <div class="item-card">
+                <div class="item-card"
+                    data-title="<?= htmlspecialchars(strtolower($item['title'])) ?>"
+                    data-seller="<?= htmlspecialchars(strtolower($item['seller_pseudo'])) ?>"
+                    data-description="<?= htmlspecialchars(strtolower($item['description'])) ?>">
                     <a href="open_item/index/<?= $item['id'] ?>">
                         <?php if ($item['pic_path']): ?>
                             <?php $thumb = str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']); ?>

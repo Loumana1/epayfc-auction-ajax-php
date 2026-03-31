@@ -21,7 +21,8 @@ class ControllerProfile extends Controller
             'current_user_id' => $current_user_id,
             'current_user' => $current_user,
             'header_title' => 'Profile',
-            'header_icon' => 'bi-cart-fill'
+            'header_icon' => 'bi-cart-fill',
+            'page_css' => ['profile.css']
         ]);
     }
 
