@@ -527,3 +527,11 @@ button:disabled,
     border-radius: 8px;
     font-weight: 600;
 }
+.bid-feedback {
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+.bid-success { background: #d4edda; color: #155724; }
+.bid-error { background: #f8d7da; color: #721c24; }

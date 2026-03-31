@@ -9,7 +9,7 @@
 
         <?php require "partials/open_item/_thumbnails.php"; ?>
 
-        <?php if (!empty($show_bid_history)): ?>
+        <?php if (!empty($is_auction)): ?>
             <?php require "partials/open_item/_bid_history.php"; ?>
         <?php endif; ?>
 

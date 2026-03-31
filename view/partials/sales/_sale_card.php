@@ -2,7 +2,7 @@
     <a href="open_item/index/<?= (int)$card['item_id'] ?>/0/sales" class="sale-card-link">
         <div class="sale-card-image">
             <?php if (!empty($card['thumb_url'])): ?>
-                <img src="<?= htmlspecialchars($card['thumb_url']) ?>" alt="">
+                <img src="<?= $card['thumb_url'] ?>" alt="">
             <?php else: ?>
                 <div class="no-pic">No Image</div>
             <?php endif; ?>
@@ -19,8 +19,8 @@
             <?php endif; ?>
         </div>
         <div class="sale-card-info">
-            <h3><?= htmlspecialchars($card['title']) ?></h3>
-            <p class="seller">by <?= htmlspecialchars($card['seller_pseudo']) ?></p>
+            <h3><?= $card['title'] ?></h3>
+            <p class="seller">by <?= $card['seller_pseudo'] ?></p>
             <div class="pricing">
                 <span class="price"><?= format_euro($card['display_price']) ?></span>
                 <?php if (!empty($card['max_bid'])): ?>
@@ -36,15 +36,15 @@
     <div class="sale-details">
         <div class="detail-row">
             <i class="bi bi-currency-dollar"></i>
-            <span>Final price <?= format_euro($card['max_bid']) ?></span>
+            <span>Final price <?= format_euro($card['max_bid'] ?? $card['display_price']) ?></span>
         </div>
         <div class="detail-row">
             <i class="bi bi-trophy"></i>
-            <span><?= htmlspecialchars($card['winner_pseudo'] ?? 'Unknown') ?></span>
+            <span><?= $card['winner_pseudo'] ?? 'Unknown' ?></span>
         </div>
         <div class="detail-row">
             <i class="bi bi-clock-history"></i>
-            <span>Closed on <?= htmlspecialchars($card['closed_at_formatted']) ?></span>
+            <span>Closed on <?= $card['closed_at_formatted'] ?></span>
         </div>
     </div>
 </div>

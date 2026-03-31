@@ -1,6 +1,6 @@
 
     <!-- caché par dfault -->
-<div id="item-carousel" class="carousel slide d-none" data-bs-ride="false" data-item-id="<?= $item->get_Id() ?>">
+<div id="item-carousel" class="carousel slide d-none" data-bs-ride="false" data-item-id="<?= $item_id ?>">
     <div class="carousel-inner" id="carousel-inner">
         
     </div>
@@ -14,7 +14,7 @@
 <section id="static-main-image">
     <?php if (!empty($main_picture_path)): ?>
         <img src="<?= $main_picture_path ?>" 
-             alt="<?= $item->get_Title() ?>"
+             alt="<?= $item_title ?>"
              class="main-item-image">
     <?php else: ?>
         <div class="image-placeholder">

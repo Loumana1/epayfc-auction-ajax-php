@@ -19,17 +19,6 @@ class AppTime {
                 return $amount * 86400;
             case 'week':
                 return $amount * 604800;
-                //toutes les itesms sont deja passé dans le temps 
-                //je veux pouvoir returner dans le temps 
-                //pose quel quelque prblèmes :
-                // - que se passe t'il pour les bids déjà fait ?
-                // - que ce passe t'il pour les elements vendu ? 
-                // - les annonces active ? 
-                // - pour, notPurchased, isOpen, hasBids,  Je ne verifie la jamais la date 
-                // - je vois qu'a utilisé dDatetime
-//convertir le moi en seconde 
-                case 'month':
-                    return $amount * 2592000;
             default:
                 return 0;
         }
@@ -46,9 +35,7 @@ class AppTime {
 
     public static function get_current_datetime(): string {
         $dt = new DateTime();
-        //Pouvoir prendre des chiffre negatifs -> retourner en arriere avec month
-        $offset = self::get_offset();
-        $dt->modify($offset . " seconds");
+        $dt->modify("+" . self::get_offset() . " seconds");
         return $dt->format("Y-m-d H:i:s");
     }
     public static function get_current_timestamp(): int { return time() + self::get_offset(); }

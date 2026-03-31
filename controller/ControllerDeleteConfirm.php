@@ -43,6 +43,9 @@ class ControllerDeleteConfirm extends Controller {
             'item' => $item,
             'current_user' => $user,
             'seller' => $seller,
+            'item_title' => $item->get_Title(),
+            'seller_full_name' => $seller->get_FullName(),
+            'item_id' => $item_id,
             'page_css' => ['delete_item.css']
         ]);
     }

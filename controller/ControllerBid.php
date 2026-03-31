@@ -1,17 +1,16 @@
 <?php
 require_once "framework/Controller.php";
-require_once "framework/View.php";
 require_once "model/Item.php";
 require_once "model/Bid.php";
 require_once "model/User.php"; 
 require_once "utils/AppTime.php";
-
+require_once "utils/format.php";
 class ControllerBid extends Controller {
 
 
     // Si quelqu'un accède à bid sans action, rediriger
     public function index(): void {
-        $this->redirect("browse_items");
+        $this->redirect("browser");
     }
 
 
@@ -77,19 +76,27 @@ class ControllerBid extends Controller {
     private function process_bid(Item $item, object $user, float $amount): void {
 
         $bid = new Bid($item->get_Id(), $user->get_id(), $amount);
-        
-        try {
-            $errors = $bid->persist();
-            //je pourrrais creer erreur stylisé 
-     
-        } catch (Exception $e) {
+        $errors = $bid->persist($item);
 
+        $is_ajax = ($_POST['format'] ?? '') === 'json';
+
+        if ($is_ajax) {
+            header('Content-Type: application/json');
+            if (!empty($errors)) {
+                http_response_code(422);
+                echo json_encode(['success' => false, 'errors' => $errors]);
+            } else {
+                echo json_encode([
+                    'success' => true, 
+                    'message' => 'You successfully bidded ' . format_euro($amount)
+                ]);
+            }
+            return;
         }
         
-        $this->redirect("open_item", "index", $item->get_Id());
+        $this->redirect("open_item", "index", (string)$item->get_Id());
+
+
     }
-
-
-
 
 }

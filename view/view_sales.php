@@ -1,7 +1,7 @@
 
 <?php ob_start(); ?>
 
-<?php $sales_count = (int)($statistics['sales_count'] ?? 0); ?>
+
 <div class="content-wrapper">
     <main class="main-content">
 
@@ -11,7 +11,8 @@
                 <p class="page-subtitle">A snapshot of the deals you've wrapped up.</p>
             </div>
             <span class="badge badge-green">
-                <?= $sales_count ?> sale<?= $sales_count > 1 ? 's' : '' ?>
+                <!--constante linguistique, ok pou nb dur--> 
+                <?= $sales_count ?> sale<?= $sales_count !== 1 ? 's' : '' ?>
             </span>
         </section>
 
