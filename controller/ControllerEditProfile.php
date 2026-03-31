@@ -28,7 +28,8 @@ class ControllerEditProfile extends Controller
             'header_title' => 'Edit Profile',
             'header_icon' => 'bi-person-fill',
             'errors' => [],
-            'success' => false
+            'success' => false,
+            'page_css' => ['edit_Profile.css']
         ]);
     }
 
@@ -86,7 +87,7 @@ class ControllerEditProfile extends Controller
             'errors' => $errors,
             'success' => false,
             'header_title' => 'Edit Profile',
-            'header_icon' => 'bi-person-fill'
+            'header_icon' => 'bi-person-fill',
         ]);
     }
 }
