@@ -13,6 +13,7 @@ require_once "model/ItemPicture.php";
     <link rel="stylesheet" href="css/my_items.css">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <script src="js/search_filter.js"></script>
 </head>
 
 <body>
@@ -39,6 +40,11 @@ require_once "model/ItemPicture.php";
         return "{$diff->i}m left";
     }
     ?>
+    <div class = "search-bar">
+        <input type="text" id="search-input" placeholder="Search item"
+        class="search-input">
+        <i class="bi bi-search search-icon"></i>
+    </div>
 
     <!-- ACTIVE ITEMS -->
     <?php if (!empty($active_items)): ?>
@@ -52,7 +58,11 @@ require_once "model/ItemPicture.php";
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
                     <div class="item-card"
-                         onclick="window.location='open_item/index/<?= $item->get_id() ?>'">
+                         onclick="window.location='open_item/index/<?= $item->get_id() ?>'"
+                    data-title="<?= htmlspecialchars($item->get_title() ?? '') ?>"
+                    data-seller="<?= htmlspecialchars($item->get_seller()->get_Pseudo() ?? '') ?>"
+                    data-description="<?= htmlspecialchars($item->get_Description() ?? '') ?>">
+                         
 
                         <div class="image-wrapper">
                             <img src="<?= $img ?>" alt="">

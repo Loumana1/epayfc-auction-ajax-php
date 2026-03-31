@@ -5,6 +5,44 @@ body {
     background: linear-gradient(180deg, #0b1220, #0a1020);
     color: #e5e7eb;
 }
+/* search bar */
+.search-bar {
+    position: relative;
+    max-width: 500px;
+    margin: 1rem auto;
+    padding: 0 1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 1rem; 
+    background-color: var(--bg-card); 
+    color: var(--text-main); 
+    border: 1px solid var(--border-color); 
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+
+.search-input::placeholder {
+    color: var(--text-muted);
+}
+
+.search-input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); 
+}
+
+.search-icon {
+    position: absolute;
+    right: 1.6rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    pointer-events: none; 
+}
 
 .my-items-page {
     padding: 24px;
