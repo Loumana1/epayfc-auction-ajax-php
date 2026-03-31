@@ -15,7 +15,7 @@ class ControllerSales extends Controller {
         $user_id = $current_user->get_Id();
         
         
-        $now = AppTime::get_current_datetime();
+        $now = date('Y-m-d H:i:s', AppTime::get_current_timestamp());
         
         
         $statistics = Item::get_sales_statistics($user_id, $now);
@@ -48,15 +48,16 @@ class ControllerSales extends Controller {
 }
 
 private function build_sale_card_data(Item $item): array {
-    $main_pic = ItemPicture::get_main_picture($item->get_Id());
+    $pictures = ItemPicture::get_all_by_item($item->get_Id());
+    $main_pic = !empty($pictures) ? $pictures[0] : null;
     $pic_path = $main_pic ? $main_pic->picture_path : null;
 
     $closed_at = $item->get_sold_at();
    
     return [
         'item_id' => $item->get_Id(),
-        'thumb_url' => $pic_path ?  str_replace('.jpg', '_thumbnail.jpg', $pic_path) : '',
-        'picture_count' => count(ItemPicture::get_all_by_item($item->get_Id())),
+        'thumb_url' => $main_pic ?  str_replace('.jpg', '_thumbnail.jpg', $pic_path) : '',
+        'picture_count' => count($pictures),
         'title' => $item->get_Title(),
         'seller_pseudo' => $item->get_seller()->get_Pseudo(),
         'display_price' => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),

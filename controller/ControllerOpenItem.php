@@ -75,11 +75,14 @@ private function load_item_or_fail(): ?Item {
     // ============ CONTRÔLE ACCES ============
     
     private function check_access(Item $item, array $context): bool {
+        /*
         if (!$context['is_open'] && !$context['is_owner'] && !$context['is_highest_bidder']) {
             $this->show_error("This item is only available to the owner or the winner.", "Access denied");
             return false;
         }
+        */
         return true;
+        
     }
     // ========== ETAT DES BOUTONS ============
     
@@ -125,6 +128,9 @@ private function load_item_or_fail(): ?Item {
             }
             return "This listing ended without a buyer.";
         }
+
+        if ($context['is_sold'])
+            return "This item is sold.";
         
         return '';
     }
@@ -256,11 +262,13 @@ private function load_item_or_fail(): ?Item {
             'is_auction' => $item->get_Is_Auction(),
             'starting_bid' => $item->get_Starting_Bid(),
             'auction_ended' => !$is_open && $item->get_Is_Auction(),
+            'can_delete' => $is_open && !$has_bids_time,
 
 
 
             'buy_now_btn_class' => $btn_class,
             'buy_now_btn_text'  =>  $btn_text,
+            'from' => $from ?? '',
             'page_css' => ['open_item.css'],
             'page_js' => ['open_item.js', 'bid.js']
         ];

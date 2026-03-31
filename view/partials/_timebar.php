@@ -4,7 +4,7 @@ require_once "utils/AppTime.php";
 <nav class="navBar navBar-time">
     <div class="time-display">
         <i class="bi bi-clock"></i>
-        <span class="time-text"><?= date('d/m/y H:i', strtotime(AppTime::get_current_datetime())) ?></span>
+        <span class="time-text"><?= date('d/m/y H:i', AppTime::get_current_timestamp()) ?></span>
     </div>
     <div class="time-controls">
 

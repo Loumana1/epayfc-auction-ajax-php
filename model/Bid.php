@@ -3,6 +3,7 @@ require_once "framework/Model.php";
 require_once "utils/AppTime.php";
 require_once "utils/format.php";
 require_once "model/Item.php";
+require_once "framework/Configuration.php";
 class Bid extends Model {
     
     private ?int $id;
@@ -26,12 +27,6 @@ class Bid extends Model {
     }
     
 
-    public function get_id(): ?int { return $this->id; }
-    public function get_item_id(): int { return $this->item_id; }
-    public function get_owner_id(): int { return $this->owner_id; }
-    public function get_amount(): float { return $this->amount; }
-    public function get_created_at(): string { return $this->created_at; }
-    
 
     public function validate(?Item $item): array {
 
@@ -47,22 +42,27 @@ class Bid extends Model {
 
         if ($item->get_owner() == $this->owner_id) {
             $errors[] = "You cannot bid on your own items ";
+            return $errors;
         }
         
 
         if (!$item->is_open()) {
             $errors[] = "This listing is closed";
+            return $errors;
         }
-        
+
+   
 
         $min_bid = $item->get_min_bid_amount();
         if ($this->amount < $min_bid) {
             $errors[] = "Minimum bid is  " . format_euro($min_bid);
+            return $errors;
 
         }
-        $max_bid = 99999999.99;
+        $max_bid = (float) Configuration::get("max_bid_amount");
         if ($this->amount > $max_bid) {
             $errors[] = "Maximum bid is " . format_euro($max_bid);
+            return $errors;
         }
                 
         return $errors;
@@ -125,8 +125,8 @@ class Bid extends Model {
              ORDER BY amount DESC, created_at DESC LIMIT 1",
             ['item_id' => $item_id, 'now' => $now]
         );
-        $highestId = $query->fetchColumn();
-        return $highestId !== false && (int)$highestId === $user_id;
+        $highest_Id = $query->fetchColumn();
+        return $highest_Id !== false && (int)$highest_Id === $user_id;
     }
 
 }

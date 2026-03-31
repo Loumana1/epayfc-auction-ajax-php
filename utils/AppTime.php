@@ -35,6 +35,7 @@ class AppTime {
 
     public static function get_current_datetime(): string {
         $dt = new DateTime();
+        $dt->modify("+" . self::get_offset() . " seconds");
         return $dt->format("Y-m-d H:i:s");
     }
     public static function get_current_timestamp(): int { return time() + self::get_offset(); }

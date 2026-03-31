@@ -1,6 +1,6 @@
 
     <!-- caché par dfault -->
-<div id="item-carousel" class="carousel slide d-none" data-bs-ride="false" data-item-id="<?= $item_title ?>">
+<div id="item-carousel" class="carousel slide d-none" data-bs-ride="false" data-item-id="<?= $item_id ?>">
     <div class="carousel-inner" id="carousel-inner">
         
     </div>

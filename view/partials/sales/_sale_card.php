@@ -36,7 +36,7 @@
     <div class="sale-details">
         <div class="detail-row">
             <i class="bi bi-currency-dollar"></i>
-            <span>Final price <?= format_euro($card['max_bid']) ?></span>
+            <span>Final price <?= format_euro($card['max_bid'] ?? $card['display_price']) ?></span>
         </div>
         <div class="detail-row">
             <i class="bi bi-trophy"></i>

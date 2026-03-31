@@ -30,7 +30,7 @@ if (!$is_owner) return;
         <?php endif; ?>
         
         <!-- Delete -->
-        <?php if (!$is_open): ?>
+        <?php if (!$can_delete): ?>
             <span class="btn-delete-item btn-disabled">
             <i class="bi bi-trash"></i> Delete Item
 
