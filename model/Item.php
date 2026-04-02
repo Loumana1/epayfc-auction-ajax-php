@@ -363,7 +363,7 @@ public function delete(): void {
     return $this->end_at;
 }
 
-    private static function title_exists_for_owner(string $title, int $owner, ?int $exclude_id): bool {
+    public static function title_exists_for_owner(string $title, int $owner, ?int $exclude_id): bool {
         $sql = "SELECT COUNT(*) FROM items WHERE title = :title AND owner = :owner";
         $params = ["title" => $title, "owner" => $owner];
 
@@ -381,8 +381,10 @@ public function delete(): void {
 
     
     $title = trim($this->title);
-    if (strlen($title) < 3 || strlen($title) > 50) {
-        $errors["title"] = "Title length must be between 3 and 50 characters.";
+    $title_min = (int) Configuration::get('title_min_length');
+    $title_max = (int) Configuration::get('title_max_length');
+    if (strlen($title) < $title_min || strlen($title) > $title_max) {
+        $errors["title"] = "Title length must be between $title_min and $title_max characters.";
     } elseif (self::title_exists_for_owner($title, $this->owner, $this->id)) {
         $errors["title"] = "You already have an item with this title.";
     }
