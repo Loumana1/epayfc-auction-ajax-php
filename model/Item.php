@@ -242,10 +242,9 @@ public function is_open(): bool {
     public function get_min_bid_amount(): float {
         $highest_bid = $this->get_max_bid_time();
         return $highest_bid
-        ? $highest_bid + 0.01
+        ? round($highest_bid + 0.01, 2)
         : round((float) $this->starting_bid, 2);
     }
-
 
 
 
