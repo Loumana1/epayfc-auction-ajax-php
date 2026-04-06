@@ -121,3 +121,25 @@ body {
     border-radius: 6px;
     text-align: left;
 }
+
+input.is-invalid, 
+textarea.is-invalid {
+    border: 2px solid #f87171 !important;
+}
+
+
+input.is-valid, 
+textarea.is-valid {
+    border: 2px solid #34d399 !important;
+}
+
+
+input.is-invalid:focus {
+    box-shadow: 0 0 0 1px #f87171;
+    outline: none;
+}
+
+input.is-valid:focus {
+    box-shadow: 0 0 0 1px #34d399;
+    outline: none;
+}

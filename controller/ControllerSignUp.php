@@ -69,4 +69,18 @@ class ControllerSignup extends Controller
     {
         $this->index();
     }
+
+    
+    public function check_availability_service(): void {
+        header('Content-Type: application/json');
+        $email = trim($_POST['email'] ?? '');
+        $pseudo = trim($_POST['pseudo'] ?? '');
+        $full_name = trim($_POST['full_name'] ?? '');
+
+        echo json_encode([
+            'email_available' => $email === '' || !User::email_exists($email),
+            'pseudo_available' => $pseudo === '' || !User::pseudo_exists($pseudo),
+            'full_name_available' => $full_name === '' || !User::full_name_exists($full_name)
+        ]);
+    }
 }

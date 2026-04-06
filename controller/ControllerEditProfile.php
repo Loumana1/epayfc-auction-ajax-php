@@ -90,6 +90,21 @@ class ControllerEditProfile extends Controller
             'header_icon' => 'bi-person-fill',
         ]);
     }
+
+    public function check_availability_service(): void {
+        $user = $this->get_user_or_redirect();
+        header('Content-Type: application/json');
+        
+        $email = trim($_POST['email'] ?? '');
+        $pseudo = trim($_POST['pseudo'] ?? '');
+        $full_name = trim($_POST['full_name'] ?? '');
+
+        echo json_encode([
+            'email_available' => $email === '' || !ModelEditProfile::is_email_taken($email, $user->id),
+            'pseudo_available' => $pseudo === '' || !ModelEditProfile::is_pseudo_taken($pseudo, $user->id),
+            'full_name_available' => $full_name === '' || !ModelEditProfile::is_full_name_taken($full_name, $user->id)
+        ]);
+    }
 }
 
 class ModelEditProfile extends \Model
