@@ -28,7 +28,6 @@ $(function () {
         errors[key] = msg;
         if (!$input) { updateBtn(); return; }
 
-        // MODIFICATION : on applique la classe sur l'input directement
         $input.removeClass('is-valid').addClass('is-invalid');
 
         let $fb = $input.siblings('.js-feedback');
@@ -36,26 +35,43 @@ $(function () {
             $fb = $('<div class="js-feedback"></div>');
             $input.after($fb);
         }
-        $fb.text(msg);
+        
+        
+        if (key === 'title' || key === 'description' || key === 'duration_days') {
+            $fb.html('• ' + msg);
+        } else {
+            if ($fb.text().indexOf(msg) === -1) { 
+                let currentHtml = $fb.html();
+                $fb.html(currentHtml + (currentHtml ? '<br>' : '') + '• ' + msg);
+            }
+        }
+        
         updateBtn();
     }
 
     function setValid(key, $input) {
+        // 1. supprime l'erreur de l'objet
         delete errors[key];
+        
+        // si on valide un champ, on nettoie les clés liées au conflit
+        if (key === 'starting_bid' || key === 'buy_now_price' || key === 'sale_price') {
+            delete errors['sale_price_1']; 
+        }
+
         if (!$input) { updateBtn(); return; }
 
-        // MODIFICATION : on applique la classe sur l'input directement
+        // 2. retire la classe invalide et on vide le message
         $input.removeClass('is-invalid').addClass('is-valid');
-
         let $fb = $input.siblings('.js-feedback');
-        if ($fb.length) $fb.text('');
+        if ($fb.length) $fb.html('');
+
+        // 3. recalcule l'état du bouton
         updateBtn();
     }
 
     function resetField($input) {
-        // MODIFICATION : on retire les classes de l'input directement
         $input.removeClass('is-invalid is-valid');
-        $input.siblings('.js-feedback').text('');
+        $input.siblings('.js-feedback').html('');
     }
 
     function updateBtn() {
@@ -117,40 +133,63 @@ $(function () {
         ['starting_bid', 'buy_now_price', 'sale_price'].forEach(k => delete errors[k]);
         [$startingBid, $buyNow, $salePrice].forEach($i => resetField($i));
 
-        if (sp !== '') {
-            // Mode vente directe
-            if (!touched.sale_price) { updateBtn(); return; }
-            const spVal = parseFloat(sp);
-            if (isNaN(spVal) || spVal <= 0) {
-                setError('sale_price', 'Le prix de vente doit être un nombre positif.', $salePrice);
-            } else {
-                setValid('sale_price', $salePrice);
-            }
+        const hasAuction = (sb !== '' || bn !== '');
+        const hasDirectSale = (sp !== '');
 
-        } else if (sb !== '') {
-            // Mode enchère
-            if (touched.starting_bid) {
+        // 1. CONFLIT : L'utilisateur a rempli les deux options
+        if (hasAuction && hasDirectSale) {
+            
+            const msgConflictAuction = "• Cannot create both auction and direct sale.";
+            const msgChooseOne = "• Choose only one sale type - cannot fill both price fields.";
+            
+            if (sb !== '') setError('starting_bid', msgConflictAuction, $startingBid);
+            if (bn !== '') setError('buy_now_price', msgChooseOne, $buyNow);
+            if (sp !== '') {
+                setError('sale_price_1', msgChooseOne, $salePrice); // Clé temporaire pour le 1er message
+                setError('sale_price', msgConflictAuction, $salePrice); 
+            }
+            updateBtn();
+            return;
+        }
+
+        // 2. OPTION 1 : Mode enchère
+        if (hasAuction) {
+            if (sb === '') {
+                if (touched.starting_bid || touched.buy_now_price) {
+                     setError('starting_bid', '• Starting bid is required for an auction.', $startingBid);
+                }
+            } else {
                 const sbVal = parseFloat(sb);
                 if (isNaN(sbVal) || sbVal <= 0) {
-                    setError('starting_bid', 'La mise de départ doit être un nombre positif.', $startingBid);
+                    setError('starting_bid', '• Starting bid must be a positive number.', $startingBid);
                 } else {
                     setValid('starting_bid', $startingBid);
 
-                    if (bn !== '' && touched.buy_now_price) {
+                    if (bn !== '') {
                         const bnVal = parseFloat(bn);
                         if (isNaN(bnVal) || bnVal <= sbVal) {
-                            setError('buy_now_price', 'Le prix d\'achat immédiat doit être supérieur à la mise de départ.', $buyNow);
+                            setError('buy_now_price', '• Instant purchase price must be greater than starting bid.', $buyNow);
                         } else {
                             setValid('buy_now_price', $buyNow);
                         }
                     }
                 }
             }
-
-        } else {
-            // Aucun mode renseigné
+        } 
+        // 3. OPTION 2 : Mode vente directe
+        else if (hasDirectSale) {
+            const spVal = parseFloat(sp);
+            if (isNaN(spVal) || spVal <= 0) {
+                setError('sale_price', '• Sale price must be a positive number.', $salePrice);
+            } else {
+                setValid('sale_price', $salePrice);
+            }
+        } 
+        // 4. AUCUNE OPTION
+        else {
             if (touched.sale_price || touched.starting_bid) {
-                setError('sale_price', 'Veuillez renseigner un prix de vente ou une mise de départ.', $salePrice);
+                setError('starting_bid', '• Please choose an option.', $startingBid);
+                setError('sale_price', '• Please choose an option.', $salePrice);
             }
         }
 
@@ -177,7 +216,7 @@ $(function () {
         }, 400);
     }
 
-    // ── 6. Événements ──────────────────────────────────────────────────────
+    // ── 6. Événements ──
     $title.on('input blur', function () {
         touched.title = true;
         validateTitle();
@@ -208,7 +247,7 @@ $(function () {
         validatePricing();
     });
 
-    // ── 7. Soumission : tout marquer comme touché avant validation ─────────
+    // ── 7. Soumission : tout marquer comme touché avant validation ──
     form.on('submit', function (e) {
         touched = {
             title        : true,
@@ -229,26 +268,24 @@ $(function () {
         }
     });
 
-
-    // ── 8. GESTION DES CHANGEMENTS NON SAUVEGARDÉS (Unsaved changes) ─────────
+    // ── 8. GESTION DES CHANGEMENTS NON SAUVEGARDÉS (Unsaved changes) ──
     
     let isDirty = false;
-    let targetUrl = ''; // Pour stocker le lien sur lequel l'utilisateur a cliqué
+    let targetUrl = ''; 
 
     // 8.1 On marque le formulaire comme "dirty" dès qu'un champ change
     form.find('input, textarea, select').on('input change', function() {
         isDirty = true;
     });
 
-    // 8.2 On retire le statut "dirty" si l'utilisateur soumet volontairement le formulaire (le clic sur Save)
+    // 8.2 le clic sur Save
     form.on('submit', function() {
-        // Seulement si le formulaire est valide (pas d'erreurs)
         if (Object.keys(errors).length === 0) {
             isDirty = false;
         }
     });
 
-    // 8.3 Intercepter les clics sur les liens internes (Navbar, Bouton retour, etc.)
+    // 8.3 Intercepter les clics sur les liens internes 
     $('a').on('click', function(e) {
         if (isDirty) {
             e.preventDefault(); // On empêche la navigation
@@ -260,20 +297,17 @@ $(function () {
     // 8.4 Gestion des boutons de la modale
     $('#cancelLeaveBtn, #closeUnsavedCross').on('click', function() {
         $('#unsavedModal').fadeOut('fast');
-        targetUrl = ''; // On annule la navigation
+        targetUrl = ''; 
     });
 
     $('#confirmLeaveBtn').on('click', function() {
-        isDirty = false; // On désactive la vérification
-        window.location.href = targetUrl; // On redirige vers le lien stocké
+        isDirty = false; 
+        window.location.href = targetUrl; 
     });
 
-    // 8.5 Intercepter la fermeture de l'onglet, le bouton "Précédent" du navigateur ou F5
-    // Attention : Pour des raisons de sécurité, les navigateurs modernes affichent LEUR PROPRE modale standard,
-    // on ne peut pas forcer le design de NOTRE modale pour un F5 ou une fermeture d'onglet.
+    // 8.5 bouton "Précédent" du navigateur ou F5
     window.addEventListener('beforeunload', function(e) {
         if (isDirty) {
-            // Le message exact est souvent ignoré par les navigateurs modernes, mais il faut le définir pour déclencher la modale native.
             const confirmationMessage = 'You have unsaved changes. Leave anyway?';
             e.returnValue = confirmationMessage;
             return confirmationMessage;
