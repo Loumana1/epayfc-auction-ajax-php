@@ -14,34 +14,46 @@
 <div class="card">
     <div class="card-title">Current Images</div>
     <?php if (!empty($pictures)): ?>
-        <div class="img-grid">
+        <div id="images-container" class="img-grid">
             <?php foreach ($pictures as $index => $picture): ?>
                 <?php 
                     $item_id = $item->get_Id();
                     $priority = $picture->priority;
                     $base_url = "manage_images";
                 ?>
-                <div class="img-box">
+                <div class="img-box image-item" data-priority="<?= $priority ?>">
                     <img src="<?= $web_root . $picture->picture_path ?>" 
                          alt="Image <?= $priority ?>" class="img-thumb">
                     
                     <div class="img-actions">
-                        <?php if ($priority > 1): ?>
-                            <a href="<?= $base_url ?>/move_left/<?= $item_id ?>/<?= $priority ?>"
-                               class="action-btn">←</a>
-                        <?php else: ?>
-                            <span class="action-btn disabled">←</span>
-                        <?php endif; ?>
+                        <button class="action-btn btn-left <?= $priority <= 1 ? 'disabled' : '' ?>" <?= $priority <= 1 ? 'disabled' : '' ?> data-priority="<?= $priority ?>">←</button>
+                        <noscript>
+                            <?php if ($priority > 1): ?>
+                                <form action="<?= $base_url ?>/move_left/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
+                                    <button type="submit" class="action-btn">←</button>
+                                </form>
+                            <?php else: ?>
+                                <span class="action-btn disabled">←</span>
+                            <?php endif; ?>
+                        </noscript>
 
-                        <?php if ($priority < $picture_count): ?>
-                            <a href="<?= $base_url ?>/move_right/<?= $item_id ?>/<?= $priority ?>"
-                               class="action-btn">→</a>
-                        <?php else: ?>
-                            <span class="action-btn disabled">→</span>
-                        <?php endif; ?>                     
+                        <button class="action-btn btn-right <?= $priority >= $picture_count ? 'disabled' : '' ?>" <?= $priority >= $picture_count ? 'disabled' : '' ?> data-priority="<?= $priority ?>">→</button>
+                        <noscript>
+                            <?php if ($priority < $picture_count): ?>
+                                <form action="<?= $base_url ?>/move_right/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
+                                    <button type="submit" class="action-btn">→</button>
+                                </form>
+                            <?php else: ?>
+                                <span class="action-btn disabled">→</span>
+                            <?php endif; ?>
+                        </noscript>                     
                         
-                        <a href="<?= $base_url ?>/delete/<?= $item_id ?>/<?= $priority ?>"
-                           class="action-btn del">✕</a>
+                        <button class="action-btn del btn-delete" data-priority="<?= $priority ?>">✕</button>
+                        <noscript>
+                            <form action="<?= $base_url ?>/delete/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
+                                <button type="submit" class="action-btn del">✕</button>
+                            </form>
+                        </noscript>
                     </div>
                 </div>
             <?php endforeach; ?>

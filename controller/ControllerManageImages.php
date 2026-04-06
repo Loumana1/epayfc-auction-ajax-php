@@ -105,4 +105,62 @@ class ControllerManageImages extends Controller
         }
         $this->redirect("manage_images", "index", $item_id ?? '');
     }
+
+
+
+   public function move_left_ajax(): void {
+    $current_user = $this->get_user_or_false();
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if (!$current_user || !$data) return;
+
+    $item_id = (int)$data['item_id'];
+    $priority = (int)$data['priority'];
+
+    $item = Item::get_by_id($item_id);
+    if (!$item || $item->get_seller()->get_Id() !== $current_user->get_Id()) return;
+
+    ItemPicture::move_left($item_id, $priority);
+
+    header('Content-Type: application/json');
+    echo json_encode(["success" => true]);
+}
+
+
+   public function move_right_ajax(): void {
+        $current_user = $this->get_user_or_false();
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (!$current_user || !$data) return;
+
+        $item_id = (int)$data['item_id'];
+        $priority = (int)$data['priority'];
+
+        $item = Item::get_by_id($item_id);
+        if (!$item || $item->get_seller()->get_Id() !== $current_user->get_Id()) return;
+
+        ItemPicture::move_right($item_id, $priority);
+
+        header('Content-Type: application/json');
+        echo json_encode(["success" => true]);
+    }
+
+
+    public function delete_ajax(): void {
+        $current_user = $this->get_user_or_false();
+        $data = json_decode(file_get_contents("php://input"), true);
+
+        if (!$current_user || !$data) return;
+
+        $item_id = (int)$data['item_id'];
+        $priority = (int)$data['priority'];
+
+        $item = Item::get_by_id($item_id);
+        if (!$item || $item->get_seller()->get_Id() !== $current_user->get_Id()) return;
+
+        ItemPicture::delete($item_id, $priority);
+
+        header('Content-Type: application/json');
+        echo json_encode(["success" => true]);
+    }
 }
