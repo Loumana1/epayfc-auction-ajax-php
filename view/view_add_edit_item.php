@@ -15,7 +15,7 @@
 <div class="page">
 
     <header class="top-bar">
-        <a href="item/my_items" class="back">
+        <a href="my_items" class="back">
             <i class="bi bi-arrow-left"></i>
         </a>
 
@@ -107,6 +107,24 @@
 
 <?php include __DIR__ . "/partials/_navbar.php"; ?>
 <?php include __DIR__ . "/partials/_timebar.php"; ?>
+
+<div id="unsavedModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Unsaved changes</h3>
+            <button type="button" class="close-modal" id="closeUnsavedCross">
+                <i class="bi bi-x"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <p>You have unsaved changes. Leave anyway?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn-cancel" id="cancelLeaveBtn">Cancel</button>
+            <button type="button" class="btn-confirm" id="confirmLeaveBtn">Leave</button>
+        </div>
+    </div>
+</div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

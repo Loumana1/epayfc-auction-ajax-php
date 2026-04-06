@@ -28,8 +28,8 @@ $(function () {
         errors[key] = msg;
         if (!$input) { updateBtn(); return; }
 
-        const $field = $input.closest('.field');
-        $field.removeClass('field-valid').addClass('field-error');
+        // MODIFICATION : on applique la classe sur l'input directement
+        $input.removeClass('is-valid').addClass('is-invalid');
 
         let $fb = $input.siblings('.js-feedback');
         if (!$fb.length) {
@@ -44,8 +44,8 @@ $(function () {
         delete errors[key];
         if (!$input) { updateBtn(); return; }
 
-        const $field = $input.closest('.field');
-        $field.removeClass('field-error').addClass('field-valid');
+        // MODIFICATION : on applique la classe sur l'input directement
+        $input.removeClass('is-invalid').addClass('is-valid');
 
         let $fb = $input.siblings('.js-feedback');
         if ($fb.length) $fb.text('');
@@ -53,7 +53,8 @@ $(function () {
     }
 
     function resetField($input) {
-        $input.closest('.field').removeClass('field-error field-valid');
+        // MODIFICATION : on retire les classes de l'input directement
+        $input.removeClass('is-invalid is-valid');
         $input.siblings('.js-feedback').text('');
     }
 
@@ -225,6 +226,57 @@ $(function () {
 
         if (Object.keys(errors).length > 0) {
             e.preventDefault();
+        }
+    });
+
+
+    // ── 8. GESTION DES CHANGEMENTS NON SAUVEGARDÉS (Unsaved changes) ─────────
+    
+    let isDirty = false;
+    let targetUrl = ''; // Pour stocker le lien sur lequel l'utilisateur a cliqué
+
+    // 8.1 On marque le formulaire comme "dirty" dès qu'un champ change
+    form.find('input, textarea, select').on('input change', function() {
+        isDirty = true;
+    });
+
+    // 8.2 On retire le statut "dirty" si l'utilisateur soumet volontairement le formulaire (le clic sur Save)
+    form.on('submit', function() {
+        // Seulement si le formulaire est valide (pas d'erreurs)
+        if (Object.keys(errors).length === 0) {
+            isDirty = false;
+        }
+    });
+
+    // 8.3 Intercepter les clics sur les liens internes (Navbar, Bouton retour, etc.)
+    $('a').on('click', function(e) {
+        if (isDirty) {
+            e.preventDefault(); // On empêche la navigation
+            targetUrl = $(this).attr('href'); // On garde le lien en mémoire
+            $('#unsavedModal').fadeIn('fast'); // On affiche la modale
+        }
+    });
+
+    // 8.4 Gestion des boutons de la modale
+    $('#cancelLeaveBtn, #closeUnsavedCross').on('click', function() {
+        $('#unsavedModal').fadeOut('fast');
+        targetUrl = ''; // On annule la navigation
+    });
+
+    $('#confirmLeaveBtn').on('click', function() {
+        isDirty = false; // On désactive la vérification
+        window.location.href = targetUrl; // On redirige vers le lien stocké
+    });
+
+    // 8.5 Intercepter la fermeture de l'onglet, le bouton "Précédent" du navigateur ou F5
+    // Attention : Pour des raisons de sécurité, les navigateurs modernes affichent LEUR PROPRE modale standard,
+    // on ne peut pas forcer le design de NOTRE modale pour un F5 ou une fermeture d'onglet.
+    window.addEventListener('beforeunload', function(e) {
+        if (isDirty) {
+            // Le message exact est souvent ignoré par les navigateurs modernes, mais il faut le définir pour déclencher la modale native.
+            const confirmationMessage = 'You have unsaved changes. Leave anyway?';
+            e.returnValue = confirmationMessage;
+            return confirmationMessage;
         }
     });
 
