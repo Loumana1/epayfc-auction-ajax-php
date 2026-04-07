@@ -9,6 +9,9 @@ $(document).ready(function () {
     $form.find('input, textarea, select').each(function () {
         initial_values[this.name] = $(this).val();
     });
+        const unsavedModalEl = document.getElementById("unsaved-modal");
+    const unsavedModal = bootstrap.Modal.getOrCreateInstance(unsavedModalEl);
+
 
     // ecoute et detect les modif
     $form.on('input change', 'input, textarea, select', function () {
@@ -16,6 +19,7 @@ $(document).ready(function () {
         $form.find('input, textarea, select').each(function () {
             if ($(this).val() !== initial_values[this.name]) {
                 is_dirty = true;
+                 return false;
             }
         });
     });
@@ -34,13 +38,13 @@ $(document).ready(function () {
 
         e.preventDefault();
         pending_href = $(this).attr('href');
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('unsaved-modal')).show();
+        unsavedModal.show();
     });
 
     // Bouton "Leave" 
     $('#unsaved-confirm-leave').on('click', function () {
         is_dirty = false;
-        bootstrap.Modal.getOrCreateInstance(document.getElementById('unsaved-modal')).hide();
+        unsavedModal.hide();
         if (pending_href) {
             window.location.href = pending_href;
         }
@@ -50,7 +54,7 @@ $(document).ready(function () {
     $(window).on('beforeunload', function (e) {
         if (is_dirty && !is_submitting) {
             e.preventDefault();
-            return '';
+            return "";
         }
     });
 });
