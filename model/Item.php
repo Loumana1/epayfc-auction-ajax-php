@@ -270,23 +270,37 @@ public function delete(): void {
     self::delete_by_id($this->id);
 }
 
-    public static function get_Item_Participating(int $userId, string $now): array {
-        $query = "SELECT * FROM v_items_status 
-        WHERE id IN (SELECT item FROM bids WHERE owner = :user_id)
-        AND buy_now_reached = 0 AND end_at > :now 
-        ORDER BY end_at DESC";
-        return self::queryToItems($query, ['user_id' => $userId, 'now' => $now]);
+    public static function get_Item_Participating(int $userId, string $now , string $search_query =""): array {
+        $query = "SELECT v.* FROM v_items_status v
+        JOIN users u on v.owner = u.id
+        WHERE v.id IN (SELECT item FROM bids WHERE owner = :user_id)
+        AND v.buy_now_reached = 0 AND v.end_at > :now ";
+
+        $params = ['user_id' => $userId, 'now' => $now];
+        if($search_query !== "") {
+           $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";            
+           $params['q'] = "%" .$search_query . "%" ;        
+        }
+        $query .= " ORDER BY end_at DESC";
+        return self::queryToItems($query,$params);
 
     }
     
-    public static function get_Item_Available(int $userId, string $now): array {
-        $query = "SELECT * FROM v_items_status 
-        WHERE id NOT IN (SELECT item FROM bids WHERE owner = :user_id)
-        AND owner != :user_id
-        AND buy_now_reached = 0 AND end_at > :now
-        ORDER BY end_at DESC";
-        return self::queryToItems($query, ['user_id' => $userId, 'now' => $now]);
+    public static function get_Item_Available(int $userId, string $now, string $search_query = ""): array {
+    $query = "SELECT v.* FROM v_items_status v
+            JOIN users u ON v.owner = u.id
+            WHERE v.id NOT IN (SELECT item FROM bids WHERE owner = :user_id)
+            AND v.owner != :user_id
+            AND v.buy_now_reached = 0 AND v.end_at > :now";
+
+    $params = ['user_id' => $userId, 'now' => $now];
+    if ($search_query !== "") {
+        $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
+        $params['q'] = "%" . $search_query . "%";
     }
+    $query .= " ORDER BY v.end_at DESC";
+    return self::queryToItems($query, $params);
+}
 
     public function get_main_picture(): ?ItemPicture {
         $query = self::execute(
@@ -299,10 +313,6 @@ public function delete(): void {
         }
         return null;
     }
-
-
-
-
 
     public static function get_sold_items_by_owner(int $userId, string $now): array {
         $query = "SELECT * FROM v_items_status 
@@ -457,6 +467,21 @@ public function delete(): void {
         return [];
     }
 
+    public static function get_items_by_owner(int $userId, string $search_query = ""): array {
+        $query = "SELECT v.* FROM v_items_status v
+                  JOIN users u ON v.owner = u.id
+                  WHERE v.owner = :user_id";
+
+        $params = ["user_id" => $userId];
+        if ($search_query !== "") {
+            $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
+            $params['q'] = "%" . $search_query . "%";
+        }
+        $query .= " ORDER BY v.end_at DESC";
+
+        return self::queryToItems($query, $params);
+    }
+
     public static function get_active_items_by_owner(int $userId, string $now): array {
         $query = "SELECT * FROM v_items_status
                     WHERE owner = :user_id
@@ -484,36 +509,21 @@ public function delete(): void {
 
 
 
-    public static function get_items_by_owner(int $userId): array {
-        $query = "
-            SELECT * FROM v_items_status
-            WHERE owner = :user_id
-            ORDER BY end_at DESC
-        ";
+   public static function get_purchased_items_by_user(int $userId, string $now, string $search_query = ""): array {
+    $sql = "SELECT v.* FROM v_items_status v
+            JOIN users u ON v.owner = u.id
+            WHERE v.id IN (SELECT item FROM bids WHERE owner = :user_id AND amount = v.max_bid)
+            AND (v.end_at <= :now OR v.buy_now_reached = 1)";
 
-        return self::queryToItems($query, [
-            "user_id" => $userId
-        ]);
+    $params = ["user_id" => $userId, "now" => $now];
+    if ($search_query !== "") {
+        $sql .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
+        $params['q'] = "%" . $search_query . "%";
     }
+    $sql .= " ORDER BY v.end_at DESC";
+    return self::queryToItems($sql, $params);
+}
 
-   public static function get_purchased_items_by_user(int $userId, string $now): array {
-        $query = "
-            SELECT * FROM v_items_status
-            WHERE id IN (
-                SELECT item
-                FROM bids
-                WHERE owner = :user_id
-                AND amount = max_bid
-            )
-            AND (end_at <= :now OR buy_now_reached = 1)
-            ORDER BY end_at DESC
-        ";
-
-        return self::queryToItems($query, [
-            "user_id" => $userId,
-            "now" => $now
-        ]);
-    }
 
 
     public function is_user_highest_bidder(int $userId): bool

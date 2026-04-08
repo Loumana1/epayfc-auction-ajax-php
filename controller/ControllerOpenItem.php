@@ -205,13 +205,21 @@ private function load_item_or_fail(): ?Item {
         
 
             // Déterminer l'URL de retour
-        $from = $_GET['param3'] ?? null;
-        $back_url = match($from) {
-            'sales' => 'sales',
-            'my_items' => 'my_items',
-            'purchases' => 'purchases',
-            default => 'browser'
-        };
+        $encoded_state = $_GET['param3'] ?? null;
+        $back_url      = 'browser';   // valeur par défaut
+        $from          = 'browser';
+
+        if ($encoded_state) {
+            $state = Tools::url_safe_decode($encoded_state);
+            if (is_array($state) && isset($state['from'])) {
+                $from     = $state['from'];                            
+                $back_url = $from . '/index/' . $encoded_state;   
+    } else {
+        // Ancien format (chaîne simple : 'sales', 'my_items', etc.)
+        $from     = $encoded_state;
+        $back_url = $encoded_state;
+    }
+}
 
         $is_open = $context['is_open'];
         $has_bids_time = $context['has_bids_time'];
@@ -269,6 +277,7 @@ private function load_item_or_fail(): ?Item {
             'buy_now_btn_class' => $btn_class,
             'buy_now_btn_text'  =>  $btn_text,
             'from' => $from ?? '',
+            'encoded_state' => $encoded_state ,
             'page_css' => ['open_item.css'],
             'page_js' => ['open_item.js', 'bid.js']
         ];

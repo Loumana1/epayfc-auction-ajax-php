@@ -1,44 +1,43 @@
-document.addEventListener("DOMContentLoaded", function (){
-    const input = document.getElementById("search-input");
-    if(!input) return;
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search-input");
+    if (!searchInput) return;
 
-    const urlParams = new URLSearchParams(window.Location.search);
-    const initialQuery = urlParams.get("q") || "";
-    if(initialQuery) {
-        input.value = initialQuery ;
-        filterCards(initialQuery);
-    }
+    let debounceTimer;
+    const baseUrl = window.location.pathname.replace(/\/index\/.*$/, '/index');
 
-    input.addEventListener("input", function () {
+    searchInput.addEventListener("input", function () {
+        clearTimeout(debounceTimer);
         const query = this.value.trim();
-        filterCards(query);
 
-        //mettre a jour l url sans recharge la page
-        const url = new URL(window.location.href);
-        if (query) {
-            url.searchParams.set("q", query);
-        } else {
-            url.searchParams.delete("q");
-        }
-        // replaceState au lieu de pushState pour ne pas polluer l historique
-        window.history.replaceState({} ,"",url);
+        debounceTimer = setTimeout(() => {
+            fetch(`${baseUrl}?ajax=1&query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    history.replaceState({ query }, "", `${baseUrl}/${data.encoded_state}`);
+                    const itemCards = document.querySelectorAll(".item-card");
+                    itemCards.forEach(card => {
+                        const itemId = parseInt(card.getAttribute("data-id"));
+
+                        if (data.matches.includes(itemId)) {
+                            card.style.display = "";
+                            const link = card.querySelector("a");
+                            if (link) {
+                                link.href = `open_item/index/${itemId}/0/${data.encoded_state}`;
+                            } else {
+                                card.onclick = () => {
+                                    window.location = `open_item/index/${itemId}/0/${data.encoded_state}`;
+                                };
+                            }
+                        } else {
+                            card.style.display = "none";
+                        }
+                    });
+                    document.querySelectorAll(".items-section").forEach(section => {
+                        const visibleCards = section.querySelectorAll(".item-card:not([style*='display: none'])");
+                        section.style.display = visibleCards.length > 0 ? "" : "none";
+                    });
+                })
+                .catch(err => console.error("Search error:", err));
+        }, 300);
     });
-
-    function filterCards(query) {
-        const q = query.toLowerCase();
-        const cards = document.querySelectorAll(".item-card");
-
-        cards.forEach(card => {
-            const title = (card.dataset.title || "").toLowerCase();
-            const seller = (card.dataset.seller || "").toLowerCase();
-            const description = (card.dataset.description || "").toLowerCase();
-
-            const match = !q
-            || title.includes(q)
-            || seller.includes(q)
-            || description.includes(q);
-
-            card.style.display = match ? "" : "none";       
-        })
-    }
-    });
+});
