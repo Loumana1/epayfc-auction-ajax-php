@@ -14,14 +14,14 @@
 <div class="card">
     <div class="card-title">Current Images</div>
     <?php if (!empty($pictures)): ?>
-        <div class="img-grid">
+        <div class="img-grid" id="sortable-images" data-item-id="<?= $item->get_Id() ?>">
             <?php foreach ($pictures as $index => $picture): ?>
                 <?php 
                     $item_id = $item->get_Id();
                     $priority = $picture->priority;
                     $base_url = "manage_images";
                 ?>
-                <div class="img-box">
+                <div class="img-box" data-path="<?= htmlspecialchars($picture->picture_path) ?>">
                     <img src="<?= $web_root . $picture->picture_path ?>" 
                          alt="Image <?= $priority ?>" class="img-thumb">
                     
