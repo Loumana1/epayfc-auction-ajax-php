@@ -3,10 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title><?= $item_id ? "Edit item" : "Add item" ?></title>
-    <base href="/prwb_2526_c04/">
+
+    <base href="<?= htmlspecialchars($web_root) ?>">
+    <!---CSS bootstrao pour modal-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+
+    
     <link rel="stylesheet" href="css/add_edit_item.css">
     <link rel="stylesheet" href="./css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+    <!--Modal bootstrap pour exit-->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 
 <body>
@@ -96,11 +105,30 @@
       
     </form>
 
+    <!--Modal exit-->
+    <div class="modal fade" id="unsaved-modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Unsaved Changes</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Leave with unsaved changes?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Stay</button>
+                    <button type="button" class="btn btn-danger" id="unsaved-confirm-leave">Leave</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <?php include __DIR__ . "/partials/_navbar.php"; ?>
 <?php include __DIR__ . "/partials/_timebar.php"; ?>
-
-
+    <!--Modal exit-->
+<script src="js/add_edit_exit_confirmation.js"></script>
 </body>
 </html>

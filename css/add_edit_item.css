@@ -9,6 +9,22 @@ body {
     color: #e5e7eb;
 }
 
+/* Modal bootstrap pour exit*/
+.modal {
+    --bs-modal-bg:  #0E172Aff;
+    --bs-modal-color: #212529;
+    --bs-modal-border-color: rgba(0, 0, 0, 0.175);
+}
+ .modal-content {
+    background-color:   #0E172Aff !important;
+    color: #ffffff !important;
+}
+.modal-header .modal-title,
+.modal-body,
+.modal-body p {
+    color: #eff7ff !important;
+}
+
 .page {
     max-width: 980px;
     margin: auto;
