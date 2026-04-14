@@ -1,22 +1,43 @@
-document.addEventListener("DOMContentLoaded", function (){
-    const input = document.getElementById("search-input");
-    if(!input) return;
+document.addEventListener("DOMContentLoaded", function () {
+    const searchInput = document.getElementById("search-input");
+    if (!searchInput) return;
 
-    input.addEventListener("input", function () {
-        const query = this.value.toLocaleLowerCase().trim();
-        const cards = document.querySelectorAll(".item-card")
+    let debounceTimer;
+    const baseUrl = window.location.pathname.replace(/\/index\/.*$/, '/index');
 
-        cards.forEach(card => {
-            const title = (card.dataset.title || "").toLowerCase();
-            const seller = (card.dataset.seller || "").toLowerCase();
-            const description = (card.dataset.description || "").toLowerCase();
+    searchInput.addEventListener("input", function () {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
 
-            const match = title.includes(query)
-            || seller.includes(query)
-            || description.includes(query);
+        debounceTimer = setTimeout(() => {
+            fetch(`${baseUrl}?ajax=1&query=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    history.replaceState({ query }, "", `${baseUrl}/${data.encoded_state}`);
+                    const itemCards = document.querySelectorAll(".item-card");
+                    itemCards.forEach(card => {
+                        const itemId = parseInt(card.getAttribute("data-id"));
 
-            card.style.display = match ? "" : "none";
-            
-        })
-    })
-})
+                        if (data.matches.includes(itemId)) {
+                            card.style.display = "";
+                            const link = card.querySelector("a");
+                            if (link) {
+                                link.href = `open_item/index/${itemId}/0/${data.encoded_state}`;
+                            } else {
+                                card.onclick = () => {
+                                    window.location = `open_item/index/${itemId}/0/${data.encoded_state}`;
+                                };
+                            }
+                        } else {
+                            card.style.display = "none";
+                        }
+                    });
+                    document.querySelectorAll(".items-section").forEach(section => {
+                        const visibleCards = section.querySelectorAll(".item-card:not([style*='display: none'])");
+                        section.style.display = visibleCards.length > 0 ? "" : "none";
+                    });
+                })
+                .catch(err => console.error("Search error:", err));
+        }, 300);
+    });
+});

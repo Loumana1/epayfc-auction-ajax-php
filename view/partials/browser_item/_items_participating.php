@@ -3,11 +3,11 @@
         <div class="item-list"> 
             <?php if (!empty($participating_items)): ?>
                 <?php foreach ($participating_items as $item): ?>
-                    <div class="item-card"
+                    <div class="item-card" data-id="<?= $item['id'] ?>"
                     data-title="<?= htmlspecialchars($item['title']?? '') ?>"
                     data-seller="<?= htmlspecialchars($item['seller_pseudo']?? '') ?>"
                     data-description="<?= htmlspecialchars($item['description']?? '') ?>"> 
-                        <a href="open_item/index/<?= $item['id'] ?>">
+                        <a href="open_item/index/<?= $item['id'] ?>/0/<?= htmlspecialchars($encoded_state) ?>">
                             <?php if ($item['pic_path']): ?>
                                 <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" class="item-image">
                             <?php else: ?>

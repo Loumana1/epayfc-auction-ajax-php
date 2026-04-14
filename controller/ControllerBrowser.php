@@ -17,13 +17,42 @@ class ControllerBrowser extends Controller
         $current_user_id = $current_user ? $current_user->get_Id() : -1;
         $now = AppTime::get_current_datetime();
 
-        $participating_items_raw = $this->get_participating_items($current_user_id, $now);
-        $available_items_raw = $this->get_available_items($current_user_id, $now);
+        $state_param = $_GET['param1'] ?? null;
+        $search_query = "";
+
+        if ($state_param !== null) {
+            $state =Tools::url_safe_decode($state_param);
+            if (is_array($state) && isset($state['query'])) {
+                $search_query = $state['query'];
+            }
+        } else {
+            $search_query = trim($_GET['query'] ?? "");
+        }
+        $encoded_state = Tools::url_safe_encode(['from' => 'browser' , 'query' => $search_query]);
+
+        // Répondre en JSON si c'est une requête AJAX
+        if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
+            $participating_raw = $this->get_participating_items($current_user_id, $now, $search_query);
+            $available_raw     = $this->get_available_items($current_user_id, $now, $search_query);
+
+            $matches = array_merge(
+                array_map(fn($i) => $i->get_id(), $participating_raw),
+                array_map(fn($i) => $i->get_id(), $available_raw)
+            );
+
+            header('Content-Type: application/json');
+            echo json_encode([
+               'encoded_state' => $encoded_state,
+               'matches'       => $matches,
+            ]);
+            return;
+        }
+        $participating_items_raw = $this->get_participating_items($current_user_id, $now, $search_query);
+        $available_items_raw = $this->get_available_items($current_user_id, $now, $search_query);
 
 
         $participating_items = [];
         foreach ($participating_items_raw as $item) {
-            // S'assurer que $item est bien un objet Item
             if (!$item instanceof Item)
                 continue;
 
@@ -38,7 +67,8 @@ class ControllerBrowser extends Controller
                 'id' => $item->get_Id(),
                 'title' => $item->get_Title(),
                 'pic_path' => $main_picture?->picture_path,
-                'picture_count' => $item->get_picture_count(),                'seller_pseudo' => $seller_pseudo,
+                'picture_count' => $item->get_picture_count(),                
+                'seller_pseudo' => $seller_pseudo,
                 'buy_now_price' => $item->get_Buy_Now_Price(),
                 'starting_bid' => $item->get_Starting_Bid(),
                 'max_bid' => $item->get_max_bid_time(),
@@ -89,6 +119,8 @@ class ControllerBrowser extends Controller
             'available_items' => $available_items,
             'current_user_id' => $current_user_id,
             'currentUser' => $current_user,
+            'encoded_state' => $encoded_state,
+            'search_query' => $search_query,
             'header_title' => 'Browser',
             'header_icon' => 'bi-cart-fill',
             'page_css' => ['browser.css'],
@@ -113,15 +145,33 @@ class ControllerBrowser extends Controller
 
         return $days . "d " . $hours . "h";
     }
-    private function get_participating_items(int $user_id, string $now): array
+    private function get_participating_items(int $user_id, string $now, string $search_query = ""): array
     {
-        return Item::get_Item_Participating($user_id, $now);
+        return Item::get_Item_Participating($user_id, $now, $search_query);
     }
 
-    private function get_available_items(int $user_id, string $now): array
+    private function get_available_items(int $user_id, string $now, string $search_query = ""): array
     {
-        return Item::get_Item_Available($user_id, $now);
+        return Item::get_Item_Available($user_id, $now, $search_query);
     }
+
+    private function format_items_for_json(array $raw_items): array 
+    {
+        $result = [];
+        foreach ($raw_items as $item) {
+            if (!$item instanceof Item) continue;
+                $pic = $item->get_main_picture();
+                $result[] = [
+                    'id'     => $item->get_Id(),
+                    'title'  => $item->get_Title(),
+                    'seller' => $item->get_seller()->get_Pseudo(),
+                    'pic'    => $pic ? $pic->picture_path : null,
+                    'price'  => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),
+                    'time'   => $this->calculate_time_remaining($item->get_End_At()),
+                ];
+    }
+    return $result;
+}
 
 } 
 ?>
