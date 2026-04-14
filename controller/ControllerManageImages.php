@@ -105,4 +105,35 @@ class ControllerManageImages extends Controller
         }
         $this->redirect("manage_images", "index", $item_id ?? '');
     }
+
+    public function update_order(): void {
+        $input = json_decode(file_get_contents('php://input'), true);
+
+        $current_user = $this->get_user_or_false();
+        if (!$current_user) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Not logged in']);
+            return;
+        }
+
+        $item_id = $input['item_id'] ?? null;
+        $order = $input['order'] ?? [];
+
+        if (!$item_id || empty($order)){
+            http_response_code(400);
+            echo json_encode(['error' => 'Invalid data']);
+            return;
+        }
+        $item = Item::get_by_id((int) $item_id);
+        if (!$item || $item->get_seller()->get_Id() !== $current_user->get_Id()) {
+            http_response_code(403);
+            echo json_encode(['error' => 'Access denied']);
+            return;
+        }
+
+        ItemPicture::reorder((int) $item_id, $order);
+
+        header('Content-Type: application/json');
+        echo json_encode(['success' => true]);
+    } 
 }

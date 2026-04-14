@@ -162,3 +162,25 @@
 .manage-page .action-btn.del:hover {
     background-color: #dc2626;
 }
+
+.img-box { 
+    cursor: grab;
+}
+
+.img-box:active { 
+    cursor: grabbing; 
+}
+
+.sortable-placeholder {
+    border: 2px dashed #4a90d9;
+    border-radius: 8px;
+    background: rgba(74, 144, 217, 0.05);
+    min-height: 120px;
+    margin: 0.5rem;
+}
+
+.ui-sortable-helper {
+    transform: rotate(2deg);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+    z-index: 1000;
+}

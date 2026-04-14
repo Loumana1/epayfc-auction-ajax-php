@@ -144,4 +144,23 @@ class ItemPicture extends Model
             ['id' => $itemId]
         );
     }
+    public static function reorder(int $item_id, array $ordered_paths): void {
+        $temp_base = 10000;
+
+        // Priorite temporaires (evite)
+        foreach ($ordered_paths as $index => $path) {
+            self::execute(
+                "UPDATE item_pictures SET priority = :temp WHERE item = :item AND picture_path = :path",
+                ["temp" => $temp_base + $index, "item" => $item_id, "path" => $path]
+            );
+        }
+
+        // Priorites finales
+        foreach ($ordered_paths as $index => $path) {
+            self::execute(
+                "UPDATE item_pictures SET priority = :priority WHERE item = :item AND picture_path = :path",
+                ["priority" => $index + 1, "item" => $item_id, "path" => $path]
+            );
+        }
+    }
 }
