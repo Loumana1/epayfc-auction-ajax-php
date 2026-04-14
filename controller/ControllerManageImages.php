@@ -35,7 +35,9 @@ class ControllerManageImages extends Controller
             'picture_count' => count($pictures),
             'current_user' => $current_user,
             'header_title' => 'Manage Images',
-            'header_icon' => 'bi-images'
+            'header_icon' => 'bi-images',
+            'page_css' => ['manage.css'],
+            'page_js' => ['manage_images.js']
         ]);
     }
 
