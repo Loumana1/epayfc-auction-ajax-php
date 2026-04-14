@@ -1,23 +1,8 @@
-<!DOCTYPE html>
-<html lang="fr">
-
-<head>
-
-    <meta charset="UTF-8">
-    <title>Manage Images</title>
-    <base href="<?= $web_root ?>">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/manage.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-
-</head>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<?php ob_start(); ?>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.min.css">
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-<script src="js/manage_images.js"></script>
 
-<body class="manage-page">
+<div class="manage-page">
 
     <main>
         <h1 class="page-subtitle">Manage Images for "<?= htmlspecialchars($item->get_Title()) ?>"</h1>
@@ -26,5 +11,6 @@
 
     </main>
         
-</body>
-</html>
+</div>
+<?php $content = ob_get_clean(); ?>
+<?php require "view_layout.php"; ?>
