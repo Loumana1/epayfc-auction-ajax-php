@@ -21,3 +21,7 @@
 </body>
 
 </html>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script>window.APP_BASE = '<?= $web_root ?>';</script>
+<script src="js/user_validation.js"></script>

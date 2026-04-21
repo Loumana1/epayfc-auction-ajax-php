@@ -71,6 +71,7 @@ body {
     padding-bottom: 10px;
     font-size: 18px;
     border-bottom: 1px solid #374151;
+    color: #e5e7eb;
 }
 
 
@@ -119,6 +120,7 @@ textarea:focus {
     margin: 0 0 14px 0;
     font-size: 15px;
     font-weight: 600;
+    color: #e5e7eb;
 }
 
 
@@ -138,6 +140,34 @@ textarea:focus {
     margin-top: 6px;
     color: #f87171;
     font-size: 13px;
+}
+
+/* Validation JS — cadre du champ complet */
+input.is-invalid,
+textarea.is-invalid {
+    border: 2px solid #f87171;
+}
+
+input.is-valid,
+textarea.is-valid {
+    border: 2px solid #34d399;
+}
+
+
+input.is-invalid:focus,
+textarea.is-invalid:focus {
+    box-shadow: 0 0 0 1px #f87171;
+}
+
+input.is-valid:focus,
+textarea.is-valid:focus {
+    box-shadow: 0 0 0 1px #34d399;
+}
+
+.js-feedback {
+    font-size: 0.85em;
+    margin-top: 4px;
+    color: #f87171;
 }
 
 
@@ -185,4 +215,101 @@ textarea:focus {
 .nav-item.active {
     color: #60a5fa;
     font-weight: 600;
+}
+
+
+/* ─── MODALE STYLES ─── */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.75); 
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #1f2937; 
+    width: 90%;
+    max-width: 400px;
+    border-radius: 12px;
+    border: 1px solid #374151;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    color: #e5e7eb;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #374151;
+    padding-bottom: 10px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    font-size: 24px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.close-modal:hover {
+    color: #f87171;
+}
+
+.modal-body {
+    margin-bottom: 20px;
+    font-size: 15px;
+    color: #d1d5db;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.btn-cancel {
+    background-color: #4b5563;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-cancel:hover {
+    background-color: #6b7280;
+}
+
+.btn-confirm {
+    background-color: #3b82f6; 
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-confirm:hover {
+    background-color: #2563eb;
 }

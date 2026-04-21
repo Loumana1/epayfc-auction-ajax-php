@@ -3,6 +3,7 @@
 require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once "model/Item.php";
+require_once "framework/Configuration.php";
 
 class ControllerItem extends Controller {
 
@@ -77,6 +78,34 @@ class ControllerItem extends Controller {
         $view_data["current_page"] = "add_item";
 
         (new View("add_edit_item"))->show($view_data);
+    }
+
+
+
+    public function check_title_service(): void
+    {
+        $user = $this->get_user_or_false();
+        if (!$user) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Not authenticated']);
+            return;
+        }
+
+        header('Content-Type: application/json');
+
+        $title   = trim($_POST['title'] ?? '');
+        $item_id = isset($_POST['item_id']) && $_POST['item_id'] !== ''
+            ? (int) $_POST['item_id']
+            : null;
+
+        if ($title === '') {
+            http_response_code(400);
+            echo json_encode(['error' => 'Title is required']);
+            return;
+        }
+
+        $taken = Item::title_exists_for_owner($title, $user->get_Id(), $item_id);
+        echo json_encode(['available' => !$taken]);
     }
 
 

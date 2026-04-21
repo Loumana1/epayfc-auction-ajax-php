@@ -12,3 +12,4 @@
 </div>
 <?php $content = ob_get_clean() ?>
 <?php require 'view_layout.php' ?>
+<script src="js/user_validation.js"></script>

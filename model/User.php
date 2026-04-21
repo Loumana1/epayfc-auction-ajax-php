@@ -365,5 +365,14 @@ public function get_hashed_password(): ?string {
         return (int)$query->fetchColumn() > 0;
     }
 
+   
+    public static function is_full_name_taken_by_other(string $full_name, int $current_id): bool {
+        $query = self::execute(
+            "SELECT COUNT(*) FROM users WHERE full_name = :full_name AND id != :id",
+            ["full_name" => $full_name, "id" => $current_id]
+        );
+        return (int)$query->fetchColumn() > 0;
+    }
+
 
 }
