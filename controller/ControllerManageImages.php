@@ -34,6 +34,7 @@ class ControllerManageImages extends Controller
             'pictures' => $pictures,
             'picture_count' => count($pictures),
             'current_user' => $current_user,
+            'back_url' => 'my_items',
             'header_title' => 'Manage Images',
             'header_icon' => 'bi-images',
             'page_css' => ['manage.css'],

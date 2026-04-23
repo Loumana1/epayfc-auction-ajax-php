@@ -146,6 +146,7 @@ function updateArrows() {
         }
     }); 
 }
+// Drag && drop 
 $(function () {
     const $grid = $("#sortable-images");
     if (!$grid.length) return;
@@ -170,11 +171,12 @@ $(function () {
                 data: JSON.stringify({ item_id: itemId, order: order }),
                 success: function () {
                     console.log("Order updated");
-                    location.reload();
+                    updatePriorities();
+                    updateArrows();
                 },
                 error: function (xhr) {
                     alert("Failed to update order.");
-                    location.reload();
+                    $grid.sortable("cancel");
                 }
             });
         } 
