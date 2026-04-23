@@ -1,6 +1,6 @@
 <?php ob_start() ; ?>
 
-<body class="profile-page">
+<div class="profile-page">
 
     <main>
 
@@ -8,7 +8,7 @@
     
     </main>
     
-</body>
+</div>
 
 <?php $content = ob_get_clean() ;?>
 <?php require "view_layout.php" ;?>

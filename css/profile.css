@@ -12,6 +12,9 @@
             align-items: center;
             padding: 30px 20px;
             margin-bottom: 25px;
+            background-color: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 10px;
         }
 
         .profile-page .user-avatar {
@@ -71,7 +74,7 @@
             padding: 12px 18px;
             font-size: 1rem;
             font-weight: 600;
-            color: #f3f4f6;
+            color: #ffffff;
             border-bottom: 1px solid #374151;
             border-left: 3px solid #3b82f6;
         }
@@ -113,13 +116,13 @@
         .profile-page .menu-title {
             font-size: 0.95rem;
             font-weight: 500;
-            color: #3b82f6;
+            color: #ffffff;
             margin-bottom: 2px;
         }
 
         .profile-page .menu-desc {
             font-size: 0.8rem;
-            color: #9ca3af;
+            color: #ffffff;
         }
 
         /* Logout special style */
