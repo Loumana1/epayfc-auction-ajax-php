@@ -1,120 +1,108 @@
-const itemId = document.body.dataset.itemId;
-
+let itemId = null;
+let baseUrl = '';
 let toDelete = null;
 let toDeleteEl = null;
 
-/* =========================
-   INIT
-========================= */
 document.addEventListener('DOMContentLoaded', () => {
+    const managePage = document.querySelector('.manage-page');
+    itemId = managePage ? managePage.dataset.itemId : null;
+    const base = document.querySelector('base');
+    baseUrl = base ? base.getAttribute('href') : '';
+
     updateArrows();
-});
 
-/* =========================
-   MOVE LEFT / RIGHT
-========================= */
-document.querySelectorAll('.btn-left, .btn-right').forEach(btn => {
-    btn.addEventListener('click', async (e) => {
-        e.preventDefault();
+    /* =========================
+       MOVE LEFT / RIGHT
+    ========================= */
+    document.querySelectorAll('.btn-left, .btn-right').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
 
-        const isLeft = btn.classList.contains('btn-left');
+            const isLeft = btn.classList.contains('btn-left');
 
-        const current = btn.closest('.image-item');
-        const container = document.getElementById('images-container');
+            const current = btn.closest('.img-box');
+            const container = document.getElementById('sortable-images');
 
-        const target = isLeft
-            ? current.previousElementSibling
-            : current.nextElementSibling;
+            const target = isLeft
+                ? current.previousElementSibling
+                : current.nextElementSibling;
 
-        if (!target) return;
+            if (!target) return;
 
-        const oldPriority = current.dataset.priority;
+            const oldPriority = btn.dataset.priority;
 
-        if (isLeft) {
-            container.insertBefore(current, target);
-        } else {
-            container.insertBefore(target, current);
-        }
+            if (isLeft) {
+                container.insertBefore(current, target);
+            } else {
+                container.insertBefore(target, current);
+            }
 
-        updatePriorities();
+            updatePriorities();
 
-        try {
-            await fetch(`manage_images/${isLeft ? 'move_left_ajax' : 'move_right_ajax'}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    item_id: itemId,
-                    priority: oldPriority
-                })
-            });
-        } catch (e) {
-            console.error(e);
-        }
+            try {
+                await fetch(baseUrl + `manage_images/${isLeft ? 'move_left' : 'move_right'}/${itemId}/${oldPriority}`, {
+                    method: 'POST'
+                });
+            } catch (e) {
+                console.error(e);
+            }
 
-        updateArrows();
+            updateArrows();
+        });
     });
-});
 
-/* =========================
-   DELETE (MODAL)
-========================= */
-document.querySelectorAll('.btn-delete').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.preventDefault();
+    /* =========================
+       DELETE (MODAL)
+    ========================= */
+    document.querySelectorAll('.btn-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
 
-        toDelete = btn.dataset.priority;
-        toDeleteEl = btn.closest('.image-item');
+            toDelete = btn.dataset.priority;
+            toDeleteEl = btn.closest('.img-box');
 
-        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-        modal.show();
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            modal.show();
+        });
     });
+
+    /* =========================
+       CONFIRM DELETE
+    ========================= */
+    const confirmBtn = document.getElementById('confirmDelete');
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', async () => {
+
+            if (!toDelete) return;
+
+            try {
+                await fetch(baseUrl + `manage_images/delete/${itemId}/${toDelete}`, {
+                    method: 'POST'
+                });
+            } catch (e) {
+                console.error(e);
+            }
+
+            if (toDeleteEl) toDeleteEl.remove();
+
+            updatePriorities();
+            updateArrows();
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+            if (modal) modal.hide();
+
+            toDelete = null;
+            toDeleteEl = null;
+        });
+    }
 });
-
-/* =========================
-   CONFIRM DELETE
-========================= */
-const confirmBtn = document.getElementById('confirmDelete');
-
-if (confirmBtn) {
-    confirmBtn.addEventListener('click', async () => {
-
-        if (!toDelete) return;
-
-        try {
-            await fetch('manage_images/delete_ajax', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    item_id: itemId,
-                    priority: toDelete
-                })
-            });
-        } catch (e) {
-            console.error(e);
-        }
-
-        if (toDeleteEl) toDeleteEl.remove();
-
-        updatePriorities();
-        updateArrows();
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-        if (modal) modal.hide();
-
-        toDelete = null;
-        toDeleteEl = null;
-    });
-}
 
 /* =========================
    UPDATE PRIORITIES
 ========================= */
 function updatePriorities() {
-    document.querySelectorAll('.image-item').forEach((el, index) => {
+    document.querySelectorAll('.img-box').forEach((el, index) => {
         const newPriority = index + 1;
 
         el.dataset.priority = newPriority;
@@ -129,7 +117,7 @@ function updatePriorities() {
    UPDATE ARROWS
 ========================= */
 function updateArrows() {
-    const items = document.querySelectorAll('.image-item');
+    const items = document.querySelectorAll('.img-box');
 
     items.forEach((item, index) => {
         const leftBtn = item.querySelector('.btn-left');

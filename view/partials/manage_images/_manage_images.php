@@ -62,3 +62,28 @@
         <p style="color: #9ca3af; text-align: center;">No images yet.</p>
     <?php endif; ?>
 </div>
+<div class="modal fade" id="deleteModal" tabindex="-1" data-bs-theme="dark">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-bg-dark" style="border: 1px solid #333;">
+            
+            <div class="modal-header border-bottom-0">
+                <h5 class="modal-title fs-6">Delete image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete this image?
+            </div>
+
+            <div class="modal-footer border-top-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background-color: #4b5563; border-color: #4b5563;">
+                    Cancel
+                </button>
+                <button type="button" id="confirmDelete" class="btn btn-danger">
+                    Delete
+                </button>
+            </div>
+
+        </div>
+    </div>
+</div>
