@@ -8,6 +8,7 @@
           method="post"
           action="item/add_edit_item<?= $item_id ? "/$item_id" : "" ?>"
           data-item-id="<?= $item_id ?? '' ?>">
+        <input type="hidden" name="from" value="<?= $from ?? 'my_items' ?>">
 
         <section class="card">
             <h2>Basic Information</h2>

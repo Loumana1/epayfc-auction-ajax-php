@@ -63,6 +63,8 @@ class ControllerItem extends Controller {
         $item_id = isset($_GET["param1"]) ? (int)$_GET["param1"] : null;
         $item = $this->load_item_for_edit_or_redirect($item_id, $owner_id);
    
+        $from = $_GET['from'] ?? $_POST['from'] ?? 'my_items';
+
         if (!empty($_POST)) {
             [$new_item, $view_data] = $this->build_item_from_post($item, $item_id, $owner_id);
 
@@ -72,7 +74,8 @@ class ControllerItem extends Controller {
                 $view_data["currentUser"]          = $user;
                 $view_data["current_page"]         = "add_item";
                 $view_data["header_title"]         = $item_id ? "Edit item" : "Add item";
-                $view_data["back_url"]             = "my_items";
+                $view_data["back_url"]             = $from;
+                $view_data["from"]                 = $from;
                 $view_data["header_right_icon"]    = "bi-floppy";
                 $view_data["header_right_form_id"] = "item-form";
                 $view_data["page_css"]             = ["add_edit_item.css"];
@@ -90,7 +93,8 @@ class ControllerItem extends Controller {
         $view_data["currentUser"]          = $user;
         $view_data["current_page"]         = "add_item";
         $view_data["header_title"]         = $item_id ? "Edit item" : "Add item";
-        $view_data["back_url"]             = "my_items";
+        $view_data["back_url"]             = $from;
+        $view_data["from"]                 = $from;
         $view_data["header_right_icon"]    = "bi-floppy";
         $view_data["header_right_form_id"] = "item-form";
         $view_data["page_css"]             = ["add_edit_item.css"];
