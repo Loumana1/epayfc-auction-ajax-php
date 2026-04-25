@@ -2,6 +2,7 @@
     <div class="card-title">Add New Images</div>
     <form action="manage_images/upload/<?= $item->get_Id() ?>" method="post" enctype="multipart/form-data">
         <label class="form-label">Select Images</label>
+        <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
         <input type="file" name="images[]" multiple accept=".jpg,.jpeg,.png,.gif,.webp" class="file-input">
         <p class="help-text">
             You can select multiple images (JPG, PNG, GIF, WebP). 
