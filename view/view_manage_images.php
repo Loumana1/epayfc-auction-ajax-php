@@ -2,7 +2,8 @@
 <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.min.css">
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
-<div class="manage-page" data-item-id="<?= $item->get_Id() ?>">
+<div class="manage-page" data-item-id="<?= $item->get_Id() ?>"
+data-encoded-state="<?= $encoded_state ?? '' ?>">
 
     <main>
         <h1 class="page-subtitle">

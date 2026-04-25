@@ -30,6 +30,8 @@
                         <noscript>
                             <?php if ($priority > 1): ?>
                                 <form action="<?= $base_url ?>/move_left/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
+                                 
+                                    <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
                                     <button type="submit" class="action-btn">←</button>
                                 </form>
                             <?php else: ?>
@@ -41,6 +43,7 @@
                         <noscript>
                             <?php if ($priority < $picture_count): ?>
                                 <form action="<?= $base_url ?>/move_right/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
+                                <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
                                     <button type="submit" class="action-btn">→</button>
                                 </form>
                             <?php else: ?>
@@ -51,6 +54,7 @@
                         <button class="action-btn del btn-delete" data-priority="<?= $priority ?>">✕</button>
                         <noscript>
                             <form action="<?= $base_url ?>/delete/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
+                            <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
                                 <button type="submit" class="action-btn del">✕</button>
                             </form>
                         </noscript>
