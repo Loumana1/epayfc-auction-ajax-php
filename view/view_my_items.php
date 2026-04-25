@@ -49,7 +49,7 @@ require_once "model/ItemPicture.php";
         ?>
         <div class="search-bar">
             <input type="text" id="search-input" placeholder="Search item" class="search-input"
-                value="<?= htmlspecialchars($search_query) ?>">
+                value="<?= $search_query ?>">
             <i class="bi bi-search search-icon"></i>
         </div>
 
@@ -66,9 +66,9 @@ require_once "model/ItemPicture.php";
                         ?>
                         <div class="item-card" data-id="<?= $item->get_id() ?>"
                             onclick="window.location='open_item/index/<?= $item->get_id() ?>/0/<?= $encoded_state ?>'"
-                            data-title="<?= htmlspecialchars($item->get_title() ?? '') ?>"
-                            data-seller="<?= htmlspecialchars($item->get_seller()->get_Pseudo() ?? '') ?>"
-                            data-description="<?= htmlspecialchars($item->get_Description() ?? '') ?>">
+                            data-title="<?= $item->get_title() ?? '' ?>"
+                            data-seller="<?= $item->get_seller()->get_Pseudo() ?? '' ?>"
+                            data-description="<?= $item->get_Description() ?? '' ?>">
 
 
                             <div class="image-wrapper">

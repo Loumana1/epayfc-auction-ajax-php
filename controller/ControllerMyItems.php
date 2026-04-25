@@ -7,15 +7,17 @@ require_once "utils/AppTime.php";
 require_once "model/ItemPicture.php";
 
 
-class ControllerMyItems extends Controller {
+class ControllerMyItems extends Controller
+{
 
-    public function index(): void {
+    public function index(): void
+    {
         $user = $this->get_user_or_redirect();
         $userid = $user->get_id();
         $now = AppTime::get_current_datetime();
 
         // 1. Gestion de la recherche et de l'état
-        $state_param  = $_GET['param1'] ?? null;
+        $state_param = $_GET['param1'] ?? null;
         $search_query = "";
         if ($state_param !== null && Tools::url_safe_decode($state_param)) {
             $state = Tools::url_safe_decode($state_param);
@@ -25,13 +27,25 @@ class ControllerMyItems extends Controller {
         }
         $encoded_state = Tools::url_safe_encode(['from' => 'my_items', 'query' => $search_query]);
 
-        // 2. Récupération des items filtrés
+        // 2. Réponse AJAX si demandée (filtre côté serveur)
+        if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
+            header('Content-Type: application/json');
+            $filtered = Item::get_items_by_owner($userid, $search_query);
+            $matches = array_map(fn($item) => $item->get_id(), $filtered);
+            echo json_encode([
+                'encoded_state' => $encoded_state,
+                'matches' => $matches,
+            ]);
+            return;
+        }
+
+        // 3. Récupération des items (filtrés côté serveur)
         $items = Item::get_items_by_owner($userid, $search_query);
 
-        // 3. Découpage en catégories
-        $active        = [];
+        // 4. Découpage en catégories
+        $active = [];
         $closed_unsold = [];
-        $sold          = [];
+        $sold = [];
 
         foreach ($items as $item) {
             if ($item->is_open()) {
@@ -43,45 +57,35 @@ class ControllerMyItems extends Controller {
             }
         }
 
-        // 4. Réponse AJAX si demandée
-        if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
-            header('Content-Type: application/json');
-            $matches = array_map(fn($item) => $item->get_id(), $items);
-            echo json_encode([
-                'encoded_state' => $encoded_state,
-                'matches'       => $matches,
-            ]);
-            return;
-        }
-
         // 5. Rendu de la vue
         (new View("my_items"))->show([
             "active_items" => $active,
             "closed_unsold_items" => $closed_unsold,
             "sold_items" => $sold,
-            "currentUser" => $user, 
+            "currentUser" => $user,
             "current_page" => "my_items",
-            "header_title"      => "My items",
-            "header_subtitle"   => "Items you are currently selling",
-            "back_url"          => "browser",
-            "search_query"      => $search_query,
-            "encoded_state"     => $encoded_state
+            "header_title" => "My items",
+            "header_subtitle" => "Items you are currently selling",
+            "back_url" => "browser",
+            "search_query" => $search_query,
+            "encoded_state" => $encoded_state
         ]);
     }
 
-    private function format_items_for_json(array $raw_items): array 
+    private function format_items_for_json(array $raw_items): array
     {
         $result = [];
         foreach ($raw_items as $item) {
-            if (!$item instanceof Item) continue;
+            if (!$item instanceof Item)
+                continue;
             $pic = $item->get_main_picture();
             $result[] = [
-                'id'     => $item->get_Id(),
-                'title'  => $item->get_Title(),
+                'id' => $item->get_Id(),
+                'title' => $item->get_Title(),
                 'seller' => $item->get_seller()->get_Pseudo(),
-                'pic'    => $pic ? $pic->picture_path : null,
-                'price'  => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),
-                'time'   => $this->calculate_time_remaining($item->get_End_At()),
+                'pic' => $pic ? $pic->picture_path : null,
+                'price' => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),
+                'time' => $this->calculate_time_remaining($item->get_End_At()),
             ];
         }
         return $result;
@@ -91,7 +95,8 @@ class ControllerMyItems extends Controller {
     {
         $now = new DateTime(AppTime::get_current_datetime());
         $end = new DateTime($end_at);
-        if ($end <= $now) return "0d 0h";
+        if ($end <= $now)
+            return "0d 0h";
         $diff = $now->diff($end);
         return $diff->days . "d " . $diff->h . "h";
     }

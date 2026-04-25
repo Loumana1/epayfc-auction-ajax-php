@@ -9,12 +9,12 @@
         <div class="input-group <?= $email_err ?>">
             <span class="icon"><i class="bi bi-envelope"></i></span>
             <input type="email" name="email" placeholder="Email" 
-                   value="<?= htmlspecialchars($email) ?>">
+                   value="<?= $email ?>">
         </div>
         <?php if (!empty($errors['email'])): ?>
             <div class="field-error">
                 <?php foreach ($errors['email'] as $e): ?>
-                    <?= htmlspecialchars($e) ?><br>
+                    <?= $e ?><br>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
@@ -23,12 +23,12 @@
         <div class="input-group <?= $fn_err ?>">
             <span class="icon"><i class="bi bi-person"></i></span>
             <input type="text" name="full_name" placeholder="Full Name" 
-                   value="<?= htmlspecialchars($full_name) ?>">
+                   value="<?= $full_name ?>">
         </div>
         <?php if (!empty($errors['full_name'])): ?>
             <div class="field-error">
                 <?php foreach ($errors['full_name'] as $e): ?>
-                    <?= htmlspecialchars($e) ?><br>
+                    <?= $e ?><br>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
@@ -37,12 +37,12 @@
         <div class="input-group <?= $pseudo_err ?>">
             <span class="icon"><i class="bi bi-at"></i></span>
             <input type="text" name="pseudo" placeholder="Pseudo" 
-                   value="<?= htmlspecialchars($pseudo) ?>">
+                   value="<?= $pseudo ?>">
         </div>
         <?php if (!empty($errors['pseudo'])): ?>
             <div class="field-error">
                 <?php foreach ($errors['pseudo'] as $e): ?>
-                    <?= htmlspecialchars($e) ?><br>
+                    <?= $e ?><br>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
@@ -55,7 +55,7 @@
         <?php if (!empty($errors['password'])): ?>
             <div class="field-error">
                 <?php foreach ($errors['password'] as $e): ?>
-                    <?= htmlspecialchars($e) ?><br>
+                    <?= $e ?><br>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
@@ -68,7 +68,7 @@
         <?php if (!empty($errors['password_confirm'])): ?>
             <div class="field-error">
                 <?php foreach ($errors['password_confirm'] as $e): ?>
-                    <?= htmlspecialchars($e) ?><br>
+                    <?= $e ?><br>
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>

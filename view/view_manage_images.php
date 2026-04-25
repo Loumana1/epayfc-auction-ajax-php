@@ -6,7 +6,7 @@
 
     <main>
         <h1 class="page-subtitle">
-            Manage Images for "<?= htmlspecialchars($item->get_Title()) ?>"
+            Manage Images for "<?= $item->get_Title() ?>"
         </h1>
 
         <?php include __DIR__ . "/partials/manage_images/_manage_images.php"; ?>

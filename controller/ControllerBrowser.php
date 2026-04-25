@@ -21,19 +21,19 @@ class ControllerBrowser extends Controller
         $search_query = "";
 
         if ($state_param !== null) {
-            $state =Tools::url_safe_decode($state_param);
+            $state = Tools::url_safe_decode($state_param);
             if (is_array($state) && isset($state['query'])) {
                 $search_query = $state['query'];
             }
         } else {
             $search_query = trim($_GET['query'] ?? "");
         }
-        $encoded_state = Tools::url_safe_encode(['from' => 'browser' , 'query' => $search_query]);
+        $encoded_state = Tools::url_safe_encode(['from' => 'browser', 'query' => $search_query]);
 
         // Répondre en JSON si c'est une requête AJAX
         if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
             $participating_raw = $this->get_participating_items($current_user_id, $now, $search_query);
-            $available_raw     = $this->get_available_items($current_user_id, $now, $search_query);
+            $available_raw = $this->get_available_items($current_user_id, $now, $search_query);
 
             $matches = array_merge(
                 array_map(fn($i) => $i->get_id(), $participating_raw),
@@ -42,8 +42,8 @@ class ControllerBrowser extends Controller
 
             header('Content-Type: application/json');
             echo json_encode([
-               'encoded_state' => $encoded_state,
-               'matches'       => $matches,
+                'encoded_state' => $encoded_state,
+                'matches' => $matches,
             ]);
             return;
         }
@@ -56,8 +56,8 @@ class ControllerBrowser extends Controller
             if (!$item instanceof Item)
                 continue;
 
-        //Peut etre remplacé par 
-        //$main_picture = ItemPicture::get_main_picture($current_user_id);
+            //Peut etre remplacé par 
+            //$main_picture = ItemPicture::get_main_picture($current_user_id);
             $main_picture = $item->get_main_picture();
 
             // Récupérer le pseudo du vendeur
@@ -67,7 +67,7 @@ class ControllerBrowser extends Controller
                 'id' => $item->get_Id(),
                 'title' => $item->get_Title(),
                 'pic_path' => $main_picture?->picture_path,
-                'picture_count' => $item->get_picture_count(),                
+                'picture_count' => $item->get_picture_count(),
                 'seller_pseudo' => $seller_pseudo,
                 'buy_now_price' => $item->get_Buy_Now_Price(),
                 'starting_bid' => $item->get_Starting_Bid(),
@@ -99,7 +99,8 @@ class ControllerBrowser extends Controller
                 'id' => $item->get_Id(),
                 'title' => $item->get_Title(),
                 'pic_path' => $mainPicture?->picture_path,
-                'picture_count' => $item->get_picture_count(),                'seller_pseudo' => $sellerPseudo,
+                'picture_count' => $item->get_picture_count(),
+                'seller_pseudo' => $sellerPseudo,
                 'buy_now_price' => $item->get_Buy_Now_Price(),
                 'starting_bid' => $item->get_Starting_Bid(),
                 'max_bid' => $item->get_max_bid_time(),
@@ -155,23 +156,24 @@ class ControllerBrowser extends Controller
         return Item::get_Item_Available($user_id, $now, $search_query);
     }
 
-    private function format_items_for_json(array $raw_items): array 
+    private function format_items_for_json(array $raw_items): array
     {
         $result = [];
         foreach ($raw_items as $item) {
-            if (!$item instanceof Item) continue;
-                $pic = $item->get_main_picture();
-                $result[] = [
-                    'id'     => $item->get_Id(),
-                    'title'  => $item->get_Title(),
-                    'seller' => $item->get_seller()->get_Pseudo(),
-                    'pic'    => $pic ? $pic->picture_path : null,
-                    'price'  => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),
-                    'time'   => $this->calculate_time_remaining($item->get_End_At()),
-                ];
+            if (!$item instanceof Item)
+                continue;
+            $pic = $item->get_main_picture();
+            $result[] = [
+                'id' => $item->get_Id(),
+                'title' => $item->get_Title(),
+                'seller' => $item->get_seller()->get_Pseudo(),
+                'pic' => $pic ? $pic->picture_path : null,
+                'price' => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),
+                'time' => $this->calculate_time_remaining($item->get_End_At()),
+            ];
+        }
+        return $result;
     }
-    return $result;
-}
 
-} 
+}
 ?>

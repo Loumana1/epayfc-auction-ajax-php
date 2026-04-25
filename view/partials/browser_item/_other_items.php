@@ -8,10 +8,10 @@
             ?>
             <?php foreach ($available_items as $item): ?>
                 <div class="item-card" data-id="<?= $item['id'] ?>"
-                    data-title="<?= htmlspecialchars(strtolower($item['title'])) ?>"
-                    data-seller="<?= htmlspecialchars(strtolower($item['seller_pseudo'])) ?>"
-                    data-description="<?= htmlspecialchars(strtolower($item['description'])) ?>">
-                    <a href="open_item/index/<?= $item['id'] ?>/0/<?= htmlspecialchars($encoded_state) ?>">
+                    data-title="<?= strtolower($item['title']) ?>"
+                    data-seller="<?= strtolower($item['seller_pseudo']) ?>"
+                    data-description="<?= strtolower($item['description']) ?>">
+                    <a href="open_item/index/<?= $item['id'] ?>/0/<?= $encoded_state ?>">
                         <?php if ($item['pic_path']): ?>
                             <?php $thumb = str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']); ?>
                             <img src="<?= $web_root . $thumb ?>" class="item-image">
@@ -20,7 +20,7 @@
                         <?php endif; ?>
 
                         <div class="item-info">
-                            <h3 class="item-title"><?= htmlspecialchars($item['title']) ?></h3>
+                            <h3 class="item-title"><?= $item['title'] ?></h3>
                             
                             <div class="item-labels">
                                 <?php if ($item['is_auction']): ?>
@@ -46,7 +46,7 @@
                                 <?php endif; ?>
                                 
                                 <span class="seller">
-                                    Listed by <?= htmlspecialchars($item['seller_pseudo']) ?>
+                                    Listed by <?= $item['seller_pseudo'] ?>
                                 </span>
                             </div>
                             
@@ -67,7 +67,7 @@
                             
                             <div class="item-time">
                                 <span class="time-remaining">
-                                    <?= htmlspecialchars($item['time_remaining']) ?> left
+                                    <?= $item['time_remaining'] ?> left
                                 </span>
                             </div>
                         </div>

@@ -21,7 +21,7 @@
                     $priority = $picture->priority;
                     $base_url = "manage_images";
                 ?>
-                <div class="img-box" data-path="<?= htmlspecialchars($picture->picture_path) ?>">
+                <div class="img-box" data-path="<?= $picture->picture_path ?>">
                     <img src="<?= $web_root . $picture->picture_path ?>" 
                          alt="Image <?= $priority ?>" class="img-thumb">
                     

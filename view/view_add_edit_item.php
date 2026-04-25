@@ -37,19 +37,19 @@
 
             <div class="field" id="field-title">
                 <label>Item Title *</label>
-                <input type="text" name="title" value="<?= htmlspecialchars($title) ?>"
+                <input type="text" name="title" value="<?= $title ?>"
                        placeholder="Ex: iPhone 13 Pro Max 256GB">
                 <?php if (!empty($errors["title"])): ?>
-                    <div class="error"><?= htmlspecialchars($errors["title"]) ?></div>
+                    <div class="error"><?= $errors["title"] ?></div>
                 <?php endif; ?>
             </div>
 
             <div class="field" id="field-description">
                 <label>Description</label>
                 <textarea name="description" rows="4"
-                          placeholder="Describe your item in detail..."><?= htmlspecialchars($description) ?></textarea>
+                          placeholder="Describe your item in detail..."><?= $description ?></textarea>
                 <?php if (!empty($errors["description"])): ?>
-                    <div class="error"><?= htmlspecialchars($errors["description"]) ?></div>
+                    <div class="error"><?= $errors["description"] ?></div>
                 <?php endif; ?>
             </div>
 
@@ -57,7 +57,7 @@
                 <label>Sale Duration (days) *</label>
                 <input type="number" name="duration_days" value="<?= $duration_days ?>">
                 <?php if (!empty($errors["duration_days"])): ?>
-                    <div class="error"><?= htmlspecialchars($errors["duration_days"]) ?></div>
+                    <div class="error"><?= $errors["duration_days"] ?></div>
                 <?php endif; ?>
             </div>
         </section>
@@ -70,19 +70,19 @@
 
                 <div class="field" id="field-starting-bid">
                     <label>Starting Bid</label>
-                    <input type="text" name="starting_bid" value="<?= htmlspecialchars($starting_bid) ?>"
+                    <input type="text" name="starting_bid" value="<?= $starting_bid ?>"
                            placeholder="e.g. 50.00">
                     <?php if (!empty($errors["starting_bid"])): ?>
-                        <div class="error"><?= htmlspecialchars($errors["starting_bid"]) ?></div>
+                        <div class="error"><?= $errors["starting_bid"] ?></div>
                     <?php endif; ?>
                 </div>
 
                 <div class="field" id="field-buy-now">
                     <label>Instant Purchase Price (optional)</label>
-                    <input type="text" name="buy_now_price" value="<?= htmlspecialchars($buy_now_price) ?>"
+                    <input type="text" name="buy_now_price" value="<?= $buy_now_price ?>"
                            placeholder="e.g. 200.00">
                     <?php if (!empty($errors["buy_now_price"])): ?>
-                        <div class="error"><?= htmlspecialchars($errors["buy_now_price"]) ?></div>
+                        <div class="error"><?= $errors["buy_now_price"] ?></div>
                     <?php endif; ?>
                 </div>
             </div>
@@ -92,10 +92,10 @@
 
                 <div class="field" id="field-sale-price">
                     <label>Sale Price</label>
-                    <input type="text" name="sale_price" value="<?= htmlspecialchars($sale_price) ?>"
+                    <input type="text" name="sale_price" value="<?= $sale_price ?>"
                            placeholder="e.g. 150.00">
                     <?php if (!empty($errors["buy_now_price"])): ?>
-                        <div class="error"><?= htmlspecialchars($errors["buy_now_price"]) ?></div>
+                        <div class="error"><?= $errors["buy_now_price"] ?></div>
                     <?php endif; ?>
                 </div>
             </div>

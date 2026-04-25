@@ -2,7 +2,7 @@
 <main>
     <div class="search-bar">
         <input type="text" id="search-input" placeholder="Search item" class="search-input"
-            value="<?= htmlspecialchars($search_query ?? '') ?>">
+            value="<?= $search_query ?? '' ?>">
         <i class="bi bi-search search-icon"></i>
     </div>
     <?php require "partials/browser_item/_items_participating.php"; ?>

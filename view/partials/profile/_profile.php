@@ -8,9 +8,9 @@
             <i class="bi bi-person-fill text-secondary fs-1"></i>
         </div>
     <?php endif; ?>
-    <h2 class="user-name h5 mb-0"><?= htmlspecialchars($current_user->full_name) ?></h2>
-    <p class="user-pseudo text-muted mb-1 small">@<?= htmlspecialchars($current_user->pseudo) ?></p>
-    <p class="user-email text-primary small mb-0"><?= htmlspecialchars($current_user->get_email()) ?></p>
+    <h2 class="user-name h5 mb-0"><?= $current_user->full_name ?></h2>
+    <p class="user-pseudo text-muted mb-1 small">@<?= $current_user->pseudo ?></p>
+    <p class="user-email text-primary small mb-0"><?= $current_user->get_email() ?></p>
 </div>
 
 <div class="section mb-4">
