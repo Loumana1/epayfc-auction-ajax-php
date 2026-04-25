@@ -302,7 +302,7 @@ $(function () {
 
     $('#confirmLeaveBtn').on('click', function() {
         isDirty = false; 
-        window.location.href = targetUrl; 
+        window.location.href = BASE + targetUrl; 
     });
 
     // 8.5 bouton "Précédent" du navigateur ou F5

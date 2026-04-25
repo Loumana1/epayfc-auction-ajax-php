@@ -4,17 +4,17 @@
             <?php if (!empty($participating_items)): ?>
                 <?php foreach ($participating_items as $item): ?>
                     <div class="item-card" data-id="<?= $item['id'] ?>"
-                    data-title="<?= htmlspecialchars($item['title']?? '') ?>"
-                    data-seller="<?= htmlspecialchars($item['seller_pseudo']?? '') ?>"
-                    data-description="<?= htmlspecialchars($item['description']?? '') ?>"> 
-                        <a href="open_item/index/<?= $item['id'] ?>/0/<?= htmlspecialchars($encoded_state) ?>">
+                    data-title="<?= $item['title']?? '' ?>"
+                    data-seller="<?= $item['seller_pseudo']?? '' ?>"
+                    data-description="<?= $item['description']?? '' ?>"> 
+                        <a href="open_item/index/<?= $item['id'] ?>/0/<?= $encoded_state ?>">
                             <?php if ($item['pic_path']): ?>
                                 <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" class="item-image">
                             <?php else: ?>
                                 <div class="no-pic">No Pic</div>
                             <?php endif; ?>
                             <div class="item-info">
-                                <h3 class="item-title"><?= htmlspecialchars($item['title']) ?></h3>
+                                <h3 class="item-title"><?= $item['title'] ?></h3>
                                 
                                 <div class="item-labels">
                                     <?php if ($item['is_highest_bidder']): ?>
@@ -38,7 +38,7 @@
                                             <?= $item['picture_count'] ?> image<?= $item['picture_count'] > 1 ? 's' : '' ?></span>
                                     <?php endif; ?>
                                     
-                                    <span class="seller">Listed by <?= htmlspecialchars($item['seller_pseudo']) ?></span>
+                                    <span class="seller">Listed by <?= $item['seller_pseudo'] ?></span>
                                 </div>
                                 
                                 <div class="item-pricing">
@@ -54,7 +54,7 @@
                                 </div>
                                 
                                 <div class="item-time">
-                                    <span class="time-remaining"><?= htmlspecialchars($item['time_remaining']) ?> left</span>
+                                    <span class="time-remaining"><?= $item['time_remaining'] ?> left</span>
                                 </div>
                             </div>
                         </a>

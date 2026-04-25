@@ -3,7 +3,7 @@
         <ul>
             <?php foreach ($errors as $error): ?>
                 <li>
-                    <?= htmlspecialchars($error) ?>
+                    <?= $error ?>
                 </li>
             <?php endforeach; ?>
         </ul>
@@ -17,14 +17,14 @@
             <div class="form-group">
                 <label class="form-label">Full Name <span class="required">*</span></label>
                 <input type="text" name="full_name" class="form-input"
-                       value="<?= htmlspecialchars($user['full_name']) ?>" required>
+                       value="<?= $user['full_name'] ?>" required>
                 <p class="form-help">Your complete name as it should appear on your profile</p>
             </div>
 
             <div class="form-group">
                 <label class="form-label">Username <span class="required">*</span></label>
                 <input type="text" name="pseudo" class="form-input"
-                       value="<?= htmlspecialchars($user['pseudo']) ?>" required>
+                       value="<?= $user['pseudo'] ?>" required>
                 <p class="form-help">This will be your public display name on the platform</p>
             </div>
         </div>
@@ -36,7 +36,7 @@
             <div class="form-group">
                 <label class="form-label">Email Address <span class="required">*</span></label>
                 <input type="email" name="email" class="form-input"
-                       value="<?= htmlspecialchars($user['email']) ?>" required>
+                       value="<?= $user['email'] ?>" required>
                 <p class="form-help">
                     We'll use this email to send you notifications about your sales and purchases
                 </p>
@@ -44,7 +44,7 @@
 
             <div class="form-group">
                 <label class="form-label">IBAN <span class="optional">(Optional)</span></label>
-                <?php $user_iban = htmlspecialchars($user['iban'] ?? ''); ?>
+                <?php $user_iban = $user['iban'] ?? ''; ?>
                 <input type="text" name="iban" class="form-input"
                        value="<?= $user_iban ?>" 
                        placeholder="BE99 9999 9999 9999 9999">

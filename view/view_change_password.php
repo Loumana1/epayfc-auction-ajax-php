@@ -23,7 +23,7 @@
                                 class="<?= !empty($field_errors_current_password) ? 'input-error' : '' ?>">
                         <?php if (!empty($field_errors_current_password)): ?>
                             <?php foreach ($field_errors_current_password as $error): ?>
-                                <span class="field-error"><?= htmlspecialchars($error) ?></span>
+                                <span class="field-error"><?= $error ?></span>
                             <?php endforeach; ?>
                         <?php endif; ?>
                         <small class="form-hint">
@@ -48,7 +48,7 @@
                                 class="<?= !empty($field_errors_new_password) ? 'input-error' : '' ?>">
                         <?php if (!empty($field_errors_new_password)): ?>
                             <?php foreach ($field_errors_new_password as $error): ?>
-                                <span class="field-error"><?= htmlspecialchars($error) ?></span>
+                                <span class="field-error"><?= $error ?></span>
                             <?php endforeach; ?>
                         <?php endif; ?>
                         <small class="form-hint">
@@ -66,7 +66,7 @@
                                 class="<?= !empty($field_errors_confirm_password) ? 'input-error' : '' ?>">
                         <?php if (!empty($field_errors_confirm_password)): ?>
                             <?php foreach ($field_errors_confirm_password as $error): ?>
-                                <span class="field-error"><?= htmlspecialchars($error) ?></span>
+                                <span class="field-error"><?= $error ?></span>
                             <?php endforeach; ?>
                         <?php endif; ?>
                         <small class="form-hint">
