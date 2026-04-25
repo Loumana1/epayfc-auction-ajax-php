@@ -47,7 +47,7 @@ class ControllerManageImages extends Controller
                     ]);
     }
     private function get_encoded_state(): ?string {
-        $state = $_GET['param2'] ?? $_POST['encoded_state'] ?? null;
+        $state = $_GET['param2'] ?? $_GET['param3'] ?? $_POST['encoded_state'] ?? null;
         return (is_string($state) && $state !== '') ? $state : null;
     }
     
@@ -90,7 +90,7 @@ class ControllerManageImages extends Controller
                 }
             }
         }
-        $this->redirect_manage_images_with_state($item_id, $encoded_state);
+        $this->redirect_manage_images_with_state($item_id , $encoded_state);
     }
 
     public function delete(): void
@@ -102,7 +102,7 @@ class ControllerManageImages extends Controller
         if ($current_user && $item_id && $priority !== null) {
             ItemPicture::delete((int) $item_id, (int) $priority);
         }
-        $this->redirect_manage_images_with_state($item_id ?? '', $encoded_state);
+        $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
 
     public function move_left(): void
@@ -115,7 +115,7 @@ class ControllerManageImages extends Controller
         if ($current_user && $item_id && $priority !== null) {
             ItemPicture::move_left((int) $item_id, (int) $priority);
         }
-        $this->redirect("manage_images", "index", $item_id ?? '');
+        $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
 
     public function move_right(): void
@@ -128,7 +128,7 @@ class ControllerManageImages extends Controller
         if ($current_user && $item_id && $priority !== null) {
             ItemPicture::move_right((int) $item_id, (int) $priority);
         }
-        $this->redirect_manage_images_with_state($item_id ?? '', $encoded_state);
+        $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
 
     public function update_order(): void {
