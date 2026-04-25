@@ -6,6 +6,8 @@ let toDeleteEl = null;
 document.addEventListener('DOMContentLoaded', () => {
     const managePage = document.querySelector('.manage-page');
     itemId = managePage ? managePage.dataset.itemId : null;
+    const encodedState = managePage ? (managePage.dataset.encodedState || '') : '';
+const stateSuffix = encodedState ? `/${encodeURIComponent(encodedState)}` : '';
     const base = document.querySelector('base');
     baseUrl = base ? base.getAttribute('href') : '';
 
@@ -40,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updatePriorities();
 
             try {
-                await fetch(baseUrl + `manage_images/${isLeft ? 'move_left' : 'move_right'}/${itemId}/${oldPriority}`, {
+                await fetch(baseUrl + `manage_images/${isLeft ? 'move_left' : 'move_right'}/${itemId}/${oldPriority}${stateSuffix}`, {
                     method: 'POST'
                 });
             } catch (e) {
@@ -77,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!toDelete) return;
 
             try {
-                await fetch(baseUrl + `manage_images/delete/${itemId}/${toDelete}`, {
+                await fetch(baseUrl + `manage_images/delete/${itemId}/${toDelete}${stateSuffix}`, {
                     method: 'POST'
                 });
             } catch (e) {
