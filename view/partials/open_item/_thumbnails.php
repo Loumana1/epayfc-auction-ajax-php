@@ -4,7 +4,7 @@
 
     <div class="thumbnail-gallery">
         <?php foreach ($pictures as $index => $picture): ?>
-            <a href="open_item/index/<?= $item_id ?>/<?= $index ?>/<?= $from ?? '' ?>">
+            <a href="open_item/index/<?= $item_id ?>/<?= $index ?>/<?= urlencode($encoded_state ?? '') ?>">
                 <img class="thumbnail <?= $selected_img === $index ? 'active' : '' ?>" 
                 
                      src="<?= str_replace('.jpg', '_thumbnail.jpg', $picture->picture_path) ?>" 
