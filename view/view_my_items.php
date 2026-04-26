@@ -46,7 +46,7 @@ function time_left(?string $endAt): string
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
                     <div class="item-card" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/0/<?= $encoded_state ?>'"
+                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'"
                         data-title="<?= $item->get_title() ?? '' ?>"
                         data-seller="<?= $item->get_seller()->get_Pseudo() ?? '' ?>"
                         data-description="<?= $item->get_Description() ?? '' ?>">
@@ -91,7 +91,7 @@ function time_left(?string $endAt): string
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
                     <div class="item-card closed" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/0/<?= $encoded_state ?>'">
+                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
 
                         <div class="image-wrapper">
                             <img src="<?= $img ?>" alt="">
@@ -123,7 +123,7 @@ function time_left(?string $endAt): string
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
                     <div class="item-card sold" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/0/<?= $encoded_state ?>'">
+                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
 
                         <div class="image-wrapper">
                             <img src="<?= $img ?>" alt="">
