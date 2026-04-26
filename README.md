@@ -26,15 +26,17 @@ Le site web est complet et fcontionel, nous avons eu quelques soucis avec le fai
 
 ### URLs deploiement
 
-* étudiant Nom Prenom :
-  * URL :
-  * Mot de passe :
-* étudiant Nom Prenom :
-  * URL :
-  * Mot de passe :
-* étudiant Nom Prénom :
-  * URL :
-  * Mot de passe :
+* étudiant Nom Prenom : Zie Traore 
+  * URL :http://infolab.epfc.eu:58327/EPayFC/
+  * Mot de passe : Y4M4L()u3a
+
+* étudiant Nom Prenom : Hugo Castelain
+  * URL :http://infolab.epfc.eu:58325/EPayFC/
+  * Mot de passe :MAUZ167/
+
+* étudiant Nom Prénom :Sam Prophet NSENGIMANA
+  * URL : http://infolab.epfc.eu:58326/EPayFC/
+  * Mot de passe :Sknkstone21!
 
 ### Liste des fonctionnalités supplémentaires
 
@@ -42,7 +44,7 @@ Le site web est complet et fcontionel, nous avons eu quelques soucis avec le fai
 
 ## Notes de version itération 2
 
-...
+L'iteration 2 s'est deroulé de maniere fluide car nous maitrision mieu le language php. Nous avons fait le choix de d'integrer un layout commun dans le framework du projet -et pour ceux, nou nous somme permis de modifier le fichier framewor/tools afin de rediriger l'affichage de l'erreur vers notre layout. 
 
 modification du framework : Utilisation de l'erreur stylisé. 
 
