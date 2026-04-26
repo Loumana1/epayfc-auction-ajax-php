@@ -210,9 +210,24 @@ class ControllerItem extends Controller {
 
     private function get_add_edit_view_data(?Item $item, ?int $item_id): array {
 
+        $starting_bid = "";
+        $buy_now_price = "";
         $sale_price = "";
-        if ($item && (($item->get_starting_bid() ?? 0) <= 0)) {
-            $sale_price = (string)($item->get_buy_now_price() ?? "");
+
+        if ($item !== null) {
+            $bn = $item->get_Buy_Now_Price();
+            $sb = $item->get_Starting_Bid() ?? 0.0;
+            // aligné sur build_item_from_post : direct (option 2) => en base starting_bid=0, prix en buy_now
+            $is_persisted_direct = $bn !== null && (float) $sb === 0.0;
+
+            if ($is_persisted_direct) {
+                $starting_bid = "";
+                $buy_now_price = "";
+                $sale_price = (string) $bn;
+            } else {
+                $starting_bid = (float) $sb === 0.0 ? "" : (string) (float) $sb;
+                $buy_now_price = $bn !== null ? (string) (float) $bn : "";
+            }
         }
 
         return [
@@ -222,8 +237,8 @@ class ControllerItem extends Controller {
             "duration_days" => $item
                 ? $item->get_duration_days()
                 : Configuration::get("default_duration_days"),
-            "starting_bid" => $item ? (string)($item->get_starting_bid() ?? "") : "",
-            "buy_now_price" => $item ? (string)($item->get_buy_now_price() ?? "") : "",
+            "starting_bid" => $starting_bid,
+            "buy_now_price" => $buy_now_price,
             "sale_price" => $sale_price,
         ];
     }
