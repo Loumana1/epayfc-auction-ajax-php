@@ -65,7 +65,8 @@ function time_left(?string $endAt): string
                             <img src="<?= $img ?>" alt="">
                             <span class="images-count">
                                 <i class="bi bi-images"></i>
-                                <?= count(ItemPicture::get_all_by_item($item->get_Id())) ?>
+                                <?php $count = count(ItemPicture::get_all_by_item($item->get_Id())); ?>
+                                <?= $count ?> image<?= $count > 1 ? 's' : '' ?>
                             </span>
                         </div>
 
