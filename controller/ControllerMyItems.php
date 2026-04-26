@@ -16,7 +16,6 @@ class ControllerMyItems extends Controller
         $userid = $user->get_id();
         $now = AppTime::get_current_datetime();
 
-        // 1. Gestion de la recherche et de l'état 
         $state_param = $_GET['param1'] ?? null;
         $search_query = "";
         if ($state_param !== null) {
@@ -31,7 +30,6 @@ class ControllerMyItems extends Controller
         }
         $encoded_state = Tools::url_safe_encode(['from' => 'my_items', 'query' => $search_query]);
 
-        // 2. Réponse AJAX si demandée (filtre côté serveur)
         if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
             header('Content-Type: application/json');
             $filtered = Item::get_items_by_owner($userid, $search_query);
@@ -43,10 +41,8 @@ class ControllerMyItems extends Controller
             return;
         }
 
-        // 3. Récupération des items (filtrés côté serveur)
         $items = Item::get_items_by_owner($userid, $search_query);
 
-        // 4. Découpage en catégories
         $active = [];
         $closed_unsold = [];
         $sold = [];
@@ -65,7 +61,6 @@ class ControllerMyItems extends Controller
         usort($closed_unsold, fn($a, $b) => strcmp($a->get_end_at(), $b->get_end_at()));
         usort($sold, fn($a, $b) => strcmp($a->get_end_at(), $b->get_end_at()));
 
-        // 5. Rendu de la vue
         (new View("my_items"))->show([
             "active_items"        => $active,
             "closed_unsold_items" => $closed_unsold,

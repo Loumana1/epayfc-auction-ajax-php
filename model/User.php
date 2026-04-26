@@ -74,7 +74,6 @@ class User extends Model {
         return $this->id;
     }
 
-    // choper info de l'utilisateur courant
     public static function get_User_By_Id(int $user_id): User|false {
     $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $user_id]);
     $data = $query->fetch();
@@ -119,22 +118,18 @@ public function has_Picture(): bool {
         $errors[] = "Password length must be between 8 and 16.";
     }
 
-    // Majuscule
     if (!preg_match("/[A-Z]/", $password)) {
         $errors[] = "Password must contain at least one uppercase letter.";
     }
 
-    // Minuscule
     if (!preg_match("/[a-z]/", $password)) {
         $errors[] = "Password must contain at least one lowercase letter.";
     }
 
-    // Chiffre
     if (!preg_match("/\d/", $password)) {
         $errors[] = "Password must contain at least one number.";
     }
 
-    // Non alphanumérique (IMPORTANT: conforme à l’énoncé)
     if (!preg_match("/[^a-zA-Z0-9]/", $password)) {
         $errors[] = "Password must contain at least one non-alphanumeric character.";
     }
@@ -142,7 +137,6 @@ public function has_Picture(): bool {
     return $errors;
     }
 
-        //=========================CHANGE PASSWORD=================
     public static function validate_passwords(string $password, string $password_confirm): array {
         $errors = self::validate_password($password);
         if ($password !== $password_confirm) {
@@ -156,7 +150,6 @@ public function get_hashed_password(): ?string {
     if ($this->hashed_password) {
         return $this->hashed_password;
     }
-    // Si pas dans l'objet, récupérer depuis la DB
     $query = self::execute("SELECT password FROM users WHERE id = :id", ['id' => $this->id]);
     $data = $query->fetch();
     return $data ? $data['password'] : null;
@@ -224,8 +217,6 @@ public function get_hashed_password(): ?string {
             }
         }
     }
-// ============ SIGN UP METHODS ============
-
     public static function email_exists(string $email): bool
     {
         $query = self::execute(
@@ -271,7 +262,6 @@ public function get_hashed_password(): ?string {
             'password_confirm' => []
         ];
 
-        // Email validation
         if (empty($email)) {
             $errors['email'][] = "Email is required.";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -280,21 +270,18 @@ public function get_hashed_password(): ?string {
             $errors['email'][] = "This email is already registered.";
         }
 
-        // Full name validation
         if (empty($full_name)) {
             $errors['full_name'][] = "Full name is required.";
         } elseif (self::full_name_exists($full_name)) {
             $errors['full_name'][] = "This name is already taken.";
         }
 
-        // Pseudo validation
         if (empty($pseudo)) {
             $errors['pseudo'][] = "Pseudo is required.";
         } elseif (self::pseudo_exists($pseudo)) {
             $errors['pseudo'][] = "This pseudo is already taken.";
         }
 
-        // Password validation
         $passwordErrors = self::validate_passwords($password, $password_confirm);
         foreach ($passwordErrors as $error) {
             if (strpos($error, 'twice the same') !== false) {
@@ -347,7 +334,6 @@ public function get_hashed_password(): ?string {
         );
     }
 
-    // Vérifie si un autre utilisateur (donc pas moi) utilise déjà ce pseudo
     public static function is_pseudo_taken_by_other(string $pseudo, int $current_id): bool {
         $query = self::execute(
             "SELECT COUNT(*) FROM users WHERE pseudo = :pseudo AND id != :id",
@@ -356,7 +342,6 @@ public function get_hashed_password(): ?string {
         return (int)$query->fetchColumn() > 0;
     }
 
-    // Vérifie si un autre utilisateur utilise déjà cet email (règle métier cruciale)
     public static function is_email_taken_by_other(string $email, int $current_id): bool {
         $query = self::execute(
             "SELECT COUNT(*) FROM users WHERE email = :email AND id != :id",

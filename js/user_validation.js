@@ -8,10 +8,8 @@ $(function () {
     let errors = {};
     let touched = {};
 
-    // 1. Récupération des constantes
     $.getJSON(BASE + 'config/validation_service', (data) => { config = data; });
 
-    // 2. Helpers UI 
    function setError(key, msg, $input) {
         errors[key] = msg;
         if (!$input) { updateBtn(); return; }
@@ -43,7 +41,6 @@ $(function () {
 
     function updateBtn() {}
 
-    // 3. Validations Synchrones
     function validateEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     }
@@ -63,7 +60,6 @@ $(function () {
         return errs;
     }
 
-    // 4. Validation AJAX 
     function checkAvailability() {
         const data = {
             email: $('input[name="email"]').val().trim(),
@@ -74,16 +70,13 @@ $(function () {
         const url = isEditProfile ? 'edit_profile/check_availability_service' : 'signup/check_availability_service';
 
         $.post(BASE + url, data, function(res) {
-            // Check Full Name
             if (!res.full_name_available) {
                 setError('full_name_ajax', 'Full name is already used.', $('input[name="full_name"]'));
             } else {
                 delete errors['full_name_ajax'];
-                // Si pas d'autres erreurs sur ce champ, on valide
                 if (!errors['full_name']) setValid('full_name', $('input[name="full_name"]'));
             }
 
-            // Check Pseudo (Username)
             if (!res.pseudo_available) {
                 setError('pseudo_ajax', 'Pseudo is already used.', $('input[name="pseudo"]'));
             } else {
@@ -91,7 +84,6 @@ $(function () {
                 if (!errors['pseudo']) setValid('pseudo', $('input[name="pseudo"]'));
             }
 
-            // Check Email
             if (!res.email_available) {
                 setError('email_ajax', 'Email address is already used.', $('input[name="email"]'));
             } else {
@@ -102,8 +94,7 @@ $(function () {
             updateBtn();
         });
     }
-    
-    // 5. Événements
+
     form.find('input').on('input blur', function () {
         const $el = $(this);
         const name = $el.attr('name');

@@ -50,6 +50,7 @@ function time_left(?string $endAt): string
                         data-title="<?= $item->get_title() ?? '' ?>"
                         data-seller="<?= $item->get_seller()->get_Pseudo() ?? '' ?>"
                         data-description="<?= $item->get_Description() ?? '' ?>">
+                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
 
                         <div class="image-wrapper">
                             <div class="item-labels">
@@ -89,6 +90,7 @@ function time_left(?string $endAt): string
                                 <?= time_left($item->get_end_at()) ?>
                             </div>
                         </div>
+                        </a>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -108,6 +110,7 @@ function time_left(?string $endAt): string
                     ?>
                     <div class="item-card closed" data-id="<?= $item->get_id() ?>"
                         onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
+                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
 
                         <div class="image-wrapper">
                             <div class="item-labels">
@@ -141,6 +144,7 @@ function time_left(?string $endAt): string
                                 Not sold
                             </div>
                         </div>
+                        </a>
                     </div>
                 <?php endforeach; ?>
             </div>
@@ -160,6 +164,7 @@ function time_left(?string $endAt): string
                     ?>
                     <div class="item-card sold" data-id="<?= $item->get_id() ?>"
                         onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
+                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
 
                         <div class="image-wrapper">
                             <div class="item-labels">
@@ -191,6 +196,7 @@ function time_left(?string $endAt): string
                                 Sold
                             </div>
                         </div>
+                        </a>
                     </div>
                 <?php endforeach; ?>
             </div>

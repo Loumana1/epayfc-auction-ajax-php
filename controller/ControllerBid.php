@@ -8,7 +8,6 @@ require_once "utils/format.php";
 class ControllerBid extends Controller {
 
 
-    // Si quelqu'un accède à bid sans action, rediriger
     public function index(): void {
         $this->redirect("browser");
     }
@@ -29,8 +28,6 @@ class ControllerBid extends Controller {
         $this->process_bid($item, $current_user, $params['amount'], $params['encoded_state'] ?? '');
     }
     
-    // ============ AUTHENTIFICATION ============
-    
     private function get_user_or_redirect_login(): ?object {
         $current_user = $this->get_user_or_false();
         if (!$current_user) {
@@ -39,8 +36,6 @@ class ControllerBid extends Controller {
         }
         return $current_user;
     }
-    
-    // ============ EXTRACTION PARAMÈTRES ============
     
     private function extract_bid_params(): ?array {
         $item_id = isset($_POST['item_id']) ? (int)$_POST['item_id'] : null;
@@ -70,8 +65,6 @@ class ControllerBid extends Controller {
         return ['item_id' => $item_id, 'amount' => $amount, 'encoded_state' => $encoded_state];
     }
     
-    // ============ CHARGEMENT ITEM ============
-    
     private function load_item_or_redirect(int $item_id): ?Item {
         $item = Item::get_by_id($item_id);
         if ($item === false) {
@@ -85,8 +78,6 @@ class ControllerBid extends Controller {
         }
         return $item;
     }
-    
-    // ============ TRAITEMENT ENCHÈRE ============
     
     private function process_bid(Item $item, object $user, float $amount, string $encoded_state = ''): void {
 

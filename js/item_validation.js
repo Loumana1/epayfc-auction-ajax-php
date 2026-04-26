@@ -10,12 +10,10 @@ $(function () {
     let errors     = {};
     let titleTimer = null;
 
-    // ── 1. Récupération des constantes de validation ───────────────────────
     $.getJSON(BASE + 'config/validation_service', function (data) {
         config = data;
     });
 
-    // ── 2. Références aux champs ───────────────────────────────────────────
     const $title       = $('input[name="title"]');
     const $desc        = $('textarea[name="description"]');
     const $duration    = $('input[name="duration_days"]');
@@ -23,7 +21,6 @@ $(function () {
     const $buyNow      = $('input[name="buy_now_price"]');
     const $salePrice   = $('input[name="sale_price"]');
 
-    // ── 3. Helpers UI ──────────────────────────────────────────────────────
     function setError(key, msg, $input) {
         errors[key] = msg;
         if (!$input) { updateBtn(); return; }
@@ -69,7 +66,6 @@ $(function () {
         saveBtn.prop('disabled', Object.keys(errors).length > 0);
     }
 
-    // ── 4. Validations synchrones ──────────────────────────────────────────
     function validateTitle() {
         if (!touched.title) return;
 
@@ -126,7 +122,6 @@ $(function () {
         const hasAuction    = (sb !== '' || bn !== '');
         const hasDirectSale = (sp !== '');
 
-        // 1. CONFLIT : les deux options remplies
         if (hasAuction && hasDirectSale) {
             if (sb !== '') setError('starting_bid', 'Cannot create both auction and direct sale.', $startingBid);
             if (bn !== '') setError('buy_now_price', 'Choose only one sale type.', $buyNow);
@@ -135,7 +130,6 @@ $(function () {
             return;
         }
 
-        // 2. OPTION 1 : enchère
         if (hasAuction) {
             if (sb === '') {
                 if (touched.starting_bid || touched.buy_now_price) {
@@ -159,7 +153,6 @@ $(function () {
                 }
             }
         }
-        // 3. OPTION 2 : vente directe
         else if (hasDirectSale) {
             const spVal = parseFloat(sp);
             if (isNaN(spVal) || spVal <= 0) {
@@ -168,7 +161,6 @@ $(function () {
                 setValid('sale_price', $salePrice);
             }
         }
-        // 4. AUCUNE OPTION
         else {
             if (touched.sale_price || touched.starting_bid) {
                 setError('starting_bid', 'Please choose an option.', $startingBid);
@@ -179,7 +171,6 @@ $(function () {
         updateBtn();
     }
 
-    // ── 5. Validation asynchrone (unicité du titre) ────────────────────────
     function checkTitleAsync(title) {
         clearTimeout(titleTimer);
         titleTimer = setTimeout(function () {
@@ -199,7 +190,6 @@ $(function () {
         }, 400);
     }
 
-    // ── 6. Événements ─────────────────────────────────────────────────────
     $title.on('input blur', function () {
         touched.title = true;
         validateTitle();
@@ -230,7 +220,6 @@ $(function () {
         validatePricing();
     });
 
-    // ── 7. Soumission ─────────────────────────────────────────────────────
     form.on('submit', function (e) {
         touched = {
             title        : true,
@@ -251,9 +240,6 @@ $(function () {
         }
     });
 
-    // ── 8. CHANGEMENTS NON SAUVEGARDÉS ────────────────────────────────────
-
-    // 8.1 Snapshot des valeurs initiales au chargement
     const initialSnapshot = {};
     form.find('input, textarea, select').each(function () {
         const name = $(this).attr('name');
@@ -274,7 +260,6 @@ $(function () {
 
     let targetUrl = '';
 
-    // 8.2 Intercepter les clics sur les liens internes
     $('a').on('click', function (e) {
         if (formHasChanges()) {
             e.preventDefault();
@@ -283,7 +268,6 @@ $(function () {
         }
     });
 
-    // 8.3 Boutons de la modale
     $('#cancelLeaveBtn, #closeUnsavedCross').on('click', function () {
         $('#unsavedModal').fadeOut('fast');
         targetUrl = '';
@@ -293,7 +277,6 @@ $(function () {
         window.location.href = BASE + targetUrl;
     });
 
-    // 8.4 Bouton précédent / F5
     window.addEventListener('beforeunload', function (e) {
         if (formHasChanges()) {
             const msg = 'You have unsaved changes. Leave anyway?';

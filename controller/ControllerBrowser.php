@@ -30,7 +30,6 @@ class ControllerBrowser extends Controller
         }
         $encoded_state = Tools::url_safe_encode(['from' => 'browser', 'query' => $search_query]);
 
-        // Répondre en JSON si c'est une requête AJAX
         if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
             $participating_raw = $this->get_participating_items($current_user_id, $now, $search_query);
             $available_raw = $this->get_available_items($current_user_id, $now, $search_query);
@@ -56,11 +55,7 @@ class ControllerBrowser extends Controller
             if (!$item instanceof Item)
                 continue;
 
-            //Peut etre remplacé par 
-            //$main_picture = ItemPicture::get_main_picture($current_user_id);
             $main_picture = $item->get_main_picture();
-
-            // Récupérer le pseudo du vendeur
             $seller_pseudo = $item->get_seller()->get_Pseudo();
 
             $participating_items[] = [
@@ -83,16 +78,12 @@ class ControllerBrowser extends Controller
             ];
         }
 
-        // Préparer les données pour la vue - Items disponibles
         $available_items = [];
         foreach ($available_items_raw as $item) {
-            // S'assurer que $item est bien un objet Item
             if (!$item instanceof Item)
                 continue;
 
             $mainPicture = $item->get_main_picture();
-
-            // Récupérer le pseudo du vendeur
             $sellerPseudo = $item->get_seller()->get_Pseudo();
 
             $available_items[] = [
@@ -132,7 +123,7 @@ class ControllerBrowser extends Controller
         ]);
 
     }
-    // Calcule le temps restant jusqu'à end_at
+
     private function calculate_time_remaining(string $end_at): string
     {
         $now = new DateTime(AppTime::get_current_datetime());

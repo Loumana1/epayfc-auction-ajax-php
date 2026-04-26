@@ -24,8 +24,6 @@ class ControllerOpenItem extends Controller {
         (new View("open_item"))->show($data);
     }
     
-    // ============ VALIDATION ============
-    
 private function load_item_or_fail(): ?Item {
     $item_id = $_GET['param1'] ?? null;
     
@@ -43,8 +41,6 @@ private function load_item_or_fail(): ?Item {
     return $item;
 }
     
-    // ============ CONTEXTE UTILISATEUR ============
-    
     private function get_user_context(Item $item): array {
         $current_user = $this->get_user_or_false();
         $current_user_id = $current_user ? $current_user->get_Id() : null;
@@ -55,7 +51,6 @@ private function load_item_or_fail(): ?Item {
             ? $item->is_user_highest_bidder($current_user_id) 
             : false;
         
-        // État de l'item
         $has_bids_time = $item->has_bids_time();
         $max_bid_time = $item->get_max_bid_time();
         $is_sold = $has_bids_time || $item->has_buy_now_reached_time();
@@ -72,8 +67,6 @@ private function load_item_or_fail(): ?Item {
         ];
     }
     
-    // ============ CONTRÔLE ACCES ============
-    
     private function check_access(Item $item, array $context): bool {
         /*
         if (!$context['is_open'] && !$context['is_owner'] && !$context['is_highest_bidder']) {
@@ -84,8 +77,6 @@ private function load_item_or_fail(): ?Item {
         return true;
         
     }
-    // ========== ETAT DES BOUTONS ============
-    
     private function get_button_state(array $context): array {
         $show_buttons = true;
         $buttons_disabled = false;
@@ -102,8 +93,6 @@ private function load_item_or_fail(): ?Item {
         ];
     }
     
-    // ============ MESSAGE DE STATUT ===============
-    
     private function get_status_message(Item $item, array $context): string {
         if ($context['is_open']) {
             if ($context['is_owner']) {
@@ -115,7 +104,6 @@ private function load_item_or_fail(): ?Item {
             return '';
         }
         
-        // Item fermé
         if ($context['is_highest_bidder']) {
             $final_price = $context['max_bid_time'] ?? 0;
             return "Congratulations! You purchased this item for " . format_euro($final_price);
@@ -134,8 +122,6 @@ private function load_item_or_fail(): ?Item {
         
         return '';
     }
-    
-    // ======== DONNEES IMAGES ============
     
     private function get_picture_data(Item $item): array {
         $pictures = ItemPicture::get_all_by_item($item->get_Id());
@@ -195,8 +181,6 @@ private function load_item_or_fail(): ?Item {
         header('Content-Type: application/json');
         echo json_encode($result);
     }
-    
-    // ============== POUR VUE ============
     
     private function prepare_view_data(Item $item, array $context): array {
         $button_state = $this->get_button_state($context);
