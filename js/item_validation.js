@@ -5,10 +5,11 @@ $(function () {
     const saveBtn = $('.save-btn');
     const itemId  = form.data('item-id') || null;
 
-    let config     = {};
-    let touched    = {};
-    let errors     = {};
-    let titleTimer = null;
+    let config       = {};
+    let touched      = {};
+    let errors       = {};
+    let titleTimer   = null;
+    let isSubmitting = false;
 
     $.getJSON(BASE + 'config/validation_service', function (data) {
         config = data;
@@ -237,6 +238,8 @@ $(function () {
 
         if (Object.keys(errors).length > 0) {
             e.preventDefault();
+        } else {
+            isSubmitting = true;
         }
     });
 
@@ -274,11 +277,12 @@ $(function () {
     });
 
     $('#confirmLeaveBtn').on('click', function () {
+        isSubmitting = true;
         window.location.href = BASE + targetUrl;
     });
 
     window.addEventListener('beforeunload', function (e) {
-        if (formHasChanges()) {
+        if (!isSubmitting && formHasChanges()) {
             const msg = 'You have unsaved changes. Leave anyway?';
             e.returnValue = msg;
             return msg;
