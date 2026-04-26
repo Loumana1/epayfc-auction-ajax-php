@@ -52,23 +52,38 @@ function time_left(?string $endAt): string
                         data-description="<?= $item->get_Description() ?? '' ?>">
 
                         <div class="image-wrapper">
+                            <div class="item-labels">
+                                <?php if ($item->get_Is_Auction()): ?>
+                                    <span class="label label-auction">Auction</span>
+                                <?php endif; ?>
+                                
+                                <?php if ($item->get_Has_buy_now_price()): ?>
+                                    <span class="label label-buy-now">Buy Now</span>
+                                <?php endif; ?>
+                            </div>
+
                             <img src="<?= $img ?>" alt="">
                             <span class="images-count">
                                 <i class="bi bi-images"></i>
-                                <?= count(ItemPicture::get_all_by_item($item->get_Id())) ?> images
+                                <?= count(ItemPicture::get_all_by_item($item->get_Id())) ?>
                             </span>
                         </div>
 
                         <div class="item-body">
-                            <h3><?= $item->get_title() ?></h3>
-
-                            <div class="price">
-                                <span class="main">
-                                    <?= euro($item->get_max_bid_time() ?? ($item->get_starting_bid() ?: $item->get_buy_now_price())) ?>
-                                </span>
+                            <h3 class="item-title"><?= $item->get_title() ?></h3>
+                            
+                            <div class="item-details">
+                                <span class="seller">Listed by <?= $item->get_seller()->get_Pseudo() ?></span>
                             </div>
 
-                            <div class="time">
+                            <div class="item-pricing">
+                                <span class="price"><?= euro($item->get_buy_now_price() ?? $item->get_starting_bid()) ?></span>
+                                <?php if ($item->get_max_bid_time()): ?>
+                                    <span class="max-bid">Highest: <?= euro($item->get_max_bid_time()) ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="item-time">
                                 <i class="bi bi-clock"></i>
                                 <?= time_left($item->get_end_at()) ?>
                             </div>
@@ -94,13 +109,33 @@ function time_left(?string $endAt): string
                         onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
 
                         <div class="image-wrapper">
+                            <div class="item-labels">
+                                <?php if ($item->get_Is_Auction()): ?>
+                                    <span class="label label-auction">Auction</span>
+                                <?php endif; ?>
+                                
+                                <?php if ($item->get_Has_buy_now_price()): ?>
+                                    <span class="label label-buy-now">Buy Now</span>
+                                <?php endif; ?>
+                            </div>
                             <img src="<?= $img ?>" alt="">
                         </div>
 
                         <div class="item-body">
-                            <h3><?= $item->get_title() ?></h3>
+                            <h3 class="item-title"><?= $item->get_title() ?></h3>
+                            
+                            <div class="item-details">
+                                <span class="seller">Listed by <?= $item->get_seller()->get_Pseudo() ?></span>
+                            </div>
 
-                            <div class="time ended">
+                            <div class="item-pricing">
+                                <span class="price"><?= euro($item->get_buy_now_price() ?? $item->get_starting_bid()) ?></span>
+                                <?php if ($item->get_max_bid_time()): ?>
+                                    <span class="max-bid">Highest: <?= euro($item->get_max_bid_time()) ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="item-time ended">
                                 <i class="bi bi-x-circle"></i>
                                 Not sold
                             </div>
@@ -126,20 +161,31 @@ function time_left(?string $endAt): string
                         onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
 
                         <div class="image-wrapper">
+                            <div class="item-labels">
+                                <?php if ($item->get_Is_Auction()): ?>
+                                    <span class="label label-auction">Auction</span>
+                                <?php endif; ?>
+                                
+                                <?php if ($item->get_Has_buy_now_price()): ?>
+                                    <span class="label label-buy-now">Buy Now</span>
+                                <?php endif; ?>
+                            </div>
                             <img src="<?= $img ?>" alt="">
                         </div>
 
                         <div class="item-body">
-                            <h3><?= $item->get_title() ?></h3>
-
-                            <div class="price">
-                                <span class="main">
-                                    <?= euro($item->get_max_bid_time()) ?>
-                                </span>
-                                <span class="sub">Final price</span>
+                            <h3 class="item-title"><?= $item->get_title() ?></h3>
+                            
+                            <div class="item-details">
+                                <span class="seller">Listed by <?= $item->get_seller()->get_Pseudo() ?></span>
                             </div>
 
-                            <div class="time sold">
+                            <div class="item-pricing">
+                                <span class="price"><?= euro($item->get_max_bid_time()) ?></span>
+                                <span class="max-bid">Final price</span>
+                            </div>
+
+                            <div class="item-time sold">
                                 <i class="bi bi-check-circle"></i>
                                 Sold
                             </div>
