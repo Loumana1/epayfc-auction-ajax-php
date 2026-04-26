@@ -241,9 +241,11 @@ public function is_open(): bool {
     
     public function get_min_bid_amount(): float {
         $highest_bid = $this->get_max_bid_time();
+        $precision = (int) Configuration::get('decimal_precision', '2');
+        $step = (float) Configuration::get('bid_increment', '0.01');
         return $highest_bid
-        ? round($highest_bid + 0.01, 2)
-        : round((float) $this->starting_bid, 2);
+            ? round((float) $highest_bid + $step, $precision)
+            : round((float) $this->starting_bid, $precision);
     }
 
 
@@ -399,13 +401,15 @@ public function delete(): void {
     }
 
     
-    if ($this->description !== null && trim($this->description) !== "" && strlen(trim($this->description)) < 3) {
-        $errors["description"] = "Description must be at least 3 characters.";
+    $desc_min = (int) Configuration::get('description_min_length', '3');
+    if ($this->description !== null && trim($this->description) !== "" && strlen(trim($this->description)) < $desc_min) {
+        $errors["description"] = "Description must be at least $desc_min characters.";
     }
 
-    
-    if ($this->duration_days < 1 || $this->duration_days > 365) {
-        $errors["duration_days"] = "Duration must be between 1 and 365 days.";
+    $days_min = (int) Configuration::get('duration_min_days', '1');
+    $days_max = (int) Configuration::get('duration_max_days', '365');
+    if ($this->duration_days < $days_min || $this->duration_days > $days_max) {
+        $errors["duration_days"] = "Duration must be between $days_min and $days_max days.";
     }
 
     $sb = $this->starting_bid;

@@ -1,5 +1,6 @@
 <?php
 require_once 'framework/Model.php';
+require_once 'framework/Configuration.php';
 
 class ItemPicture extends Model
 {
@@ -120,8 +121,7 @@ class ItemPicture extends Model
 
     private static function get_temp_priority(): int
     {
-        $config = parse_ini_file("config/dev.ini");
-        return (int)($config['temp_priority'] ?? 9999);
+        return (int) Configuration::get('temp_priority', '9999');
     }
     
     //supprime toutes les images d'un item
@@ -145,7 +145,7 @@ class ItemPicture extends Model
         );
     }
     public static function reorder(int $item_id, array $ordered_paths): void {
-        $temp_base = 10000;
+        $temp_base = (int) Configuration::get('item_picture_reorder_temp_base', '10000');
 
         // Priorite temporaires (evite)
         foreach ($ordered_paths as $index => $path) {

@@ -13,8 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const pathMatch = path.match(rePath);
     const pathToken = pathMatch && pathMatch[2] ? pathMatch[2] : null;
 
-    /* Pas de jeton (base64) dans l'URL de la page liste pendant la saisie.
-       Le jeton n'est que dans les liens / onclick vers open_item. */
     function setListPageUrlToBase() {
         history.replaceState(null, "", listBase);
     }

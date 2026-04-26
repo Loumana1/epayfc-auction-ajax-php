@@ -47,7 +47,7 @@ $(document).ready(function () {
         // Afficher le carousel ou masquer l'image statique
         $('#item-carousel').removeClass('d-none');
         $('#static-main-image').addClass('d-none');
-        // Masquer les liens <a> des vignettes (version sans JS)
+   
         $('.thumbnail-gallery a').contents().unwrap();
     });
 });

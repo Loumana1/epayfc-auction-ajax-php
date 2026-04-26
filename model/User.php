@@ -1,5 +1,6 @@
 <?php
 require_once "framework/Model.php";
+require_once "framework/Configuration.php";
 
 class User extends Model {
 
@@ -114,27 +115,29 @@ public function has_Picture(): bool {
 
     private static function validate_password(string $password): array {
         $errors = [];
-       if (strlen($password) < 8 || strlen($password) > 16) {
-        $errors[] = "Password length must be between 8 and 16.";
-    }
+        $min = (int) Configuration::get('password_min_length', '8');
+        $max = (int) Configuration::get('password_max_length', '16');
+        if (strlen($password) < $min || strlen($password) > $max) {
+            $errors[] = "Password length must be between $min and $max.";
+        }
 
-    if (!preg_match("/[A-Z]/", $password)) {
-        $errors[] = "Password must contain at least one uppercase letter.";
-    }
+        if (!preg_match("/[A-Z]/", $password)) {
+            $errors[] = "Password must contain at least one uppercase letter.";
+        }
 
-    if (!preg_match("/[a-z]/", $password)) {
-        $errors[] = "Password must contain at least one lowercase letter.";
-    }
+        if (!preg_match("/[a-z]/", $password)) {
+            $errors[] = "Password must contain at least one lowercase letter.";
+        }
 
-    if (!preg_match("/\d/", $password)) {
-        $errors[] = "Password must contain at least one number.";
-    }
+        if (!preg_match("/\d/", $password)) {
+            $errors[] = "Password must contain at least one number.";
+        }
 
-    if (!preg_match("/[^a-zA-Z0-9]/", $password)) {
-        $errors[] = "Password must contain at least one non-alphanumeric character.";
-    }
+        if (!preg_match("/[^a-zA-Z0-9]/", $password)) {
+            $errors[] = "Password must contain at least one non-alphanumeric character.";
+        }
 
-    return $errors;
+        return $errors;
     }
 
     public static function validate_passwords(string $password, string $password_confirm): array {
