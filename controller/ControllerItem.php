@@ -62,7 +62,10 @@ class ControllerItem extends Controller {
 
         $item_id = isset($_GET["param1"]) ? (int)$_GET["param1"] : null;
         $item = $this->load_item_for_edit_or_redirect($item_id, $owner_id);
-   
+
+        $p2 = $_GET['param2'] ?? $_POST['encoded_state'] ?? null;
+        $encoded_state = (is_string($p2) && $p2 !== '' && $p2 !== '0') ? $p2 : null;
+
         $from = $_GET['from'] ?? $_POST['from'] ?? 'my_items';
 
         if (!empty($_POST)) {
@@ -76,6 +79,7 @@ class ControllerItem extends Controller {
                 $view_data["header_title"]         = $item_id ? "Edit item" : "Add item";
                 $view_data["back_url"]             = $from;
                 $view_data["from"]                 = $from;
+                $view_data["encoded_state"]        = $encoded_state;
                 $view_data["header_right_icon"]    = "bi-floppy";
                 $view_data["header_right_form_id"] = "item-form";
                 $view_data["page_css"]             = ["add_edit_item.css"];
@@ -84,8 +88,21 @@ class ControllerItem extends Controller {
                 return;
             }
 
-            $this->redirect("item", "my_items");
+            $is_edit = ($item_id !== null && (int) $item_id > 0);
+            $fromPost = (string) ($_POST['from'] ?? '');
 
+            if (!$is_edit) {
+                $this->redirect("item", "my_items");
+            } elseif (strpos($fromPost, "open_item") !== false) {
+                $es = trim((string) ($_POST['encoded_state'] ?? ""));
+                if ($es !== "") {
+                    $this->redirect("open_item", "index", (string) $item_id, $es, "0");
+                } else {
+                    $this->redirect("open_item", "index", (string) $item_id, "0", "0");
+                }
+            } else {
+                $this->redirect("item", "my_items");
+            }
         }
 
         $view_data = $this->get_add_edit_view_data($item, $item_id);
@@ -95,6 +112,7 @@ class ControllerItem extends Controller {
         $view_data["header_title"]         = $item_id ? "Edit item" : "Add item";
         $view_data["back_url"]             = $from;
         $view_data["from"]                 = $from;
+        $view_data["encoded_state"]        = $encoded_state;
         $view_data["header_right_icon"]    = "bi-floppy";
         $view_data["header_right_form_id"] = "item-form";
         $view_data["page_css"]             = ["add_edit_item.css"];
