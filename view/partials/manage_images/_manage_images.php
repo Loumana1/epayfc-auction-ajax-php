@@ -21,44 +21,41 @@
                     $item_id = $item->get_Id();
                     $priority = $picture->priority;
                     $base_url = "manage_images";
+                    $nojs = (bool) Configuration::get("disable_js");
                 ?>
                 <div class="img-box" data-path="<?= $picture->picture_path ?>">
                     <img src="<?= $web_root . $picture->picture_path ?>" 
                          alt="Image <?= $priority ?>" class="img-thumb">
                     
                     <div class="img-actions">
-                        <button class="action-btn btn-left <?= $priority <= 1 ? 'disabled' : '' ?>" <?= $priority <= 1 ? 'disabled' : '' ?> data-priority="<?= $priority ?>">←</button>
-                        <noscript>
+                        <?php if ($nojs): ?>
                             <?php if ($priority > 1): ?>
                                 <form action="<?= $base_url ?>/move_left/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
-                                 
                                     <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
                                     <button type="submit" class="action-btn">←</button>
                                 </form>
                             <?php else: ?>
                                 <span class="action-btn disabled">←</span>
                             <?php endif; ?>
-                        </noscript>
 
-                        <button class="action-btn btn-right <?= $priority >= $picture_count ? 'disabled' : '' ?>" <?= $priority >= $picture_count ? 'disabled' : '' ?> data-priority="<?= $priority ?>">→</button>
-                        <noscript>
                             <?php if ($priority < $picture_count): ?>
                                 <form action="<?= $base_url ?>/move_right/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
-                                <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
+                                    <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
                                     <button type="submit" class="action-btn">→</button>
                                 </form>
                             <?php else: ?>
                                 <span class="action-btn disabled">→</span>
                             <?php endif; ?>
-                        </noscript>                     
-                        
-                        <button class="action-btn del btn-delete" data-priority="<?= $priority ?>">✕</button>
-                        <noscript>
+
                             <form action="<?= $base_url ?>/delete/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
-                            <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
+                                <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
                                 <button type="submit" class="action-btn del">✕</button>
                             </form>
-                        </noscript>
+                        <?php else: ?>
+                            <button class="action-btn btn-left <?= $priority <= 1 ? 'disabled' : '' ?>" <?= $priority <= 1 ? 'disabled' : '' ?> data-priority="<?= $priority ?>">←</button>
+                            <button class="action-btn btn-right <?= $priority >= $picture_count ? 'disabled' : '' ?>" <?= $priority >= $picture_count ? 'disabled' : '' ?> data-priority="<?= $priority ?>">→</button>
+                            <button class="action-btn del btn-delete" data-priority="<?= $priority ?>">✕</button>
+                        <?php endif; ?>
                     </div>
                 </div>
             <?php endforeach; ?>
