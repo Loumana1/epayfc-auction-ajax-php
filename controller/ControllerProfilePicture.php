@@ -75,10 +75,6 @@ class ControllerProfilePicture extends Controller {
 
         copy($path, $thumb_path);
 
-        if ($user->get_picture_path()) {
-            @unlink($user->get_picture_path());
-            @unlink(str_replace("profile.", "profile_thumbnail.", $user->get_picture_path()));
-        }
 
         $user->set_picture_path($path);
         $user->save_picture();
