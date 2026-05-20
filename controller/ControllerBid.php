@@ -81,6 +81,11 @@ class ControllerBid extends Controller {
     
     private function process_bid(Item $item, object $user, float $amount, string $encoded_state = ''): void {
 
+        if ($this->is_duplicate_bid($item->get_Id(), $user->get_id(), $amount)) {
+            $this->redirect("open_item", "index", $item->get_Id());
+            return;
+        }
+
         $bid = new Bid($item->get_Id(), $user->get_id(), $amount);
         $errors = $bid->persist($item);
 
@@ -107,5 +112,11 @@ class ControllerBid extends Controller {
             $this->redirect("open_item", "index", (string) $item->get_Id());
         }
     }
+
+    private function is_duplicate_bid(int $item_id, int $user_id, float $amount): bool {
+        return Bid::exists_recent_duplicate($item_id, $user_id,0.5);
+    }
+
+
 
 }
