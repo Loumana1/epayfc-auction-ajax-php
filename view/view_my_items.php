@@ -28,11 +28,14 @@ function time_left(?string $endAt): string
 
 <div class="my-items-page">
 
+    <?php $nojs = Configuration::get("disable_js"); ?>
+    <?php if (!$nojs): ?>
     <div class="search-bar">
         <input type="text" id="search-input" placeholder="Search item" class="search-input"
-            value="<?= $search_query ?>">
+            value="<?= $search_query ?? '' ?>">
         <i class="bi bi-search search-icon"></i>
     </div>
+    <?php endif ?>
 
     <!-- ACTIVE ITEMS -->
     <?php if (!empty($active_items)): ?>
