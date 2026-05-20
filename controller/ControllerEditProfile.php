@@ -73,18 +73,18 @@ class ControllerEditProfile extends Controller
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors['email'] = "Invalid email format";
         }
-         if (!empty(trim($full_name)) && ModelEditProfile::is_full_name_taken(trim($full_name), $user_id)) {
+         if (!empty(trim($full_name)) && User::is_full_name_taken(trim($full_name), $user_id)) {
             $errors['full_name'] = "Full name is already taken by another user.";
         }
-        if (!empty(trim($pseudo)) && ModelEditProfile::is_pseudo_taken(trim($pseudo), $user_id)) {
+        if (!empty(trim($pseudo)) && User::is_pseudo_taken(trim($pseudo), $user_id)) {
             $errors['pseudo'] = "Username is already taken by another user.";
         }
        
-        if (!empty(trim($email)) && ModelEditProfile::is_email_taken(trim($email), $user_id)) {
+        if (!empty(trim($email)) && User::is_email_taken(trim($email), $user_id)) {
             $errors['email'] = "Email is already used by another user.";
         }
         if (empty(array_filter($errors))) {
-            ModelEditProfile::update_user($user_id, $full_name, $pseudo, $email, $iban);
+            User::update_user($user_id, $full_name, $pseudo, $email, $iban);
             $this->redirect("profile");
             return;
         }
@@ -121,52 +121,10 @@ class ControllerEditProfile extends Controller
         $full_name = trim($_POST['full_name'] ?? '');
 
         echo json_encode([
-            'email_available' => $email === '' || !ModelEditProfile::is_email_taken($email, $user->id),
-            'pseudo_available' => $pseudo === '' || !ModelEditProfile::is_pseudo_taken($pseudo, $user->id),
-            'full_name_available' => $full_name === '' || !ModelEditProfile::is_full_name_taken($full_name, $user->id)
+            'email_available' => $email === '' || !User::is_email_taken($email, $user->id),
+            'pseudo_available' => $pseudo === '' || !User::is_pseudo_taken($pseudo, $user->id),
+            'full_name_available' => $full_name === '' || !User::is_full_name_taken($full_name, $user->id)
         ]);
     }
 }
 
-class ModelEditProfile extends \Model
-{
-    public static function get_user_data(int $user_id): ?array
-    {
-        $query = self::execute("SELECT * FROM users WHERE id = :id", ['id' => $user_id]);
-        $data = $query->fetch();
-        return $data ?: null;
-    }
-
-    public static function is_pseudo_taken(string $pseudo, int $user_id): bool
-    {
-        $query = self::execute("SELECT COUNT(*) FROM users WHERE pseudo = :pseudo AND id != :id", ['pseudo' => $pseudo, 'id' => $user_id]);
-        return (int)$query->fetchColumn() > 0;
-    }
-
-    public static function is_email_taken(string $email, int $user_id): bool
-    {
-        $query = self::execute("SELECT COUNT(*) FROM users WHERE email = :email AND id != :id", ['email' => $email, 'id' => $user_id]);
-        return (int)$query->fetchColumn() > 0;
-    }
-
-    public static function is_full_name_taken(string $full_name, int $user_id): bool
-    {
-        $query = self::execute("SELECT COUNT(*) FROM users WHERE full_name = :full_name AND id != :id", ['full_name' => $full_name, 'id' => $user_id]);
-        return (int)$query->fetchColumn() > 0;
-    }
-
-    public static function update_user(int $user_id, string $full_name, string $pseudo, string $email, string $iban): bool
-    {
-        $query = self::execute(
-            "UPDATE users SET full_name = :full_name, pseudo = :pseudo, email = :email, iban = :iban WHERE id = :id",
-            [
-                'id' => $user_id,
-                'full_name' => $full_name,
-                'pseudo' => $pseudo,
-                'email' => $email,
-                'iban' => $iban ?: null
-            ]
-        );
-        return $query !== false;
-    }
-}
