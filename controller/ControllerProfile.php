@@ -8,7 +8,14 @@ class ControllerProfile extends Controller
 {
     public function index(): void
     {
-        $current_user = $this->get_user_or_false();
+        $session_user = $this->get_user_or_false();
+
+        if (!$session_user) {
+            $this->redirect("login");
+        return;
+        }
+
+        $current_user =User::get_User_By_Id($session_user->get_Id());
 
         if (!$current_user) {
             $this->redirect("login");

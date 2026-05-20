@@ -15,22 +15,28 @@ class ControllerEditProfile extends Controller
         }
 
         $current_user_id = $current_user->get_Id();
+        $db_user = User::get_User_By_Id($current_user_id);
 
         (new View("edit_profile"))->show([
             'current_user_id' => $current_user_id,
             'currentUser' => $current_user,
             'user' => [
-                'full_name' => $current_user->full_name,
-                'pseudo' => $current_user->pseudo,
-                'email' => $current_user->get_email(),
-                'iban' => $current_user->iban ?? ''
+                'full_name' => $db_user->full_name,
+                'pseudo' => $db_user->pseudo,
+                'email' => $db_user->get_email(),
+                'iban' => $db_user->iban ?? ''
             ],
             'header_title' => 'Edit Profile',
             'header_icon' => 'bi-person-fill',
             'back_url' => 'profile',
             'header_right_icon' => 'bi-floppy',
             'header_right_form_id' => 'edit-form',
-            'errors' => [],
+            'errors' => [    
+                'full_name' => '',
+                'pseudo' => '',
+                'email' => '',
+                'iban' => '',
+            ],
             'success' => false,
             'page_css' => ['edit_Profile.css'],
             'page_js' => ['user_validation.js'],
@@ -51,36 +57,42 @@ class ControllerEditProfile extends Controller
         $email = $_POST['email'] ?? '';
         $iban = $_POST['iban'] ?? '';
 
-        $errors = [];
+        $errors = [    'full_name' => '',
+        'pseudo' => '',
+        'email' => '',
+        'iban' => '',];
 
         if (empty(trim($full_name))) {
-            $errors[] = "Full name is required";
+            $errors['full_name'] = "Full name is required";
         }
         if (empty(trim($pseudo))) {
-            $errors[] = "Username is required";
+            $errors['pseudo'] = "Username is required";
         }
         if (empty(trim($email))) {
-            $errors[] = "Email is required";
+            $errors['email'] = "Email is required";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = "Invalid email format";
+            $errors['email'] = "Invalid email format";
         }
          if (!empty(trim($full_name)) && ModelEditProfile::is_full_name_taken(trim($full_name), $user_id)) {
-            $errors[] = "Full name is already taken by another user.";
+            $errors['full_name'] = "Full name is already taken by another user.";
         }
         if (!empty(trim($pseudo)) && ModelEditProfile::is_pseudo_taken(trim($pseudo), $user_id)) {
-            $errors[] = "Username is already taken by another user.";
+            $errors['pseudo'] = "Username is already taken by another user.";
         }
        
         if (!empty(trim($email)) && ModelEditProfile::is_email_taken(trim($email), $user_id)) {
-            $errors[] = "Email is already used by another user.";
+            $errors['email'] = "Email is already used by another user.";
         }
-        if (empty($errors)) {
+        if (empty(array_filter($errors))) {
             ModelEditProfile::update_user($user_id, $full_name, $pseudo, $email, $iban);
             $this->redirect("profile");
             return;
         }
 
         (new View("edit_profile"))->show([
+            'current_user_id' => $user_id,
+            'currentUser' => $current_user,
+            'current_user' => $current_user,
             'user' => [
                 'id' => $user_id,
                 'full_name' => $full_name,
@@ -92,6 +104,11 @@ class ControllerEditProfile extends Controller
             'success' => false,
             'header_title' => 'Edit Profile',
             'header_icon' => 'bi-person-fill',
+            'back_url' => 'profile',
+            'header_right_icon' => 'bi-floppy',
+            'header_right_form_id' => 'edit-form',
+            'page_css' => ['edit_Profile.css'],
+            'page_js' => ['user_validation.js'],
         ]);
     }
 
