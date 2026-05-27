@@ -53,7 +53,17 @@ class ControllerItem extends Controller {
         if (!empty($_POST)) {
             [$new_item, $view_data] = $this->build_item_from_post($item, $item_id, $owner_id);
 
-            $errors = $new_item->persist();
+            $errors = [];
+
+            $has_auction = ($view_data["starting_bid"] !== "" || $view_data["buy_now_price"] !== "");
+            $has_direct = ($view_data["sale_price"] !== "");
+
+            if ($has_auction && $has_direct) {
+                $errors["starting_bid"] = "You cannot select both auction and direct sale options.";
+                $errors["buy_now_price"] = "Please choose only one sale option.";
+            } else {
+                $errors = $new_item->persist();
+            }
             if (!empty($errors)) {
                 $view_data["errors"]               = $errors;
                 $view_data["currentUser"]          = $user;
