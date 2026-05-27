@@ -262,7 +262,8 @@ private function load_item_or_fail(): ?Item {
             'is_auction' => $item->get_Is_Auction(),
             'starting_bid' => $item->get_Starting_Bid(),
             'auction_ended' => !$is_open && $item->get_Is_Auction(),
-            'can_delete' => (!$is_sold && !$has_bids_time) || ($item->has_buy_now_reached_time() && !$is_sold),
+            'can_modify' => !$has_bids_time,
+
 
 
 

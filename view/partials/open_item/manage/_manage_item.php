@@ -18,7 +18,7 @@ if (!$is_owner) return;
         <?php endif; ?>
         
         <!-- Images -->
-        <?php if (!$is_open): ?>
+        <?php if (!$can_modify): ?>
             <span class="btn-manage-item btn-disabled">
             <i class="bi bi-images"></i> Manage Images
 
@@ -31,7 +31,7 @@ if (!$is_owner) return;
         <?php endif; ?>
         
         <!-- Delete -->
-        <?php if (!$can_delete): ?>
+        <?php if (!$can_modify): ?>
             <span class="btn-delete-item btn-disabled">
             <i class="bi bi-trash"></i> Delete Item
 
