@@ -37,18 +37,27 @@ class ControllerItem extends Controller {
 
 
 
-    public function add_edit_item(): void {
 
+    public function add_edit_item(): void {
         $user = $this->get_user_or_redirect();
         $owner_id = $user->get_id();
-
-        $item_id = isset($_GET["param1"]) ? (int)$_GET["param1"] : null;
-        $item = $this->load_item_for_edit_or_redirect($item_id, $owner_id);
 
         $p2 = $_GET['param2'] ?? $_POST['encoded_state'] ?? null;
         $encoded_state = (is_string($p2) && $p2 !== '' && $p2 !== '0') ? $p2 : null;
 
+        $param1 = $_GET['param1'] ?? null;
+
+        $item_id = null;
+        if (is_string($param1) && $param1 !== '' && ctype_digit($param1)) {
+            $item_id = (int) $param1;
+        }
+        $item = $this->load_item_for_edit_or_redirect($item_id, $owner_id, $encoded_state);
+        if ($item_id !== null && $item === null) {
+            return; 
+        }
         $from = $_GET['from'] ?? $_POST['from'] ?? 'my_items';
+        $back_url = $this->build_item_back_url($from, $encoded_state, $item_id);
+
 
         if (!empty($_POST)) {
             [$new_item, $view_data] = $this->build_item_from_post($item, $item_id, $owner_id);
@@ -59,7 +68,7 @@ class ControllerItem extends Controller {
                 $view_data["currentUser"]          = $user;
                 $view_data["current_page"]         = "add_item";
                 $view_data["header_title"]         = $item_id ? "Edit item" : "Add item";
-                $view_data["back_url"]             = $from;
+                $view_data["back_url"]             = $back_url;
                 $view_data["from"]                 = $from;
                 $view_data["encoded_state"]        = $encoded_state;
                 $view_data["header_right_icon"]    = "bi-floppy";
@@ -70,21 +79,15 @@ class ControllerItem extends Controller {
                 return;
             }
 
-            $is_edit = ($item_id !== null && (int) $item_id > 0);
-            $fromPost = (string) ($_POST['from'] ?? '');
-
-            if (!$is_edit) {
-                $this->redirect("my_items", "index");
-            } elseif (strpos($fromPost, "open_item") !== false) {
-                $es = trim((string) ($_POST['encoded_state'] ?? ""));
-                if ($es !== "") {
-                    $this->redirect("open_item", "index", (string) $item_id, $es, "0");
-                } else {
-                    $this->redirect("open_item", "index", (string) $item_id, "0", "0");
-                }
-            } else {
-                $this->redirect("my_items", "index");
-            }
+            $is_edit = ($item_id !== null && $item_id > 0);
+            $from_post = (string) ($_POST['from'] ?? '');
+            $this->redirect_after_item_save(
+                $is_edit,
+                $item_id,
+                $from_post,
+                trim((string) ($_POST['encoded_state'] ?? '')) ?: $encoded_state
+            );
+            return;
         }
 
         $view_data = $this->get_add_edit_view_data($item, $item_id);
@@ -92,7 +95,7 @@ class ControllerItem extends Controller {
         $view_data["currentUser"]          = $user;
         $view_data["current_page"]         = "add_item";
         $view_data["header_title"]         = $item_id ? "Edit item" : "Add item";
-        $view_data["back_url"]             = $from;
+        $view_data["back_url"]             = $back_url;
         $view_data["from"]                 = $from;
         $view_data["encoded_state"]        = $encoded_state;
         $view_data["header_right_icon"]    = "bi-floppy";
@@ -133,7 +136,7 @@ class ControllerItem extends Controller {
 
 
 
-    private function load_item_for_edit_or_redirect(?int $item_id, int $owner_id): ?Item {
+    private function load_item_for_edit_or_redirect(?int $item_id, int $owner_id,  ?string $encoded_state = null): ?Item {
 
         if ($item_id === null) {
             return null; 
@@ -142,13 +145,22 @@ class ControllerItem extends Controller {
         $item = Item::get_by_id_for_edit($item_id);
 
         if ($item === null || $item->get_owner() !== $owner_id) {
-            $this->redirect();
+            $this->redirect('my_items');
+            return null;
         }
 
        
         if ($item->has_bids_time()) {
-            $this->redirect( "open_item", "index", (string)$item_id);
+            if ($encoded_state) {
+                $this->redirect('open_item', 'index', (string) $item_id, $encoded_state, '0');
+            } else {
+                $this->redirect('open_item', 'index', (string) $item_id);
+            }
+            return null;
         }
+
+    
+
 
 
         return $item;
@@ -217,7 +229,7 @@ class ControllerItem extends Controller {
         if ($item !== null) {
             $bn = $item->get_Buy_Now_Price();
             $sb = $item->get_Starting_Bid() ?? 0.0;
-            // aligné sur build_item_from_post : direct (option 2) => en base starting_bid=0, prix en buy_now
+        
             $is_persisted_direct = $bn !== null && (float) $sb === 0.0;
 
             if ($is_persisted_direct) {
@@ -241,5 +253,61 @@ class ControllerItem extends Controller {
             "buy_now_price" => $buy_now_price,
             "sale_price" => $sale_price,
         ];
+    }
+    private function build_item_back_url(string $from, ?string $encoded_state, ?int $item_id): string{
+
+
+        if (strpos($from, 'open_item') !== false && $item_id !== null) {
+
+            if ($encoded_state) {
+                return 'open_item/index/' . $item_id . '/' . rawurlencode($encoded_state) . '/0';
+            }
+
+        
+            return 'open_item/index/' . $item_id . '/0/0';
+        }
+
+        if ($encoded_state) {
+            return 'my_items/index/' . rawurlencode($encoded_state);
+        }
+
+        return 'my_items/index';
+}
+
+
+    private function redirect_after_item_save(
+        bool $is_edit,
+        ?int $item_id,
+        string $from_post,
+        ?string $encoded_state
+    ): void {
+        $es = ($encoded_state !== null && $encoded_state !== '') ? $encoded_state : '';
+
+        // Nouveau item
+        if (!$is_edit) {
+            if ($es !== '') {
+                $this->redirect('my_items', 'index', $es);
+            } else {
+                $this->redirect('my_items', 'index');
+            }
+            return;
+        }
+
+        // Edit depuis open_item
+        if (strpos($from_post, 'open_item') !== false) {
+            if ($es !== '') {
+                $this->redirect('open_item', 'index', (string) $item_id, $es, '0');
+            } else {
+                $this->redirect('open_item', 'index', (string) $item_id, '0', '0');
+            }
+            return;
+        }
+
+        // Edit depuis my_items 
+        if ($es !== '') {
+            $this->redirect('my_items', 'index', $es);
+        } else {
+            $this->redirect('my_items', 'index');
+        }
     }
 }
