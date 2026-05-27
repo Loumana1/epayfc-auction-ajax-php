@@ -99,4 +99,35 @@ class ImageProcessor {
             unlink($thumb);
         }
     }
+
+    public static function process_profile_upload(string $tmp_path, int $user_id): string
+{
+    if (!extension_loaded('gd')) {
+        throw new InvalidArgumentException('GD pas actif');
+    }
+
+    $max_size = (int) Configuration::get('max_profile_picture_size', '2097152');
+    if (filesize($tmp_path) > $max_size) {
+        throw new InvalidArgumentException('Fichier trop grand');
+    }
+
+    $dest_dir = 'uploads/users/' . $user_id;
+    if (!is_dir($dest_dir)) {
+        mkdir($dest_dir, 0755, true);
+    }
+
+    $quality = (int) Configuration::get('item_picture_jpeg_quality', '85');
+    $main_w  = (int) Configuration::get('item_picture_max_width', '1080');
+    $main_h  = (int) Configuration::get('item_picture_max_height', '1080');
+    $thumb_w = (int) Configuration::get('item_thumbnail_max_width', '360');
+    $thumb_h = (int) Configuration::get('item_thumbnail_max_height', '360');
+
+    $main_path  = $dest_dir . '/profile.jpg';
+    $thumb_path = $dest_dir . '/profile_thumbnail.jpg';
+
+    self::compress_and_resize_to_jpeg($tmp_path, $main_path, $main_w, $main_h, $quality);
+    self::compress_and_resize_to_jpeg($tmp_path, $thumb_path, $thumb_w, $thumb_h, $quality);
+
+    return $main_path;
+}
 }
