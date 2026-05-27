@@ -5,41 +5,36 @@ require_once 'utils/AppTime.php';
 require_once 'model/Item.php';
 require_once 'model/ItemPicture.php';
 require_once 'model/User.php';
+require_once 'utils/ImageProcessor.php';
+require_once 'framework/Configuration.php';
 
 class ControllerManageImages extends Controller
 {
     public function index(): void
     {
-        $current_user = $this->get_user_or_false();
-        if (!$current_user) {
-            $this->redirect("login");
-            return;
-        }
+        $current_user = $this->get_user_or_redirect_login();
+
 
         $item_id = $_GET['param1'] ?? null;
-        if (!$item_id) {
+        if (!$item_id || !ctype_digit((string) $item_id)) {
             $this->redirect("profile");
             return;
         }
 
-        $item = Item::get_by_id((int) $item_id);
-        if (!$item || $item->get_seller()->get_Id() !== $current_user->get_Id()) {
-            $this->redirect("profile");
-            return;
-        }
+
         $encoded_state = $_GET['param2'] ?? null;
 
         $item = $this->get_owner_item_or_reject((int) $item_id, $current_user, $encoded_state);
         if ($item === null) {
             return;
         }
+
         $pictures = ItemPicture::get_all_by_item((int) $item_id);
         (new View("manage_images"))->show([
             'item' => $item,
             'pictures' => $pictures,
             'picture_count' => count($pictures),
             'current_user' => $current_user,
-            'back_url' => 'my_items',
             'header_title' => 'Manage Images',
             'header_icon' => 'bi-images',
             'page_css' => ['manage.css'],
@@ -50,6 +45,15 @@ class ControllerManageImages extends Controller
                 : "open_item/index/$item_id",
                     ]);
     }
+    private function get_user_or_redirect_login(): User
+    {
+        $user = $this->get_user_or_false();
+        if (!$user) {
+            $this->redirect("login");
+        }
+        return $user;
+    }
+
     private function get_encoded_state(bool $forIndexAction = false): ?string {
         $fromPost = $_POST['encoded_state'] ?? null;
         if (is_string($fromPost) && $fromPost !== '') {
@@ -74,16 +78,13 @@ class ControllerManageImages extends Controller
 
     public function upload(): void
     {
-        $current_user = $this->get_user_or_false();
-        if (!$current_user){
-            $this->redirect("login");
-            return;
-        }
+        $current_user = $this->get_user_or_redirect_login();
 
         $item_id =$_GET['param1'] ?? $_POST['item_id'] ?? null;
-        if (!$item_id)
+        if (!$item_id || !ctype_digit((string) $item_id)) {
+            $this->redirect("my_items");
             return;
-
+        }
         $encoded_state = $this->get_encoded_state(false);
 
         $item = $this->get_owner_item_or_reject((int) $item_id, $current_user, $encoded_state);
@@ -93,17 +94,31 @@ class ControllerManageImages extends Controller
 
         if (!empty($_FILES['images']['name'][0])) {
             $upload_dir = 'uploads/items/'. $item_id . '/';
-            if (!is_dir($upload_dir)) {
-                mkdir($upload_dir, 0755, true);
-            }
+  
+            $max_size   = (int) Configuration::get('max_item_picture_size', '5242880');
 
             foreach ($_FILES['images']['tmp_name'] as $key => $tmp_name) {
-                $extension = pathinfo($_FILES['images']['name'][$key], PATHINFO_EXTENSION);
-                $new_file_name = bin2hex(random_bytes(8)) . '_' . AppTime::get_current_timestamp() . '.' . $extension;
-                $file_path = $upload_dir . $new_file_name;
+                if (($_FILES['images']['error'][$key] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                    continue;
+                }
 
-                if (move_uploaded_file($tmp_name, $file_path)) {
-                    ItemPicture::add((int) $item_id, $file_path);
+                if (!is_uploaded_file($tmp_name)) {
+                    continue;
+                }
+                if (($_FILES['images']['size'][$key] ?? 0) > $max_size) {
+                    continue;
+                }
+    
+
+                try {
+
+                    $base_name = bin2hex(random_bytes(8)) . '_' . AppTime::get_current_timestamp();
+                    $main_path = ImageProcessor::process_item_upload($tmp_name, $upload_dir, $base_name);
+                    ItemPicture::add((int) $item_id, $main_path);
+
+                } catch (InvalidArgumentException $e) {
+
+                    continue;
                 }
             }
         }
@@ -160,11 +175,14 @@ class ControllerManageImages extends Controller
     }
     public function delete(): void
     {
-        $current_user = $this->get_user_or_false();
+
+        $current_user = $this->get_user_or_redirect_login();
+
+   
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();
-        $encoded_state = $this->get_encoded_state();
+
         if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
             $this->redirect("my_items");
             return;
@@ -177,9 +195,10 @@ class ControllerManageImages extends Controller
         $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
 
+
     public function move_left(): void
     {
-        $current_user = $this->get_user_or_false();
+        $current_user = $this->get_user_or_redirect_login();
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();
@@ -198,7 +217,8 @@ class ControllerManageImages extends Controller
 
     public function move_right(): void
     {
-        $current_user = $this->get_user_or_false();
+        $current_user = $this->get_user_or_redirect_login();
+        
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();

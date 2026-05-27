@@ -1,6 +1,7 @@
 <?php
 require_once 'framework/Model.php';
 require_once 'framework/Configuration.php';
+require_once 'utils/ImageProcessor.php';
 
 class ItemPicture extends Model
 {
@@ -57,7 +58,7 @@ class ItemPicture extends Model
         );
         return $query !== false;
     }
-
+//utilisation de la Image proceec
     public static function delete(int $item_id, int $priority): bool
     {
         $query = self::execute(
@@ -68,6 +69,8 @@ class ItemPicture extends Model
 
         if (!$data)
             return false;
+
+            ImageProcessor::delete_files($data['picture_path']);
 
         self::execute(
             "DELETE FROM item_pictures WHERE item = :item AND priority = :priority",
@@ -133,10 +136,7 @@ class ItemPicture extends Model
         $pictures = $query->fetchAll();
     
         foreach ($pictures as $pic) {
-            $path = $pic['picture_path'];
-            $thumbPath = str_replace('.jpg', '_thumbnail.jpg', $path);
-            if (file_exists($path)) unlink($path);
-            if (file_exists($thumbPath)) unlink($thumbPath);
+            ImageProcessor::delete_files($pic['picture_path']);
         }
     
         self::execute(
