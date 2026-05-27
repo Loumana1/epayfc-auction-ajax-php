@@ -29,6 +29,10 @@ class ControllerManageImages extends Controller
         }
         $encoded_state = $_GET['param2'] ?? null;
 
+        $item = $this->get_owner_item_or_reject((int) $item_id, $current_user, $encoded_state);
+        if ($item === null) {
+            return;
+        }
         $pictures = ItemPicture::get_all_by_item((int) $item_id);
         (new View("manage_images"))->show([
             'item' => $item,
@@ -82,6 +86,11 @@ class ControllerManageImages extends Controller
 
         $encoded_state = $this->get_encoded_state(false);
 
+        $item = $this->get_owner_item_or_reject((int) $item_id, $current_user, $encoded_state);
+            if ($item === null) {
+                return;
+            }
+
         if (!empty($_FILES['images']['name'][0])) {
             $upload_dir = 'uploads/items/'. $item_id . '/';
             if (!is_dir($upload_dir)) {
@@ -101,15 +110,70 @@ class ControllerManageImages extends Controller
         $this->redirect_manage_images_with_state($item_id , $encoded_state);
     }
 
+    private function get_owner_item_or_reject(int $item_id, User $current_user, ?string $encoded_state = null): ?Item
+    {
+        $item = Item::get_by_id($item_id);
+
+        if (!$item) {
+            $this->redirect('my_items');
+            return null;
+        }
+
+        if ($item->get_seller()->get_Id() !== $current_user->get_Id()) {
+            $this->redirect('browse_items');
+            return null;
+        }
+
+        if ($item->has_bids_time()) {
+            if ($encoded_state) {
+                $this->redirect('open_item', 'index', (string) $item_id, $encoded_state, '0');
+            } else {
+                $this->redirect('open_item', 'index', (string) $item_id);
+            }
+            return null;
+        }
+
+        return $item;
+    }
+    private function get_owner_item_or_json_error(int $item_id, User $current_user): ?Item
+    {
+        $item = Item::get_by_id($item_id);
+        if (!$item) {
+            http_response_code(404);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Item not found']);
+            return null;
+        }
+        if ($item->get_seller()->get_Id() !== $current_user->get_Id()) {
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Access denied']);
+            return null;
+        }
+        if ($item->has_bids_time()) {
+            http_response_code(403);
+            header('Content-Type: application/json');
+            echo json_encode(['error' => 'Item can no longer be modified']);
+            return null;
+        }
+        return $item;
+    }
     public function delete(): void
     {
         $current_user = $this->get_user_or_false();
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();
-        if ($current_user && $item_id && $priority !== null) {
-            ItemPicture::delete((int) $item_id, (int) $priority);
+        $encoded_state = $this->get_encoded_state();
+        if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
+            $this->redirect("my_items");
+            return;
         }
+        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+        if ($item === null) {
+            return;
+        }
+        ItemPicture::delete((int)$item_id, (int)$priority);
         $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
 
@@ -120,9 +184,15 @@ class ControllerManageImages extends Controller
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();
 
-        if ($current_user && $item_id && $priority !== null) {
-            ItemPicture::move_left((int) $item_id, (int) $priority);
+        if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
+            $this->redirect("my_items");
+            return;
         }
+        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+        if ($item === null) {
+            return;
+        }
+        ItemPicture::move_left((int)$item_id, (int)$priority);
         $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
 
@@ -132,10 +202,15 @@ class ControllerManageImages extends Controller
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();
-
-        if ($current_user && $item_id && $priority !== null) {
-            ItemPicture::move_right((int) $item_id, (int) $priority);
+        if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
+            $this->redirect("my_items");
+            return;
         }
+        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+        if ($item === null) {
+            return;
+        }
+        ItemPicture::move_right((int)$item_id, (int)$priority);
         $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
 
@@ -145,6 +220,7 @@ class ControllerManageImages extends Controller
         $current_user = $this->get_user_or_false();
         if (!$current_user) {
             http_response_code(401);
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Not logged in']);
             return;
         }
@@ -152,20 +228,17 @@ class ControllerManageImages extends Controller
         $item_id = $input['item_id'] ?? null;
         $order = $input['order'] ?? [];
 
-        if (!$item_id || empty($order)){
+        if (!$item_id || !ctype_digit((string)$item_id) || empty($order)) {
             http_response_code(400);
+            header('Content-Type: application/json');
             echo json_encode(['error' => 'Invalid data']);
             return;
         }
-        $item = Item::get_by_id((int) $item_id);
-        if (!$item || $item->get_seller()->get_Id() !== $current_user->get_Id()) {
-            http_response_code(403);
-            echo json_encode(['error' => 'Access denied']);
+        $item = $this->get_owner_item_or_json_error((int)$item_id, $current_user);
+        if ($item === null) {
             return;
         }
-
-        ItemPicture::reorder((int) $item_id, $order);
-
+        ItemPicture::reorder((int)$item_id, $order);
         header('Content-Type: application/json');
         echo json_encode(['success' => true]);
     } 
