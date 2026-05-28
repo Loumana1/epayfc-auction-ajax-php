@@ -3,15 +3,22 @@
 require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once "model/User.php";
+require_once 'framework/Configuration.php';
+require_once 'utils/ImageProcessor.php';
 
 class ControllerProfilePicture extends Controller {
 
     public function index(): void {
-        $user = $this->get_user_or_redirect();
 
+        $session_user = $this->get_user_or_redirect();
+        $currentUser = User::get_User_By_Id($session_user->get_Id());
+        if (!$currentUser) {
+                $this->redirect('login');
+                return;
+            }
         
         (new View("profile_picture"))->show([
-            "currentUser"  => $user,
+            "currentUser"  => $currentUser,
             "header_title" => "Manage profile picture",
             "header_icon"  => "bi-person-circle",
             "back_url"     => "profile",
@@ -21,82 +28,63 @@ class ControllerProfilePicture extends Controller {
     }
 
     public function upload(): void {
-        $user = $this->get_user_or_redirect();
+        $session_user = $this->get_user_or_redirect();
 
         if (!isset($_FILES["picture"]) || $_FILES["picture"]["error"] !== UPLOAD_ERR_OK) {
             $this->redirect("profile_picture");
+            return;
         }
 
-        $file = $_FILES["picture"];
 
+        $tmp =$_FILES['picture']['tmp_name'];
+
+        if (!is_uploaded_file($tmp)) {
+            $this->redirect('profile_picture');
+            return;
+        } 
+
+
+        $current_user = User::get_User_By_Id($session_user->get_Id());
+        if (!$current_user) {
+            $this->redirect('login');
+            return;
+        }
+
+
+        try {
+            // del ancienne photo
+            if ($current_user->get_picture_path()) {
+                ImageProcessor::delete_files($current_user->get_picture_path());
+            }
+
+            //ajout la nouvel
+            $main_path = ImageProcessor::process_profile_upload($tmp, $current_user->get_Id());
+
+
+            $current_user->set_picture_path($main_path);
+            $current_user->save_picture();
+        } catch (InvalidArgumentException $e) {
         
-        $max_size = (int) Configuration::get("max_profile_picture_size");
-
-        if ($file["size"] > $max_size) {
-            $this->redirect("profile_picture");
         }
-
-
-        
-        $allowed = ["image/jpeg", "image/png", "image/webp", "image/gif"];
-        $mime = mime_content_type($file["tmp_name"]);
-
-        if (!in_array($mime, $allowed)) {
-            $this->redirect("profile_picture");
-        }
-
-      
-        $ext = match ($mime) {
-            "image/jpeg" => "jpg",
-            "image/png"  => "png",
-            "image/webp" => "webp",
-            "image/gif"  => "gif",
-        };
-
        
-        $user_dir = "uploads/users/" . $user->get_id();
-        if (!is_dir($user_dir)) {
-            mkdir($user_dir, 0777, true);
-        }
-
-        $path = "$user_dir/profile.$ext";
-        $thumb_path = "$user_dir/profile_thumbnail.$ext";
-
-      
-        if ($user->get_picture_path()) {
-            @unlink($user->get_picture_path());
-            @unlink(str_replace("profile.", "profile_thumbnail.", $user->get_picture_path()));
-        }
-
-       
-        if (!move_uploaded_file($file["tmp_name"], $path)) {
-            $this->redirect("profile_picture");
-        }
-
-        copy($path, $thumb_path);
-
-
-        $user->set_picture_path($path);
-        $user->save_picture();
-
-        $_SESSION["user"] = User::get_User_By_Id($user->get_Id());
 
         $this->redirect("profile_picture");
     }
 
     public function delete(): void {
-        $user = $this->get_user_or_redirect();
+        $session_user = $this->get_user_or_redirect();
+        $user = User::get_User_By_Id($session_user->get_Id());
 
-        $path = $user->get_picture_path();
-
-        if ($path) {
-            @unlink($path);
-            $thumb = str_replace("profile.", "profile_thumbnail.", $path);
-            @unlink($thumb);
+        if (!$user) {
+            $this->redirect('login');
+            return;
         }
 
-        $user->set_picture_path(null);
-        $user->save_picture();
+        if ($user->get_picture_path()) {
+            ImageProcessor::delete_files($user->get_picture_path());
+            $user->set_picture_path(null);
+            $user->save_picture();
+        }
 
         $this->redirect("profile_picture");
     }

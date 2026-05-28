@@ -15,6 +15,9 @@ class ControllerEditProfile extends Controller
         }
 
         $current_user_id = $current_user->get_Id();
+        
+        // on doit recharger les données directement de la db parce que session 
+        //n'est plus a jour apres changement save
         $db_user = User::get_User_By_Id($current_user_id);
 
         (new View("edit_profile"))->show([
