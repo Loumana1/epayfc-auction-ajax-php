@@ -184,13 +184,32 @@ class ControllerManageImages extends Controller
         $encoded_state = $this->get_encoded_state();
 
         if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
+
+            if ($this->necessite_json_response()) {
+                $this->json_response(['error' => 'Invalid parameters'], 400);
+            return;
+            }
             $this->redirect("my_items");
             return;
         }
+
+    if ($this->necessite_json_response()) {
+        $item = $this->get_owner_item_or_json_error((int)$item_id, $current_user);
+        if ($item === null) {
+            return;
+        }
+        ItemPicture::delete((int)$item_id, (int)$priority);
+        $this->json_response(['success' => true]);
+        return;
+    }
+
+
+
         $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
         if ($item === null) {
             return;
         }
+
         ItemPicture::delete((int)$item_id, (int)$priority);
         $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
@@ -204,16 +223,41 @@ class ControllerManageImages extends Controller
         $encoded_state = $this->get_encoded_state();
 
         if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
+            if ($this->necessite_json_response()) {
+                $this->json_response(['success' => false, 'error' => 'Invalid parameters'], 400);
+                return;
+            }
             $this->redirect("my_items");
             return;
         }
-        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+
+                
+       if ($this->necessite_json_response()) {
+        $item = $this->get_owner_item_or_json_error((int)$item_id, $current_user);
         if ($item === null) {
             return;
         }
         ItemPicture::move_left((int)$item_id, (int)$priority);
+        $this->json_response(['success' => true]);
+        return;
+    }
+
+
+        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+        if ($item === null) {
+            return;
+
+        }
+
+        ItemPicture::move_left((int)$item_id, (int)$priority);
+
+
         $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
+
+
+
+
 
     public function move_right(): void
     {
@@ -222,18 +266,51 @@ class ControllerManageImages extends Controller
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();
+
         if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
+                 if ($this->necessite_json_response()) {
+                $this->json_response(['success' => false, 'error' => 'Invalid parameters'], 400);
+                return;
+            }
             $this->redirect("my_items");
             return;
         }
-        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+
+  
+    if ($this->necessite_json_response()) {
+        $item = $this->get_owner_item_or_json_error((int)$item_id, $current_user);
         if ($item === null) {
             return;
         }
         ItemPicture::move_right((int)$item_id, (int)$priority);
+        $this->json_response(['success' => true]);
+        return;
+    }
+
+        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+        if ($item === null) {
+            return;
+        }
+
+        ItemPicture::move_right((int)$item_id, (int)$priority);
+
+
+
         $this->redirect_manage_images_with_state($item_id, $encoded_state);
     }
 
+
+
+
+    private function necessite_json_response(): bool {
+        return !((bool) Configuration::get("disable_js"));
+    }
+
+    private function json_response(array $payload, int $status = 200): void {
+        http_response_code($status);
+        header('Content-Type: application/json');
+        echo json_encode($payload);
+    }
     public function update_order(): void {
         $input = json_decode(file_get_contents('php://input'), true);
 
