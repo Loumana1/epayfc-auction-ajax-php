@@ -39,7 +39,23 @@ $(function () {
         updateBtn();
     }
 
-    function updateBtn() {}
+    function updateBtn() {
+        
+        const hasErrors = Object.keys(errors).length > 0;
+        
+        let allRequiredFilled = true;
+
+        const requiredFields = isEditProfile 
+            ? ['email', 'full_name', 'pseudo'] 
+            : ['email', 'full_name', 'pseudo', 'password', 'password_confirm'];
+        requiredFields.forEach(field => {
+            const $input = form.find(`input[name="${field}"]`);
+            if ($input.length > 0 && $input.val().trim() === '') {
+                allRequiredFilled = false;
+            }
+        });
+        submitBtn.prop('disabled', hasErrors || !allRequiredFilled);
+    }
 
     function validateEmail(email) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
