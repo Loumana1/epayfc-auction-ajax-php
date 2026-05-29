@@ -289,4 +289,16 @@ $(function () {
         }
     });
 
+    // Vérification des 3 catégories max
+    $('.category-checkbox').on('change', function() {
+        if ($('.category-checkbox:checked').length > 3) {
+            $(this).prop('checked', false); 
+            $('#categoryModal').fadeIn('fast');
+        }
+    });
+
+    $('#closeCategoryCross, #okCategoryBtn').on('click', function () {
+        $('#categoryModal').fadeOut('fast');
+    });
+
 });
