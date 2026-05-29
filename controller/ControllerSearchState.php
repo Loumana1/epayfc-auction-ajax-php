@@ -13,14 +13,19 @@ class ControllerSearchState extends Controller
     {
         $from = $_POST['from'] ?? 'browser';
         $q = trim($_POST['q'] ?? '');
+        $category = (int) ($_POST['category'] ?? 0);
 
         if ($from !== 'browser' && $from !== 'my_items') {
             $from = 'browser';
         }
+        if ($category < 0) {
+            $category = 0;
+        }
 
         $search_state = Tools::url_safe_encode([
             'from' => $from,
-            'q' => $q
+            'q' => $q,
+            'category' => $category
         ]);
 
         header('Content-Type: application/json');

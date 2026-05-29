@@ -6,12 +6,13 @@ document.addEventListener("DOMContentLoaded", function () {
     const initialQuery = (input.dataset.initialQuery || "").trim();
     const initialSearchState = input.dataset.searchState || "";
     const listOrigin = input.dataset.listOrigin || "browser";
+    const initialCategory = parseInt(input.dataset.initialCategory || "0", 10) || 0;
     const noItemsMsg = document.getElementById("no-items-message");
-
     const categorySelect = document.getElementById("category-select");
 
     const base = document.querySelector("base");
     const encodeUrl = (base ? base.getAttribute("href") : "") + "search_state/encode";
+    const listBaseUrl = (base ? base.getAttribute("href") : "") + listOrigin + "/index";
 
     if (initialQuery) {
         input.value = initialQuery;
@@ -32,33 +33,44 @@ document.addEventListener("DOMContentLoaded", function () {
             e.preventDefault();
 
             const query = input.value.trim();
+            const category = getCategoryValue();
             const baseUrl = link.getAttribute("href");
 
-            if (!query) {
+            if (!query && category === 0) {
                 goToUrl(baseUrl);
                 return;
             }
 
-            if (initialSearchState && query === initialQuery) {
+            if (initialSearchState && query === initialQuery && category === initialCategory) {
                 goToUrl(withSearchState(baseUrl, initialSearchState));
                 return;
             }
 
-            fetch(encodeUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
-                body: "from=" + encodeURIComponent(listOrigin) + "&q=" + encodeURIComponent(query)
-            })
-                .then(function (r) { return r.json(); })
-                .then(function (data) {
-                    var token = data.search_state || "";
-                    goToUrl(token ? withSearchState(baseUrl, token) : baseUrl);
-                })
-                .catch(function () {
-                    goToUrl(baseUrl);
-                });
+            encodeSearchState(query, category, function (token) {
+                goToUrl(token ? withSearchState(baseUrl, token) : baseUrl);
+            }, function () {
+                goToUrl(baseUrl);
+            });
         });
     });
+
+    if (categorySelect) {
+        categorySelect.addEventListener("change", function () {
+            const query = input.value.trim();
+            const category = getCategoryValue();
+
+            if (!query && category === 0) {
+                goToUrl(listBaseUrl);
+                return;
+            }
+
+            encodeSearchState(query, category, function (token) {
+                goToUrl(token ? (listBaseUrl + "/" + token) : listBaseUrl);
+            }, function () {
+                goToUrl(listBaseUrl);
+            });
+        });
+    }
 
     function filterCards(query) {
         var q = query.toLowerCase();
@@ -97,6 +109,30 @@ document.addEventListener("DOMContentLoaded", function () {
         var itemId = parts[idx + 1];
         // open_item/index/{id}/{search_state}/0
         return parts.slice(0, idx + 2).concat([token, "0"]).join("/");
+    }
+
+    function getCategoryValue() {
+        if (!categorySelect) return 0;
+        var value = parseInt(categorySelect.value, 10);
+        return Number.isNaN(value) ? 0 : value;
+    }
+
+    function encodeSearchState(query, category, onSuccess, onError) {
+        fetch(encodeUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+            body: "from=" + encodeURIComponent(listOrigin)
+                + "&q=" + encodeURIComponent(query)
+                + "&category=" + encodeURIComponent(String(category))
+        })
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                var token = data.search_state || "";
+                onSuccess(token);
+            })
+            .catch(function () {
+                onError();
+            });
     }
 
     function goToUrl(url) {

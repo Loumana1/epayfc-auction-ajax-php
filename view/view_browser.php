@@ -3,20 +3,32 @@
     
     <?php $nojs = Configuration::get("disable_js"); ?>
     <?php if (!$nojs): ?>
+    <?php
+    $safe_categories = [];
+    foreach (($categories ?? []) as $cat) {
+        if (is_object($cat) && isset($cat->id) && isset($cat->name)) {
+            $safe_categories[] = $cat;
+        }
+    }
+    ?>
     <div class="search-bar">
         <input type="text" id="search-input" placeholder="Search item" class="search-input"
-                      value="<?= $initial_query ?? '' ?>"
-               data-initial-query="<?= $initial_query ?? '' ?>"
-               data-search-state="<?= $search_state ?? '' ?>"
-               data-list-origin="<?=$list_origin ?? 'browser'?>">
+               value="<?= htmlspecialchars($initial_query ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               data-initial-query="<?= htmlspecialchars($initial_query ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               data-search-state="<?= htmlspecialchars($search_state ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               data-list-origin="<?= htmlspecialchars($list_origin ?? 'browser', ENT_QUOTES, 'UTF-8') ?>"
+               data-initial-category="<?= (int) ($category_id ?? 0) ?>">
         <i class="bi bi-search search-icon"></i>
-        <input type="text" id="search-input" placeholder="Search items..." class="search-input"
-            value="<?= htmlspecialchars($search_query ?? '') ?>">
         <select id="category-select" class="category-select">
             <option value="0" <?= ($category_id ?? 0) == 0 ? 'selected' : '' ?>>All categories</option>
-            <?php foreach ($categories as $cat): ?>
-                <option value="<?= $cat->id ?>" <?= ($category_id ?? 0) == $cat->id ? 'selected' : '' ?>>
-                    <?= htmlspecialchars($cat->name) ?>
+            <?php foreach ($safe_categories as $cat): ?>
+                <?php
+                $cat_data = is_object($cat) ? get_object_vars($cat) : [];
+                $cat_id = (int) ($cat_data['id'] ?? 0);
+                $cat_name = htmlspecialchars((string) ($cat_data['name'] ?? ''), ENT_QUOTES, 'UTF-8');
+                ?>
+                <option value="<?= $cat_id ?>" <?= ($category_id ?? 0) == $cat_id ? 'selected' : '' ?>>
+                    <?= $cat_name ?>
                 </option>
             <?php endforeach; ?>
         </select>

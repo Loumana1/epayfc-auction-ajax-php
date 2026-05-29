@@ -13,16 +13,6 @@ class Category extends Model {
         $this -> priority = $priority;
     }
 
-    public static function get_all(): array {
-        $query = self::execute("SELECT * FROM categories ORDER BY priority ASC", []);
-        $rows = $query->fetchAll();
-        $result = [];
-        foreach ($rows as $row) {
-            $result[] = new Category($row['id'], $row['name'], $row['priority']);
-        }
-        return $result;
-    }
-
     public static function get_by_item(int $item_id): array {
         
         $query = self::execute(

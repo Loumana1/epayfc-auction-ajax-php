@@ -17,19 +17,20 @@ class ControllerMyItems extends Controller
         $userid = $user->get_id();
         $now = AppTime::get_current_datetime();
 
-  
         $search_state = (string) ($_GET['param1'] ?? '');
         $initial_query = '';
+        $category_id = 0;
         
         if ($search_state !== '') {
             $decoded = Tools::url_safe_decode($search_state);
             if (is_array($decoded)) {
-                $initial_query = trim((string) ($decoded['q'] ?? ''));
+                $initial_query = trim((string) ($decoded['q'] ?? $decoded['query'] ?? ''));
+                $category_id = (int) ($decoded['category'] ?? 0);
             }
         }
 
         $search_query = $initial_query;
-        $items = Item::get_items_by_owner($userid, $search_query);
+        $items = Item::get_items_by_owner($userid, $search_query, $category_id);
 
         $active = [];
         $closed_unsold = [];
@@ -60,6 +61,8 @@ class ControllerMyItems extends Controller
             "list_origin" => "my_items",
             "search_state" => $search_state,
             "initial_query" => $initial_query,
+            "category_id" => $category_id,
+            "categories" => Category::get_all(),
             "page_css"            => ["my_items.css"],
             "page_js"             => ["search_filter.js"],
         ]);

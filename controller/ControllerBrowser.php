@@ -17,24 +17,21 @@ class ControllerBrowser extends Controller
         $current_user = $this->get_user_or_false();
         $current_user_id = $current_user ? $current_user->get_Id() : -1;
         $now = AppTime::get_current_datetime();
-
-       $search_state = (string) ($_GET['param1'] ?? '');
+        $search_state = (string) ($_GET['param1'] ?? '');
         $initial_query = '';
+        $category_id = 0;
 
-
-          if ($search_state !== '') {
+        if ($search_state !== '') {
             $decoded = Tools::url_safe_decode($search_state);
             if (is_array($decoded)) {
-               
-                $initial_query = trim((string) ($decoded['q'] ?? ''));
+                $initial_query = trim((string) ($decoded['q'] ?? $decoded['query'] ?? ''));
+                $category_id = (int) ($decoded['category'] ?? 0);
             }
         }
-       
-
 
         $search_query = $initial_query;
-        $participating_items_raw = $this->get_participating_items($current_user_id, $now, $search_query);
-        $available_items_raw = $this->get_available_items($current_user_id, $now, $search_query);
+        $participating_items_raw = $this->get_participating_items($current_user_id, $now, $search_query, $category_id);
+        $available_items_raw = $this->get_available_items($current_user_id, $now, $search_query, $category_id);
 
 
         $participating_items = [];
@@ -102,6 +99,8 @@ class ControllerBrowser extends Controller
             'current_user_id' => $current_user_id,
             'search_state' => $search_state,
             'initial_query' => $initial_query,
+            'category_id' => $category_id,
+            'categories' => Category::get_all(),
             'currentUser' => $current_user,
             'list_origin' => 'browser',
             'header_title' => 'Browser',
@@ -132,7 +131,7 @@ class ControllerBrowser extends Controller
 
 
         
-    private function get_participating_items(int $user_id, string $now, string $search_query = ""): array
+    private function get_participating_items(int $user_id, string $now, string $search_query = "",  int $category_id = 0): array
     {
         return Item::get_Item_Participating($user_id, $now, $search_query, $category_id);
     }
