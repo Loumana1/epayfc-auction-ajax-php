@@ -176,9 +176,16 @@ class ControllerManageImages extends Controller
     public function delete(): void
     {
 
-        $current_user = $this->get_user_or_redirect_login();
+        $current_user = $this->get_user_or_false();
+        if (!$current_user) {
+            if ($this->necessite_json_response()) {
+                $this->json_response(['error' => 'Not authenticated'], 401);
+                return;
+            }
+            $this->redirect("login");
+            return;
+        }
 
-   
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();
@@ -203,8 +210,6 @@ class ControllerManageImages extends Controller
         return;
     }
 
-
-
         $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
         if ($item === null) {
             return;
@@ -217,7 +222,15 @@ class ControllerManageImages extends Controller
 
     public function move_left(): void
     {
-        $current_user = $this->get_user_or_redirect_login();
+        $current_user = $this->get_user_or_false();
+        if (!$current_user) {
+            if ($this->necessite_json_response()) {
+                $this->json_response(['error' => 'Not authenticated'], 401);
+                return;
+            }
+            $this->redirect("login");
+            return;
+        }
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $encoded_state = $this->get_encoded_state();
@@ -261,7 +274,15 @@ class ControllerManageImages extends Controller
 
     public function move_right(): void
     {
-        $current_user = $this->get_user_or_redirect_login();
+        $current_user = $this->get_user_or_false();
+        if (!$current_user) {
+            if ($this->necessite_json_response()) {
+                $this->json_response(['error' => 'Not authenticated'], 401);
+                return;
+            }
+            $this->redirect("login");
+            return;
+        }
         
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;

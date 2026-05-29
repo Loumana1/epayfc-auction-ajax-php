@@ -31,6 +31,13 @@ class ControllerBid extends Controller {
     private function get_user_or_redirect_login(): ?object {
         $current_user = $this->get_user_or_false();
         if (!$current_user) {
+            $is_ajax = ($_POST['format'] ?? '') === 'json';
+            if ($is_ajax) {
+                header('Content-Type: application/json');
+                http_response_code(401);
+                echo json_encode(['success' => false, 'errors' => ['auth' => 'Not authenticated']]);
+                exit;
+            }
             $this->redirect("login");
             return null;
         }
