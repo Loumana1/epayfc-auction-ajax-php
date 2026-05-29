@@ -12,6 +12,7 @@ class Item extends Model{
     private $id;
     private  $title;
     private  $description;
+    public array $category_ids = [];
     private  $owner;
     private $created_at;
     private  $buy_now_price;
@@ -440,6 +441,10 @@ public function delete(): void {
         }
     }
 
+    if (count($this -> category_ids) > 3) {
+        $errors["categories"] = "Vous ne pouvez pas selectionner plus de 3 categories.";
+    }
+
     return $errors;
 }
 
@@ -481,6 +486,15 @@ public function delete(): void {
             );
         }
 
+        self::execute("DELETE FROM item_categories WHERE item = :id", ["id" => $this->id]);
+        if (!empty($this->category_ids)) {
+            foreach ($this->category_ids as $cat_id) {
+                self::execute("INSERT INTO item_categories(item, category) VALUES(:item, :cat)", [
+                    "item" => $this->id,
+                    "cat" => $cat_id
+                ]);
+            }
+        }
         return [];
     }
 

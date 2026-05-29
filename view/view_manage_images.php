@@ -3,7 +3,7 @@
 <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
 <div class="manage-page" data-item-id="<?= $item->get_Id() ?>"
-data-encoded-state="<?= $encoded_state ?? '' ?>">
+data-search-state="<?= $search_state ?? '' ?>">
 
     <main>
         <h1 class="page-subtitle">

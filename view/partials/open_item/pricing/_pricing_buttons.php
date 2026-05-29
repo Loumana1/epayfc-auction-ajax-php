@@ -5,7 +5,7 @@ if (!$show_buttons) return;
 
 <?php if ($is_auction): ?>
 <form class="bid-form" method="post" action="bid/create">
-<input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
+<input type="hidden" name="search_state" value="<?= $search_state ?? '', ENT_QUOTES  ?>">
     <input type="hidden" name="item_id" value="<?= $item_id ?>">
     <div class="bid-input-group">
         <span>€</span>
@@ -24,7 +24,7 @@ if (!$show_buttons) return;
 
 <?php if ($has_buy_now_price): ?>
 <form method="post" action="bid/create">
-<input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
+<input type="hidden" name="search_state" value="<?= $search_state ?? '', ENT_QUOTES  ?>">
     <input type="hidden" name="item_id" value="<?= $item_id ?>">
     <input type="hidden" name="amount" value="<?= $buy_now_price?>">
     

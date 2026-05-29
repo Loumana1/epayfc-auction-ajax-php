@@ -17,34 +17,19 @@ class ControllerMyItems extends Controller
         $userid = $user->get_id();
         $now = AppTime::get_current_datetime();
 
-        $state_param = $_GET['param1'] ?? null;
-        $search_query = "";
+        $search_state = (string) ($_GET['param1'] ?? '');
+        $initial_query = '';
         $category_id = 0;
-        if ($state_param !== null) {
-            $state = Tools::url_safe_decode($state_param);
-            if (is_array($state)) {
-                $search_query = (string)($state['query'] ?? '');
-                $category_id = (int)($state['category'] ?? 0);
-            } else {
-                $search_query = trim($_GET['query'] ?? "");
+        
+        if ($search_state !== '') {
+            $decoded = Tools::url_safe_decode($search_state);
+            if (is_array($decoded)) {
+                $initial_query = trim((string) ($decoded['q'] ?? $decoded['query'] ?? ''));
+                $category_id = (int) ($decoded['category'] ?? 0);
             }
-        } else {
-            $search_query = trim($_GET['query'] ?? "");
-            $category_id = (int)($_GET['category'] ?? 0);
-        }
-        $encoded_state = Tools::url_safe_encode(['from' => 'my_items', 'query' => $search_query, 'category' => $category_id]);
-
-        if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
-            header('Content-Type: application/json');
-            $filtered = Item::get_items_by_owner($userid, $search_query, $category_id);
-            $matches = array_map(fn($item) => $item->get_id(), $filtered);
-            echo json_encode([
-                'encoded_state' => $encoded_state,
-                'matches' => $matches,
-            ]);
-            return;
         }
 
+        $search_query = $initial_query;
         $items = Item::get_items_by_owner($userid, $search_query, $category_id);
 
         $active = [];
@@ -73,10 +58,11 @@ class ControllerMyItems extends Controller
             "current_page"        => "my_items",
             "header_title"        => "My items",
             "back_url"            => "browser",
-            "search_query"        => $search_query,
-            "category_id"         => $category_id,
-            "categories"          => Category::get_all(),
-            "encoded_state"       => $encoded_state,
+            "list_origin" => "my_items",
+            "search_state" => $search_state,
+            "initial_query" => $initial_query,
+            "category_id" => $category_id,
+            "categories" => Category::get_all(),
             "page_css"            => ["my_items.css"],
             "page_js"             => ["search_filter.js"],
         ]);
@@ -110,4 +96,7 @@ class ControllerMyItems extends Controller
         $diff = $now->diff($end);
         return $diff->days . "d " . $diff->h . "h";
     }
+
+
+
 }

@@ -4,14 +4,16 @@
 
     <script>window.APP_BASE = '<?= $web_root ?>';</script>
 
-    <?php $es_tail = !empty($encoded_state) ? '/' . rawurlencode($encoded_state) : ''; ?>
+    <?php
+    $ss_tail = !empty($search_state) ? '/' . rawurlencode($search_state) : '';
+    $id_tail = $item_id ? '/' . (int) $item_id : '';
+    ?>
     <form id="item-form"
           method="post"
-          action="item/add_edit_item<?= $item_id ? '/' . (int) $item_id : '' ?><?= $es_tail ?>"
+          action="item/add_edit_item<?= $id_tail ?><?= $ss_tail ?>"
           data-item-id="<?= $item_id ?? '' ?>">
-        <input type="hidden" name="from" value="<?= $from ?? 'my_items' ?>">
-        <input type="hidden" name="encoded_state" value="<?= htmlspecialchars($encoded_state ?? '', ENT_QUOTES, 'UTF-8') ?>">
-
+        <input type="hidden" name="search_state" value="<?= $search_state ?? '', ENT_QUOTES, 'UTF-8' ?>">
+        
         <section class="card">
             <h2>Basic Information</h2>
 
@@ -79,6 +81,27 @@
                     <?php endif; ?>
                 </div>
             </div>
+        </section>
+
+        <section class="card">
+                <h2>Categories</h2>
+                <div class="categories-checkbox-list">
+                    <?php foreach ($all_categories as $cat): ?>
+                    <div class = "form-check">
+                        <input 
+                        type="checkbox" 
+                        name="categories[]" 
+                        value="<?= $cat->id ?>" 
+                        class="form-check-input category-checkbox" 
+                        <?= in_array($cat->id, $selected_categories 
+                        ?? []) ? 'checked' : '' ?>>
+                    <label class="form-check-label"><?= $cat->name ?></label>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php if (isset($errors['categories'])): ?>
+                    <div class="text-danger mt-1"><?= $errors['categories'] ?></div>
+                <?php endif; ?>
         </section>
 
     </form>

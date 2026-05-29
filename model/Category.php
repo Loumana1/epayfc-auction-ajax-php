@@ -3,7 +3,7 @@
 require_once "framework/Model.php";
 
 class Category extends Model {
-    
+
     public int $id;
     public string $name;
     public int $priority;
@@ -133,7 +133,6 @@ class Category extends Model {
     }
 
     public static function get_by_item(int $item_id): array {
-        
         $query = self::execute(
             "SELECT c.* FROM categories c
             JOIN item_categories ic ON c.id = ic.category
@@ -141,16 +140,12 @@ class Category extends Model {
             ORDER BY c.name ASC",
             ['item_id' => $item_id]
         );
-        $data = $query -> fetchAll();
+        $data = $query->fetchAll();
 
         $categories = [];
         foreach ($data as $row) {
-            $categories[] = new Category(
-                $row['id'],
-                $row['name'],
-                $row['priority'] 
-                ?? 0);
-        } 
+            $categories[] = new Category($row['id'], $row['name'], $row['priority'] ?? 0);
+        }
         return $categories;
     }
 }
