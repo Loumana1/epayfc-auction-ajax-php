@@ -30,11 +30,18 @@ function time_left(?string $endAt): string
 
     <?php $nojs = Configuration::get("disable_js"); ?>
     <?php if (!$nojs): ?>
-    <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search item" class="search-input"
-            value="<?= $search_query ?? '' ?>">
+        <div class="search-bar">
+        <input type="text"
+               id="search-input"
+               class="search-input"
+               placeholder="Search item"
+               value="<?= $initial_query ?? '' ?>"
+               data-initial-query="<?= $initial_query ?? '' ?>"
+               data-search-state="<?= $search_state ?? '' ?>"
+               data-list-origin="<?= $list_origin ?? 'my_items' ?>">
         <i class="bi bi-search search-icon"></i>
     </div>
+    <p id="no-items-message" class="no-items-message" style="display:none;">No item found.</p>
     <?php endif ?>
 
     <!-- ACTIVE ITEMS -->
@@ -48,12 +55,13 @@ function time_left(?string $endAt): string
                     $pic = ItemPicture::get_main_picture($item->get_id());
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
-                    <div class="item-card" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'"
-                        data-title="<?= $item->get_title() ?? '' ?>"
-                        data-seller="<?= $item->get_seller()->get_Pseudo() ?? '' ?>"
-                        data-description="<?= $item->get_Description() ?? '' ?>">
-                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
+                        <div class="item-card" data-id="<?= $item->get_id() ?>"
+                         data-title="<?= strtolower($item->get_title() ?? '') ?>"
+                         data-seller="<?= strtolower($item->get_seller()->get_Pseudo() ?? '') ?>"
+                         data-description="<?= strtolower($item->get_Description() ?? '') ?>">
+                        <a href="open_item/index/<?= (int) $item->get_id() ?>/0">
+
+
 
                         <div class="image-wrapper">
                             <div class="item-labels">
@@ -112,8 +120,11 @@ function time_left(?string $endAt): string
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
                     <div class="item-card closed" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
-                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
+                    data-title="<?= strtolower($item->get_title() ?? '') ?>"
+                         data-seller="<?= strtolower($item->get_seller()->get_Pseudo() ?? '') ?>"
+                         data-description="<?= strtolower($item->get_Description() ?? '') ?>">
+                    <a href="open_item/index/<?= (int) $item->get_id() ?>/0">
+
 
                         <div class="image-wrapper">
                             <div class="item-labels">
@@ -166,8 +177,12 @@ function time_left(?string $endAt): string
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
                     <div class="item-card sold" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
-                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
+                    data-title="<?= strtolower($item->get_title() ?? '') ?>"
+                         data-seller="<?= strtolower($item->get_seller()->get_Pseudo() ?? '') ?>"
+                         data-description="<?= strtolower($item->get_Description() ?? '') ?>">
+                    <a href="open_item/index/<?= (int) $item->get_id() ?>/0">
+
+
 
                         <div class="image-wrapper">
                             <div class="item-labels">

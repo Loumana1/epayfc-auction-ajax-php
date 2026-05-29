@@ -4,10 +4,10 @@
             <?php if (!empty($participating_items)): ?>
                 <?php foreach ($participating_items as $item): ?>
                     <div class="item-card" data-id="<?= $item['id'] ?>"
-                    data-title="<?= $item['title']?? '' ?>"
-                    data-seller="<?= $item['seller_pseudo']?? '' ?>"
-                    data-description="<?= $item['description']?? '' ?>"> 
-                        <a href="open_item/index/<?= $item['id'] ?>/<?= $encoded_state ?>/0">
+                data-title="<?= strtolower($item['title'] ?? '') ?>"
+                data-seller="<?= strtolower($item['seller_pseudo'] ?? '') ?>"
+                data-description="<?= strtolower($item['description'] ?? '') ?>">
+                      <a href="open_item/index/<?= (int) $item['id'] ?>/0">
                             <?php if ($item['pic_path']): ?>
                                 <img src="<?= $web_root . str_replace('.jpg', '_thumbnail.jpg', $item['pic_path']) ?>" class="item-image">
                             <?php else: ?>

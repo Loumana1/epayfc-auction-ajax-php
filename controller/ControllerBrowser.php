@@ -17,19 +17,21 @@ class ControllerBrowser extends Controller
         $current_user_id = $current_user ? $current_user->get_Id() : -1;
         $now = AppTime::get_current_datetime();
 
-        $state_param = $_GET['param1'] ?? null;
-        $search_query = "";
+       $search_state = (string) ($_GET['param1'] ?? '');
+        $initial_query = '';
 
-        if ($state_param !== null) {
-            $state = Tools::url_safe_decode($state_param);
-            if (is_array($state) && isset($state['query'])) {
-                $search_query = $state['query'];
+
+          if ($search_state !== '') {
+            $decoded = Tools::url_safe_decode($search_state);
+            if (is_array($decoded)) {
+               
+                $initial_query = trim((string) ($decoded['q'] ?? ''));
             }
-        } 
-        
-        $encoded_state = Tools::url_safe_encode(['from' => 'browser', 'query' => $search_query]);
+        }
+       
 
 
+        $search_query = $initial_query;
         $participating_items_raw = $this->get_participating_items($current_user_id, $now, $search_query);
         $available_items_raw = $this->get_available_items($current_user_id, $now, $search_query);
 
@@ -97,9 +99,10 @@ class ControllerBrowser extends Controller
             'participating_items' => $participating_items,
             'available_items' => $available_items,
             'current_user_id' => $current_user_id,
+            'search_state' => $search_state,
+            'initial_query' => $initial_query,
             'currentUser' => $current_user,
-            'encoded_state' => $encoded_state,
-            'search_query' => $search_query,
+            'list_origin' => 'browser',
             'header_title' => 'Browser',
             'header_icon' => 'bi-cart-fill',
             'page_css' => ['browser.css'],
@@ -125,29 +128,7 @@ class ControllerBrowser extends Controller
         return $days . "d " . $hours . "h";
     }
 
-    public function search_service(): void {
-        $current_user = $this->get_user_or_false();
-        $current_user_id = $current_user ? $current_user->get_Id() : -1;
-        $now = AppTime::get_current_datetime();
 
-        $search_query = trim($_POST['query'] ?? '');
-
-        $participating_raw = $this->get_participating_items($current_user_id, $now, $search_query);
-        $available_raw = $this->get_available_items($current_user_id, $now, $search_query);
-
-        $matches = array_merge(
-            array_map(fn($i) => $i->get_id(), $participating_raw),
-            array_map(fn($i) => $i->get_id(), $available_raw)
-        );
-
-        $encoded_state = Tools::url_safe_encode(['from' => 'browser', 'query' => $search_query]);
-
-        header('Content-Type: application/json');
-        echo json_encode([
-            'encoded_state' => $encoded_state,
-            'matches' => $matches,
-        ]);
-        }
 
         
     private function get_participating_items(int $user_id, string $now, string $search_query = ""): array
@@ -160,24 +141,7 @@ class ControllerBrowser extends Controller
         return Item::get_Item_Available($user_id, $now, $search_query);
     }
 
-    private function format_items_for_json(array $raw_items): array
-    {
-        $result = [];
-        foreach ($raw_items as $item) {
-            if (!$item instanceof Item)
-                continue;
-            $pic = $item->get_main_picture();
-            $result[] = [
-                'id' => $item->get_Id(),
-                'title' => $item->get_Title(),
-                'seller' => $item->get_seller()->get_Pseudo(),
-                'pic' => $pic ? $pic->picture_path : null,
-                'price' => $item->get_Buy_Now_Price() ?? $item->get_Starting_Bid(),
-                'time' => $this->calculate_time_remaining($item->get_End_At()),
-            ];
-        }
-        return $result;
-    }
+
 
 }
 ?>

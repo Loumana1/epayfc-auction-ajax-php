@@ -2,11 +2,11 @@
     <div class="card-title">Add New Images</div>
     <form action="manage_images/upload/<?= $item->get_Id() ?>" method="post" enctype="multipart/form-data">
         <label class="form-label">Select Images</label>
-        <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
+        <input type="hidden" name="search_state" value="<?= $search_state ?? '' ?>">
         <input type="file" name="images[]" multiple accept=".jpg,.jpeg,.png,.gif,.webp" class="file-input">
         <p class="help-text">
-            You can select multiple images (JPG, PNG, GIF, WebP). 
-            Images will be added to the end of your current list.
+            Vous pouvez sellectionner plusieurs images (JPG, PNG, GIF, WebP). 
+            
         </p>
         <button type="submit" class="upload-btn">Upload Images</button>
     </form>
@@ -31,7 +31,7 @@
                         <?php if ($nojs): ?>
                             <?php if ($priority > 1): ?>
                                 <form action="<?= $base_url ?>/move_left/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
-                                    <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
+                                    <input type="hidden" name="search_state" value="<?= $search_state ?? '' ?>">
                                     <button type="submit" class="action-btn">←</button>
                                 </form>
                             <?php else: ?>
@@ -40,7 +40,7 @@
 
                             <?php if ($priority < $picture_count): ?>
                                 <form action="<?= $base_url ?>/move_right/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
-                                    <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
+                                    <input type="hidden" name="search_state" value="<?= $search_state ?? '' ?>">
                                     <button type="submit" class="action-btn">→</button>
                                 </form>
                             <?php else: ?>
@@ -48,7 +48,7 @@
                             <?php endif; ?>
 
                             <form action="<?= $base_url ?>/delete/<?= $item_id ?>/<?= $priority ?>" method="POST" style="display:inline-block;">
-                                <input type="hidden" name="encoded_state" value="<?= $encoded_state ?? '' ?>">
+                                <input type="hidden" name="search_state" value="<?= $search_state ?? '' ?>">
                                 <button type="submit" class="action-btn del">✕</button>
                             </form>
                         <?php else: ?>

@@ -16,18 +16,18 @@ class ControllerMyItems extends Controller
         $userid = $user->get_id();
         $now = AppTime::get_current_datetime();
 
-        $state_param = $_GET['param1'] ?? null;
-        $search_query = "";
-        if ($state_param !== null) {
-            $state = Tools::url_safe_decode($state_param);
-            if (is_array($state) && array_key_exists('query', $state)) {
-                $search_query = (string) $state['query'];
+  
+        $search_state = (string) ($_GET['param1'] ?? '');
+        $initial_query = '';
+        
+        if ($search_state !== '') {
+            $decoded = Tools::url_safe_decode($search_state);
+            if (is_array($decoded)) {
+                $initial_query = trim((string) ($decoded['q'] ?? ''));
             }
-        } 
+        }
 
-        $encoded_state = Tools::url_safe_encode(['from' => 'my_items', 'query' => $search_query]);
-
-
+        $search_query = $initial_query;
         $items = Item::get_items_by_owner($userid, $search_query);
 
         $active = [];
@@ -56,8 +56,9 @@ class ControllerMyItems extends Controller
             "current_page"        => "my_items",
             "header_title"        => "My items",
             "back_url"            => "browser",
-            "search_query"        => $search_query,
-            "encoded_state"       => $encoded_state,
+            "list_origin" => "my_items",
+            "search_state" => $search_state,
+            "initial_query" => $initial_query,
             "page_css"            => ["my_items.css"],
             "page_js"             => ["search_filter.js"],
         ]);
@@ -93,19 +94,5 @@ class ControllerMyItems extends Controller
     }
 
 
-    public function search_service(): void
-    {
-        $user = $this->get_user_or_redirect();
-        $search_query = trim($_POST['query'] ?? '');
 
-        $encoded_state = Tools::url_safe_encode(['from' => 'my_items', 'query' => $search_query]);
-        $filtered = Item::get_items_by_owner($user->get_id(), $search_query);
-        $matches = array_map(fn($item) => $item->get_id(), $filtered);
-        
-        header('Content-Type: application/json');
-        echo json_encode([
-            'encoded_state' => $encoded_state,
-            'matches' => $matches,
-        ]);
-    }
 }

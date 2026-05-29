@@ -1,148 +1,107 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const searchInput = document.getElementById("search-input");
-    if (!searchInput) return;
+    const input = document.getElementById("search-input");
+    if (!input) return;
+
+    const cards = document.querySelectorAll(".item-card");
+    const initialQuery = (input.dataset.initialQuery || "").trim();
+    const initialSearchState = input.dataset.searchState || "";
+    const listOrigin = input.dataset.listOrigin || "browser";
+    const noItemsMsg = document.getElementById("no-items-message");
 
     const base = document.querySelector("base");
-    if (!base) return;
-    const baseHref = base.getAttribute("href");
-    const controller = location.pathname.includes("my_items") ? "my_items" : "browser";
-    const listBase = baseHref + controller + "/index";
+    const encodeUrl = (base ? base.getAttribute("href") : "") + "search_state/encode";
 
-    const path = location.pathname;
-    const rePath = new RegExp("/" + controller + "/index(/([^/]+))?/?$");
-    const pathMatch = path.match(rePath);
-    const pathToken = pathMatch && pathMatch[2] ? pathMatch[2] : null;
-
-    function setListPageUrlToBase() {
-        history.replaceState(null, "", listBase);
+    if (initialQuery) {
+        input.value = initialQuery;
+        filterCards(initialQuery);
+        showNoItemsMessage();
     }
 
-    function applyMatchesToCards(data) {
-        const cartes = document.querySelectorAll(".item-card");
-        for (let i = 0; i < cartes.length; i++) {
-            const id = parseInt(cartes[i].getAttribute("data-id"), 10);
-            if (data.matches.indexOf(id) === -1) {
-                cartes[i].style.display = "none";
-            } else {
-                cartes[i].style.display = "";
+    input.addEventListener("input", function () {
+        filterCards(input.value.trim());
+        showNoItemsMessage();
+    });
+
+    cards.forEach(function (card) {
+        card.addEventListener("click", function (e) {
+            const link = card.querySelector("a");
+            if (!link) return;
+
+            e.preventDefault();
+
+            const query = input.value.trim();
+            const baseUrl = link.getAttribute("href");
+
+            if (!query) {
+                goToUrl(baseUrl);
+                return;
             }
-        }
-    }
 
-    function setOpenItemLinksOnCards(encodedState) {
-        if (!encodedState) return;
-        const cartes = document.querySelectorAll(".item-card");
-        for (let j = 0; j < cartes.length; j++) {
-            const id = cartes[j].getAttribute("data-id");
-            const a = cartes[j].querySelector("a[href^='open_item/']");
-            if (a) {
-                a.href = "open_item/index/" + id + "/" + encodedState + "/0";
-            } else {
-                cartes[j].setAttribute("onclick", "location.href='open_item/index/" + id + "/" + encodedState + "/0'");
+            if (initialSearchState && query === initialQuery) {
+                goToUrl(withSearchState(baseUrl, initialSearchState));
+                return;
             }
-        }
-    }
 
-    function replaceMyItemsBelowSearch(nPage) {
-        const curPage = document.querySelector(".my-items-page");
-        if (!curPage || !nPage) return false;
-        const sbar = curPage.querySelector(".search-bar");
-        const sbarF = nPage.querySelector(".search-bar");
-        if (!sbar || !sbarF) return false;
-        let n = sbar.nextElementSibling;
-        while (n) {
-            const t = n.nextElementSibling;
-            n.remove();
-            n = t;
-        }
-        n = sbarF.nextElementSibling;
-        while (n) {
-            const t = n.nextElementSibling;
-            curPage.appendChild(n);
-            n = t;
-        }
-        return true;
-    }
-
-    function replaceListPageFromHtml(html) {
-        const doc = (new DOMParser()).parseFromString(html, "text/html");
-        if (replaceMyItemsBelowSearch(doc)) {
-            return;
-        }
-        const newMy = doc.querySelector(".my-items-page");
-        const curMy = document.querySelector(".my-items-page");
-        if (newMy && curMy) {
-            curMy.innerHTML = newMy.innerHTML;
-            return;
-        }
-        [".participating .item-list", ".available .item-list", ".items-section .item-list"].forEach(
-            function (s) {
-                const listeActuelle = document.querySelector(s);
-                const nouvelleListe = doc.querySelector(s);
-                if (listeActuelle && nouvelleListe) {
-                    listeActuelle.innerHTML = nouvelleListe.innerHTML;
-                }
-            }
-        );
-    }
-
-    (function initFromServerState() {
-        const q = searchInput.value.trim();
-        if (q !== "" && !pathToken) {
-            fetch(listBase + "?ajax=1&query=" + encodeURIComponent(q))
+            fetch(encodeUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" },
+                body: "from=" + encodeURIComponent(listOrigin) + "&q=" + encodeURIComponent(query)
+            })
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
-                    applyMatchesToCards(data);
-                    setOpenItemLinksOnCards(data.encoded_state);
+                    var token = data.search_state || "";
+                    goToUrl(token ? withSearchState(baseUrl, token) : baseUrl);
+                })
+                .catch(function () {
+                    goToUrl(baseUrl);
                 });
-            return;
-        }
-        if (q === "" && pathToken) {
-            setListPageUrlToBase();
-            fetch(listBase)
-                .then(function (r) { return r.text(); })
-                .then(replaceListPageFromHtml);
-        }
-    })();
-
-    searchInput.addEventListener("input", function () {
-        const query = searchInput.value.trim();
-        setListPageUrlToBase();
-
-        if (query === "") {
-            fetch(listBase)
-                .then(function (r) { return r.text(); })
-                .then(replaceListPageFromHtml);
-            return;
-        }
-
-        const ajaxUrl = listBase + "?ajax=1&query=" + encodeURIComponent(query);
-        fetch(ajaxUrl)
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                const cartes = document.querySelectorAll(".item-card");
-                for (let k = 0; k < cartes.length; k++) {
-                    const id = parseInt(cartes[k].getAttribute("data-id"), 10);
-                    if (data.matches.indexOf(id) === -1) {
-                        cartes[k].style.display = "none";
-                    } else {
-                        cartes[k].style.display = "";
-                        const lien = cartes[k].querySelector("a");
-                        if (lien) {
-                            lien.href = "open_item/index/" + id + "/" + data.encoded_state + "/0";
-                        } else {
-                            cartes[k].setAttribute("onclick", "location.href='open_item/index/" + id + "/" + data.encoded_state + "/0'");
-                        }
-                    }
-                }
-            });
+        });
     });
 
-    addEventListener("pageshow", function () {
-        const q = searchInput.value.trim();
-        if (q === "") return;
-        fetch(listBase + "?ajax=1&query=" + encodeURIComponent(q))
-            .then(function (r) { return r.json(); })
-            .then(applyMatchesToCards);
-    });
+    function filterCards(query) {
+        var q = query.toLowerCase();
+        cards.forEach(function (card) {
+            var title = (card.dataset.title || "").toLowerCase();
+            var seller = (card.dataset.seller || "").toLowerCase();
+            var description = (card.dataset.description || "").toLowerCase();
+            var match = !q
+                || title.indexOf(q) !== -1
+                || seller.indexOf(q) !== -1
+                || description.indexOf(q) !== -1;
+            card.style.display = match ? "" : "none";
+        });
+    }
+
+    function showNoItemsMessage() {
+        if (!noItemsMsg) return;
+        var q = input.value.trim();
+        if (!q) {
+            noItemsMsg.style.display = "none";
+            return;
+        }
+        var visible = 0;
+        cards.forEach(function (card) {
+            if (card.style.display !== "none") visible++;
+        });
+        noItemsMsg.style.display = visible === 0 ? "" : "none";
+    }
+
+    function withSearchState(baseUrl, token) {
+        var parts = baseUrl.replace(/\/$/, "").split("/");
+        var idx = parts.indexOf("index");
+        if (idx === -1 || parts.length < idx + 2) {
+            return baseUrl;
+        }
+        var itemId = parts[idx + 1];
+        // open_item/index/{id}/{search_state}/0
+        return parts.slice(0, idx + 2).concat([token, "0"]).join("/");
+    }
+
+    function goToUrl(url) {
+        var form = document.createElement("form");
+        form.method = "GET";
+        form.action = url;
+        document.body.appendChild(form);
+        form.submit();
+    }
 });

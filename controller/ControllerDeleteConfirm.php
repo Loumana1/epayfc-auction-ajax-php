@@ -8,7 +8,7 @@ class ControllerDeleteConfirm extends Controller {
 
     public function index(): void {
         $user = $this->get_user_or_redirect();
-        $encoded_state = $_GET['param2'] ?? null;
+        $search_state = $_GET['param2'] ?? null;
         
         $item_id = $_GET['param1'] ?? null;
         
@@ -26,13 +26,17 @@ class ControllerDeleteConfirm extends Controller {
         
     
         if ($item->get_Owner() != $user->get_Id()) {
-            $this->redirect('browse_items');
+            $this->redirect('browser');
             return;
         }
         
    
         if ($item->has_bids_time()) {
-            $this->redirect('open_item', 'index', (string)$item_id);
+            if ($search_state) {
+                $this->redirect('open_item', 'index', (string)$item_id, $search_state, '0');
+            } else {
+                $this->redirect('open_item', 'index', (string)$item_id, '0', '0');
+            }
             return;
         }
         $seller = User::get_User_By_Id($item->get_Owner());
@@ -40,7 +44,6 @@ class ControllerDeleteConfirm extends Controller {
         (new View("delete_confirm"))->show([
             'header_title' => 'Delete Item',
             'header_icon' => 'bi-trash',
-            'back_url' => 'open_item/index/' . $item_id,
             'item' => $item,
             'current_user' => $user,
             'seller' => $seller,
@@ -48,10 +51,10 @@ class ControllerDeleteConfirm extends Controller {
             'seller_full_name' => $seller->get_FullName(),
             'item_id' => $item_id,
             'page_css' => ['delete_item.css'],
-            'back_url' => $encoded_state
-            ? 'open_item/index/' . $item_id . '/' . urlencode($encoded_state) . '/0'
-            : 'open_item/index/' . $item_id,
-        'encoded_state' => $encoded_state,
+            'back_url' => $search_state 
+            ? 'open_item/index/' . $item_id . '/' . urlencode($search_state ) . '/0'
+            : 'open_item/index/' . $item_id. '/0/0',
+            'search_state' =>$search_state 
         ]);
     }
     
@@ -59,7 +62,7 @@ class ControllerDeleteConfirm extends Controller {
         $user = $this->get_user_or_redirect();
         
         $item_id = $_POST['item_id'] ?? null;
-        $encoded_state = $_POST['encoded_state'] ?? null;
+        $search_state = $_POST['search_state'] ?? null;
         
         if (!$item_id) {
             $this->redirect('my_items');
@@ -78,13 +81,12 @@ class ControllerDeleteConfirm extends Controller {
         ItemPicture::delete_all_by_item($item->get_Id());
 
         $item->delete();
-
-        if ($encoded_state) {
-            $state = Tools::url_safe_decode($encoded_state);
-            $from = is_array($state) && isset($state['from']) ? $state['from'] : 'my_items';
-            $this->redirect($from, 'index', $encoded_state);
-        } else {
-            $this->redirect('my_items');
+        if (in_array($search_state, ['sales', 'purchases', 'browser', 'my_items'], true)) {
+            $this->redirect($search_state, 'index');
+            return;
         }
+        $state = Tools::url_safe_decode($search_state);
+        $from = is_array($state) && isset($state['from']) ? $state['from'] : 'my_items';
+        $this->redirect($from, 'index', $search_state);
     }
 }

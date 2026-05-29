@@ -22,9 +22,12 @@ class ControllerManageImages extends Controller
         }
 
 
-        $encoded_state = $_GET['param2'] ?? null;
+        $search_state = $_GET['param2'] ?? null;
+        if ($search_state === '0' || $search_state === '') {
+            $search_state = null;
+        }
 
-        $item = $this->get_owner_item_or_reject((int) $item_id, $current_user, $encoded_state);
+        $item = $this->get_owner_item_or_reject((int) $item_id, $current_user,$search_state);
         if ($item === null) {
             return;
         }
@@ -39,10 +42,10 @@ class ControllerManageImages extends Controller
             'header_icon' => 'bi-images',
             'page_css' => ['manage.css'],
             'page_js' => ['manage_images.js'],
-            'encoded_state' => $encoded_state,
-            'back_url' => $encoded_state
-                ? "open_item/index/$item_id/" . urlencode($encoded_state) . "/0"
-                : "open_item/index/$item_id",
+            'search_state'=> $search_state,
+            'back_url' => $search_state
+                ? "open_item/index/$item_id/" . urlencode($search_state) . "/0"
+                : "open_item/index/$item_id/0/0",
                     ]);
     }
     private function get_user_or_redirect_login(): User
@@ -54,8 +57,8 @@ class ControllerManageImages extends Controller
         return $user;
     }
 
-    private function get_encoded_state(bool $forIndexAction = false): ?string {
-        $fromPost = $_POST['encoded_state'] ?? null;
+    private function get_search_state(bool $forIndexAction = false): ?string {
+        $fromPost = $_POST['search_state'] ?? null;
         if (is_string($fromPost) && $fromPost !== '') {
             return $fromPost;
         }
@@ -67,12 +70,12 @@ class ControllerManageImages extends Controller
         return (is_string($s) && $s !== '') ? $s : null;
     }
     
-    private function redirect_manage_images_with_state(int|string $item_id, ?string $encoded_state): void {
+    private function redirect_manage_images_with_state(int|string $item_id, ?string $search_state): void {
         $this->redirect(
             "manage_images",
             "index",
             (string)$item_id,
-            $encoded_state ?? ""
+            $search_state ?? '0'
         );
     }
 
@@ -85,9 +88,9 @@ class ControllerManageImages extends Controller
             $this->redirect("my_items");
             return;
         }
-        $encoded_state = $this->get_encoded_state(false);
+        $search_state= $this->get_search_state(false);
 
-        $item = $this->get_owner_item_or_reject((int) $item_id, $current_user, $encoded_state);
+        $item = $this->get_owner_item_or_reject((int) $item_id, $current_user, $search_state);
             if ($item === null) {
                 return;
             }
@@ -122,10 +125,10 @@ class ControllerManageImages extends Controller
                 }
             }
         }
-        $this->redirect_manage_images_with_state($item_id , $encoded_state);
+        $this->redirect_manage_images_with_state($item_id ,$search_state);
     }
 
-    private function get_owner_item_or_reject(int $item_id, User $current_user, ?string $encoded_state = null): ?Item
+    private function get_owner_item_or_reject(int $item_id, User $current_user, ?string $search_state = null): ?Item
     {
         $item = Item::get_by_id($item_id);
 
@@ -140,8 +143,8 @@ class ControllerManageImages extends Controller
         }
 
         if ($item->has_bids_time()) {
-            if ($encoded_state) {
-                $this->redirect('open_item', 'index', (string) $item_id, $encoded_state, '0');
+            if ($search_state) {
+                $this->redirect('open_item', 'index', (string) $item_id, $search_state ,'0');
             } else {
                 $this->redirect('open_item', 'index', (string) $item_id);
             }
@@ -183,7 +186,7 @@ class ControllerManageImages extends Controller
    
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
-        $encoded_state = $this->get_encoded_state();
+        $search_state = $this->get_search_state();
 
         if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
 
@@ -207,13 +210,13 @@ class ControllerManageImages extends Controller
 
 
 
-        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user,$search_state);
         if ($item === null) {
             return;
         }
 
         ItemPicture::delete((int)$item_id, (int)$priority);
-        $this->redirect_manage_images_with_state($item_id, $encoded_state);
+        $this->redirect_manage_images_with_state($item_id,$search_state);
     }
 
 
@@ -227,7 +230,7 @@ class ControllerManageImages extends Controller
 
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
-        $encoded_state = $this->get_encoded_state();
+        $search_state = $this->get_search_state();
 
         if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
             if ($this->necessite_json_response()) {
@@ -250,7 +253,7 @@ class ControllerManageImages extends Controller
     }
 
 
-        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user,$search_state);
         if ($item === null) {
             return;
 
@@ -259,7 +262,7 @@ class ControllerManageImages extends Controller
         ItemPicture::move_left((int)$item_id, (int)$priority);
 
 
-        $this->redirect_manage_images_with_state($item_id, $encoded_state);
+        $this->redirect_manage_images_with_state($item_id,$search_state);
     }
 
 
@@ -274,7 +277,7 @@ class ControllerManageImages extends Controller
         }
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
-        $encoded_state = $this->get_encoded_state();
+        $search_state = $this->get_search_state();
 
         if (!$item_id || !ctype_digit((string)$item_id) || $priority === null || !ctype_digit((string)$priority)) {
                  if ($this->necessite_json_response()) {
@@ -296,7 +299,7 @@ class ControllerManageImages extends Controller
         return;
     }
 
-        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user, $encoded_state);
+        $item = $this->get_owner_item_or_reject((int)$item_id, $current_user,$search_state);
         if ($item === null) {
             return;
         }
@@ -305,7 +308,7 @@ class ControllerManageImages extends Controller
 
 
 
-        $this->redirect_manage_images_with_state($item_id, $encoded_state);
+        $this->redirect_manage_images_with_state($item_id,$search_state);
     }
 
 
@@ -335,8 +338,8 @@ class ControllerManageImages extends Controller
             return;
         }
 
-        $item_id = $input['item_id'] ?? null;
-        $order = $input['order'] ?? [];
+        $item_id = $_POST['item_id'] ?? null;
+        $order = $_POST['order'] ?? [];
 
         if (!is_array($order)) {
             $order = [];

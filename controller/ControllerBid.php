@@ -25,7 +25,7 @@ class ControllerBid extends Controller {
         $item = $this->load_item_or_redirect($params['item_id']);
         if (!$item) return;
         
-        $this->process_bid($item, $current_user, $params['amount'], $params['encoded_state'] ?? '');
+        $this->process_bid($item, $current_user, $params['amount'], $params['search_state'] ?? '');
     }
     
     private function get_user_or_redirect_login(): ?object {
@@ -46,14 +46,14 @@ class ControllerBid extends Controller {
             $amount_str = str_replace(',', '.', $amount_str);
             $amount = (float)$amount_str;
         }
-        $encoded_state = trim((string) ($_POST['encoded_state'] ?? ''));
-       
+        $search_state = trim((string) ($_POST['search_state'] ?? ''));
+
         if (!$item_id ||  $amount === null) {
             if ($item_id) {
-                if ($encoded_state !== '') {
-                    $this->redirect("open_item", "index", (string) $item_id, $encoded_state, "0");
+                if ($search_state !== '') {
+                    $this->redirect("open_item", "index", (string) $item_id, $search_state, "0");
                 } else {
-                    $this->redirect("open_item", "index", (string) $item_id);
+                    $this->redirect("open_item", "index", (string) $item_id, "0", "0");
                 }
             } else {
                 $this->redirect("browser");
@@ -62,59 +62,70 @@ class ControllerBid extends Controller {
         }
         
         
-        return ['item_id' => $item_id, 'amount' => $amount, 'encoded_state' => $encoded_state];
+        return ['item_id' => $item_id, 'amount' => $amount,  'search_state' => $search_state];
     }
     
     private function load_item_or_redirect(int $item_id): ?Item {
         $item = Item::get_by_id($item_id);
         if ($item === false) {
-            $es = trim((string) ($_POST['encoded_state'] ?? ''));
+            $es = trim((string) ($_POST['search_state'] ?? ''));
             if ($es !== '') {
                 $this->redirect("open_item", "index", (string) $item_id, $es, "0");
             } else {
-                $this->redirect("open_item", "index", (string) $item_id);
+                $this->redirect("open_item", "index", (string) $item_id, "0", "0");
             }
             return null;
         }
         return $item;
     }
     
-    private function process_bid(Item $item, object $user, float $amount, string $encoded_state = ''): void {
+    private function process_bid(Item $item, object $user, float $amount, string  $search_state = ''): void {
+
+        $is_ajax = (($_POST['format'] ?? '') === 'json');
+        $search_state = trim((string) ($_POST['search_state'] ?? ''));
 
         if ($this->is_duplicate_bid($item->get_Id(), $user->get_id(), $amount)) {
-            $this->redirect("open_item", "index", $item->get_Id());
+            if ($is_ajax) {
+                header('Content-Type: application/json');
+                http_response_code(429);
+                echo json_encode(['success' => false, 'errors' => ['Please wait before bidding again.']]);
+                return;
+            }
+            if ($search_state !== '') {
+                $this->redirect('open_item', 'index', (string) $item->get_Id(), $search_state, '0');
+            } else {
+                $this->redirect('open_item', 'index', (string) $item->get_Id(), '0', '0');
+            }
             return;
         }
-
         $bid = new Bid($item->get_Id(), $user->get_id(), $amount);
         $errors = $bid->persist($item);
-
-        $is_ajax = ($_POST['format'] ?? '') === 'json';
-
         if ($is_ajax) {
             header('Content-Type: application/json');
             if (!empty($errors)) {
                 http_response_code(422);
                 echo json_encode(['success' => false, 'errors' => $errors]);
-            } else {
-                echo json_encode([
-                    'success' => true, 
-                    'message' => 'You successfully bidded ' . format_euro($amount)
-                ]);
+                return;
             }
+            echo json_encode([
+                'success' => true,
+                'message' => 'You successfully bidded ' . format_euro($amount)
+            ]);
             return;
         }
 
-        $es = $encoded_state !== '' ? $encoded_state : trim((string) ($_POST['encoded_state'] ?? ''));
-        if ($es !== '') {
-            $this->redirect("open_item", "index", (string) $item->get_Id(), $es, "0");
+            //sans Js --> redirect
+        if ($search_state !== '') {
+            $this->redirect("open_item", "index", (string) $item->get_Id(), $search_state, '0');
         } else {
-            $this->redirect("open_item", "index", (string) $item->get_Id());
+            $this->redirect("open_item", "index", (string) $item->get_Id(), '0', '0');
         }
+        return;
+        
     }
 
     private function is_duplicate_bid(int $item_id, int $user_id, float $amount): bool {
-        return Bid::exists_recent_duplicate($item_id, $user_id,0.5);
+        return Bid::exists_recent_duplicate($item_id, $user_id,1);
     }
 
 

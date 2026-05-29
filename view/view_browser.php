@@ -5,9 +5,13 @@
     <?php if (!$nojs): ?>
     <div class="search-bar">
         <input type="text" id="search-input" placeholder="Search item" class="search-input"
-            value="<?= $search_query ?? '' ?>">
+                      value="<?= $initial_query ?? '' ?>"
+               data-initial-query="<?= $initial_query ?? '' ?>"
+               data-search-state="<?= $search_state ?? '' ?>"
+               data-list-origin="<?=$list_origin ?? 'browser'?>">
         <i class="bi bi-search search-icon"></i>
     </div>
+       <p id="no-items-message" class="no-items-message" style="display:none;">No item found.</p>
     <?php endif ?>
 
     <?php require "partials/browser_item/_items_participating.php"; ?>
