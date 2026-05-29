@@ -216,6 +216,24 @@ textarea.is-valid:focus {
     color: #60a5fa;
     font-weight: 600;
 }
+/*check box*/
+.categories-checkbox-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 8px 8px;
+    margin-top: 5px; 
+    background: #1f2937;
+    margin: 20px;
+    padding: 5px;
+    border-radius: 14px;
+}
+
+.category-checkbox {
+    margin: 4px;
+    width: 4px;
+    height: 4px;
+    transform: scale(0.8);
+}
 
 
 /* ─── MODALE STYLES ─── */
