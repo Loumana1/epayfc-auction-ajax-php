@@ -5,6 +5,7 @@ require_once 'utils/AppTime.php';
 require_once 'model/Item.php';
 require_once 'model/ItemPicture.php';
 require_once 'model/User.php';
+require_once 'model/Category.php';
 
 
 
@@ -19,20 +20,23 @@ class ControllerBrowser extends Controller
 
         $state_param = $_GET['param1'] ?? null;
         $search_query = "";
+        $category_id = 0;
 
         if ($state_param !== null) {
             $state = Tools::url_safe_decode($state_param);
-            if (is_array($state) && isset($state['query'])) {
-                $search_query = $state['query'];
+            if (is_array($state)) {
+                $search_query = $state['query'] ?? '';
+                $category_id = (int)($state['category'] ?? 0);
             }
         } else {
             $search_query = trim($_GET['query'] ?? "");
+            $category_id = (int)($_GET['category'] ?? 0);
         }
-        $encoded_state = Tools::url_safe_encode(['from' => 'browser', 'query' => $search_query]);
+        $encoded_state = Tools::url_safe_encode(['from' => 'browser', 'query' => $search_query, 'category' => $category_id]);
 
         if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
-            $participating_raw = $this->get_participating_items($current_user_id, $now, $search_query);
-            $available_raw = $this->get_available_items($current_user_id, $now, $search_query);
+            $participating_raw = $this->get_participating_items($current_user_id, $now, $search_query, $category_id);
+            $available_raw = $this->get_available_items($current_user_id, $now, $search_query, $category_id);
 
             $matches = array_merge(
                 array_map(fn($i) => $i->get_id(), $participating_raw),
@@ -46,8 +50,8 @@ class ControllerBrowser extends Controller
             ]);
             return;
         }
-        $participating_items_raw = $this->get_participating_items($current_user_id, $now, $search_query);
-        $available_items_raw = $this->get_available_items($current_user_id, $now, $search_query);
+        $participating_items_raw = $this->get_participating_items($current_user_id, $now, $search_query, $category_id);
+        $available_items_raw = $this->get_available_items($current_user_id, $now, $search_query, $category_id);
 
 
         $participating_items = [];
@@ -116,6 +120,8 @@ class ControllerBrowser extends Controller
             'currentUser' => $current_user,
             'encoded_state' => $encoded_state,
             'search_query' => $search_query,
+            'category_id' => $category_id,
+            'categories' => Category::get_all(),
             'header_title' => 'Browser',
             'header_icon' => 'bi-cart-fill',
             'page_css' => ['browser.css'],
@@ -140,14 +146,14 @@ class ControllerBrowser extends Controller
 
         return $days . "d " . $hours . "h";
     }
-    private function get_participating_items(int $user_id, string $now, string $search_query = ""): array
+    private function get_participating_items(int $user_id, string $now, string $search_query = "", int $category_id = 0): array
     {
-        return Item::get_Item_Participating($user_id, $now, $search_query);
+        return Item::get_Item_Participating($user_id, $now, $search_query, $category_id);
     }
 
-    private function get_available_items(int $user_id, string $now, string $search_query = ""): array
+    private function get_available_items(int $user_id, string $now, string $search_query = "", int $category_id = 0): array
     {
-        return Item::get_Item_Available($user_id, $now, $search_query);
+        return Item::get_Item_Available($user_id, $now, $search_query, $category_id);
     }
 
     private function format_items_for_json(array $raw_items): array

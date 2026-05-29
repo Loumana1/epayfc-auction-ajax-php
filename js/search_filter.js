@@ -2,11 +2,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("search-input");
     if (!searchInput) return;
 
+    const categorySelect = document.getElementById("category-select");
+
     const base = document.querySelector("base");
     if (!base) return;
     const baseHref = base.getAttribute("href");
     const controller = location.pathname.includes("my_items") ? "my_items" : "browser";
     const listBase = baseHref + controller + "/index";
+
+    function getCategoryId() {
+        return categorySelect ? parseInt(categorySelect.value, 10) : 0;
+    }
 
     const path = location.pathname;
     const rePath = new RegExp("/" + controller + "/index(/([^/]+))?/?$");
@@ -86,10 +92,39 @@ document.addEventListener("DOMContentLoaded", function () {
         );
     }
 
+    function buildAjaxUrl(query, categoryId) {
+        let url = listBase + "?ajax=1&query=" + encodeURIComponent(query);
+        if (categoryId > 0) {
+            url += "&category=" + categoryId;
+        }
+        return url;
+    }
+
+    function doFilter() {
+        const query = searchInput.value.trim();
+        const categoryId = getCategoryId();
+        setListPageUrlToBase();
+
+        if (query === "" && categoryId === 0) {
+            fetch(listBase)
+                .then(function (r) { return r.text(); })
+                .then(replaceListPageFromHtml);
+            return;
+        }
+
+        fetch(buildAjaxUrl(query, categoryId))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                applyMatchesToCards(data);
+                setOpenItemLinksOnCards(data.encoded_state);
+            });
+    }
+
     (function initFromServerState() {
         const q = searchInput.value.trim();
-        if (q !== "" && !pathToken) {
-            fetch(listBase + "?ajax=1&query=" + encodeURIComponent(q))
+        const categoryId = getCategoryId();
+        if ((q !== "" || categoryId > 0) && !pathToken) {
+            fetch(buildAjaxUrl(q, categoryId))
                 .then(function (r) { return r.json(); })
                 .then(function (data) {
                     applyMatchesToCards(data);
@@ -97,7 +132,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             return;
         }
-        if (q === "" && pathToken) {
+        if (q === "" && categoryId === 0 && pathToken) {
             setListPageUrlToBase();
             fetch(listBase)
                 .then(function (r) { return r.text(); })
@@ -105,43 +140,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     })();
 
-    searchInput.addEventListener("input", function () {
-        const query = searchInput.value.trim();
-        setListPageUrlToBase();
+    searchInput.addEventListener("input", doFilter);
 
-        if (query === "") {
-            fetch(listBase)
-                .then(function (r) { return r.text(); })
-                .then(replaceListPageFromHtml);
-            return;
-        }
-
-        const ajaxUrl = listBase + "?ajax=1&query=" + encodeURIComponent(query);
-        fetch(ajaxUrl)
-            .then(function (r) { return r.json(); })
-            .then(function (data) {
-                const cartes = document.querySelectorAll(".item-card");
-                for (let k = 0; k < cartes.length; k++) {
-                    const id = parseInt(cartes[k].getAttribute("data-id"), 10);
-                    if (data.matches.indexOf(id) === -1) {
-                        cartes[k].style.display = "none";
-                    } else {
-                        cartes[k].style.display = "";
-                        const lien = cartes[k].querySelector("a");
-                        if (lien) {
-                            lien.href = "open_item/index/" + id + "/" + data.encoded_state + "/0";
-                        } else {
-                            cartes[k].setAttribute("onclick", "location.href='open_item/index/" + id + "/" + data.encoded_state + "/0'");
-                        }
-                    }
-                }
-            });
-    });
+    if (categorySelect) {
+        categorySelect.addEventListener("change", doFilter);
+    }
 
     addEventListener("pageshow", function () {
         const q = searchInput.value.trim();
-        if (q === "") return;
-        fetch(listBase + "?ajax=1&query=" + encodeURIComponent(q))
+        const categoryId = getCategoryId();
+        if (q === "" && categoryId === 0) return;
+        fetch(buildAjaxUrl(q, categoryId))
             .then(function (r) { return r.json(); })
             .then(applyMatchesToCards);
     });

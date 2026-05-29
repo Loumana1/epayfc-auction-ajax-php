@@ -276,37 +276,44 @@ public function delete(): void {
     self::delete_by_id($this->id);
 }
 
-    public static function get_Item_Participating(int $userId, string $now , string $search_query =""): array {
-        $query = "SELECT v.* FROM v_items_status v
-        JOIN users u on v.owner = u.id
-        WHERE v.id IN (SELECT item FROM bids WHERE owner = :user_id)
-        AND v.buy_now_reached = 0 AND v.end_at > :now ";
-
-        $params = ['user_id' => $userId, 'now' => $now];
-        if($search_query !== "") {
-           $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";            
-           $params['q'] = "%" .$search_query . "%" ;        
+    public static function get_Item_Participating(int $userId, string $now, string $search_query = "", int $category_id = 0): array {
+        $query = "SELECT v.* FROM v_items_status v JOIN users u on v.owner = u.id";
+        if ($category_id > 0) {
+            $query .= " JOIN item_categories ic ON v.id = ic.item AND ic.category = :category_id";
         }
-        $query .= " ORDER BY end_at DESC";
-        return self::queryToItems($query,$params);
-
+        $query .= " WHERE v.id IN (SELECT item FROM bids WHERE owner = :user_id)
+        AND v.buy_now_reached = 0 AND v.end_at > :now ";
+        $params = ['user_id' => $userId, 'now' => $now];
+        if ($search_query !== "") {
+            $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
+            $params['q'] = "%" . $search_query . "%";
+        }
+        if ($category_id > 0) {
+            $params['category_id'] = $category_id;
+        }
+        $query .= " ORDER BY end_at ASC";
+        return self::queryToItems($query, $params);
     }
-    
-    public static function get_Item_Available(int $userId, string $now, string $search_query = ""): array {
-    $query = "SELECT v.* FROM v_items_status v
-            JOIN users u ON v.owner = u.id
-            WHERE v.id NOT IN (SELECT item FROM bids WHERE owner = :user_id)
+
+    public static function get_Item_Available(int $userId, string $now, string $search_query = "", int $category_id = 0): array {
+        $query = "SELECT v.* FROM v_items_status v JOIN users u ON v.owner = u.id";
+        if ($category_id > 0) {
+            $query .= " JOIN item_categories ic ON v.id = ic.item AND ic.category = :category_id";
+        }
+        $query .= " WHERE v.id NOT IN (SELECT item FROM bids WHERE owner = :user_id)
             AND v.owner != :user_id
             AND v.buy_now_reached = 0 AND v.end_at > :now";
-
-    $params = ['user_id' => $userId, 'now' => $now];
-    if ($search_query !== "") {
-        $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
-        $params['q'] = "%" . $search_query . "%";
+        $params = ['user_id' => $userId, 'now' => $now];
+        if ($search_query !== "") {
+            $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
+            $params['q'] = "%" . $search_query . "%";
+        }
+        if ($category_id > 0) {
+            $params['category_id'] = $category_id;
+        }
+        $query .= " ORDER BY v.end_at ASC";
+        return self::queryToItems($query, $params);
     }
-    $query .= " ORDER BY v.end_at DESC";
-    return self::queryToItems($query, $params);
-}
 
     public function get_main_picture(): ?ItemPicture {
         $query = self::execute(
@@ -477,18 +484,21 @@ public function delete(): void {
         return [];
     }
 
-    public static function get_items_by_owner(int $userId, string $search_query = ""): array {
-        $query = "SELECT v.* FROM v_items_status v
-                  JOIN users u ON v.owner = u.id
-                  WHERE v.owner = :user_id";
-
+    public static function get_items_by_owner(int $userId, string $search_query = "", int $category_id = 0): array {
+        $query = "SELECT v.* FROM v_items_status v JOIN users u ON v.owner = u.id";
+        if ($category_id > 0) {
+            $query .= " JOIN item_categories ic ON v.id = ic.item AND ic.category = :category_id";
+        }
+        $query .= " WHERE v.owner = :user_id";
         $params = ["user_id" => $userId];
         if ($search_query !== "") {
             $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
             $params['q'] = "%" . $search_query . "%";
         }
+        if ($category_id > 0) {
+            $params['category_id'] = $category_id;
+        }
         $query .= " ORDER BY v.end_at DESC";
-
         return self::queryToItems($query, $params);
     }
 
