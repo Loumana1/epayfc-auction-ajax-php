@@ -235,12 +235,12 @@ public function is_open(): bool {
     public function get_max_bid_time(): ?float {
         $bids = $this->get_bids();
         if (empty($bids)) return null;
-        return (float)max(array_column($bids, 'amount'));
+        return (float)max(array_map(fn($b) => $b->get_amount(), $bids));
     }
-    
+
     public function get_highest_bidder_pseudo(): ?string {
         $bids = $this->get_bids();
-        return !empty($bids) ? $bids[0]['pseudo'] : null;
+        return !empty($bids) ? $bids[0]->get_pseudo() : null;
     }
 
 
@@ -381,7 +381,7 @@ public function delete(): void {
     if ($this->buy_now_reached || ($this->is_direct_sale && $this->has_bids_time())) {
         $bids = $this->get_bids();
         if (!empty($bids)) {
-            return $bids[0]['created_at'];
+            return $bids[0]->get_created_at();
         }
     }
     return $this->end_at;

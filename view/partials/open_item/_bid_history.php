@@ -11,13 +11,13 @@
             <?php foreach ($bids as $bid): ?>
                 <div class="bid-row">
                     <div class="bid-info">
-                        <span class="bidder-name"><?= $bid['pseudo'] ?></span>
+                        <span class="bidder-name"><?= $bid->get_pseudo() ?></span>
                         <span class="bid-date">
-                            <?= date('d/m/Y H:i:s', strtotime($bid['created_at'])) ?>
+                            <?= date('d/m/Y H:i:s', strtotime($bid->get_created_at())) ?>
                         </span>
                     </div>
                     <span class="bid-amount">
-                        <?= format_euro($bid['amount']) ?>
+                        <?= format_euro($bid->get_amount()) ?>
                     </span>
                 </div>
             <?php endforeach; ?>
