@@ -243,6 +243,7 @@ private function load_item_or_fail(): ?Item {
             'item_description' => $item->get_Description(),
             'item_created_at' => $item->get_Created_At(),
             'item_end_at' => $item->get_End_At(),
+            'item_categories' => $item->get_categories(),
 
             'pictures' => $picture_data['pictures'],
             'selected_img' => $picture_data['selected_img'],

@@ -5,20 +5,23 @@ require_once "model/Bid.php";
 require_once "model/User.php";
 require_once "framework/Configuration.php";
 require_once "model/ItemPicture.php";
-
+require_once "model/Category.php";
 
 class Item extends Model{
 
     private $id;
     private  $title;
     private  $description;
+    public array $category_ids = [];
     private  $owner;
     private $created_at;
     private  $buy_now_price;
     private $duration_days;
     private ?float $starting_bid;
+    private ?array $_cached_categories = null;
 
-    private  ?array $_cached_bids = null;    public $end_at;
+    private  ?array $_cached_bids = null;    
+    public $end_at;
     private  $bid_count;
     private  $max_bid;
     private $is_direct_sale;
@@ -206,9 +209,12 @@ public function is_open(): bool {
         return new DateTime($this->end_at) > $now_dt && !$this->has_buy_now_reached_time();
     }
 
-   
-
-       
+    public function get_categories(): array {
+        if ($this->_cached_categories === null) {
+            $this->_cached_categories = Category::get_by_item($this->id);
+        }
+        return $this->_cached_categories;
+    }  
     
     public function get_bids(): array {
         if ($this->_cached_bids === null) {
@@ -271,37 +277,44 @@ public function delete(): void {
     self::delete_by_id($this->id);
 }
 
-    public static function get_Item_Participating(int $userId, string $now , string $search_query =""): array {
-        $query = "SELECT v.* FROM v_items_status v
-        JOIN users u on v.owner = u.id
-        WHERE v.id IN (SELECT item FROM bids WHERE owner = :user_id)
-        AND v.buy_now_reached = 0 AND v.end_at > :now ";
-
-        $params = ['user_id' => $userId, 'now' => $now];
-        if($search_query !== "") {
-           $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";            
-           $params['q'] = "%" .$search_query . "%" ;        
+    public static function get_Item_Participating(int $userId, string $now, string $search_query = "", int $category_id = 0): array {
+        $query = "SELECT v.* FROM v_items_status v JOIN users u on v.owner = u.id";
+        if ($category_id > 0) {
+            $query .= " JOIN item_categories ic ON v.id = ic.item AND ic.category = :category_id";
         }
-        $query .= " ORDER BY end_at DESC";
-        return self::queryToItems($query,$params);
-
+        $query .= " WHERE v.id IN (SELECT item FROM bids WHERE owner = :user_id)
+        AND v.buy_now_reached = 0 AND v.end_at > :now ";
+        $params = ['user_id' => $userId, 'now' => $now];
+        if ($search_query !== "") {
+            $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
+            $params['q'] = "%" . $search_query . "%";
+        }
+        if ($category_id > 0) {
+            $params['category_id'] = $category_id;
+        }
+        $query .= " ORDER BY end_at ASC";
+        return self::queryToItems($query, $params);
     }
-    
-    public static function get_Item_Available(int $userId, string $now, string $search_query = ""): array {
-    $query = "SELECT v.* FROM v_items_status v
-            JOIN users u ON v.owner = u.id
-            WHERE v.id NOT IN (SELECT item FROM bids WHERE owner = :user_id)
+
+    public static function get_Item_Available(int $userId, string $now, string $search_query = "", int $category_id = 0): array {
+        $query = "SELECT v.* FROM v_items_status v JOIN users u ON v.owner = u.id";
+        if ($category_id > 0) {
+            $query .= " JOIN item_categories ic ON v.id = ic.item AND ic.category = :category_id";
+        }
+        $query .= " WHERE v.id NOT IN (SELECT item FROM bids WHERE owner = :user_id)
             AND v.owner != :user_id
             AND v.buy_now_reached = 0 AND v.end_at > :now";
-
-    $params = ['user_id' => $userId, 'now' => $now];
-    if ($search_query !== "") {
-        $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
-        $params['q'] = "%" . $search_query . "%";
+        $params = ['user_id' => $userId, 'now' => $now];
+        if ($search_query !== "") {
+            $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
+            $params['q'] = "%" . $search_query . "%";
+        }
+        if ($category_id > 0) {
+            $params['category_id'] = $category_id;
+        }
+        $query .= " ORDER BY v.end_at ASC";
+        return self::queryToItems($query, $params);
     }
-    $query .= " ORDER BY v.end_at DESC";
-    return self::queryToItems($query, $params);
-}
 
     public function get_main_picture(): ?ItemPicture {
         $query = self::execute(
@@ -428,6 +441,10 @@ public function delete(): void {
         }
     }
 
+    if (count($this -> category_ids) > 3) {
+        $errors["categories"] = "Vous ne pouvez pas selectionner plus de 3 categories.";
+    }
+
     return $errors;
 }
 
@@ -469,21 +486,33 @@ public function delete(): void {
             );
         }
 
+        self::execute("DELETE FROM item_categories WHERE item = :id", ["id" => $this->id]);
+        if (!empty($this->category_ids)) {
+            foreach ($this->category_ids as $cat_id) {
+                self::execute("INSERT INTO item_categories(item, category) VALUES(:item, :cat)", [
+                    "item" => $this->id,
+                    "cat" => $cat_id
+                ]);
+            }
+        }
         return [];
     }
 
-    public static function get_items_by_owner(int $userId, string $search_query = ""): array {
-        $query = "SELECT v.* FROM v_items_status v
-                  JOIN users u ON v.owner = u.id
-                  WHERE v.owner = :user_id";
-
+    public static function get_items_by_owner(int $userId, string $search_query = "", int $category_id = 0): array {
+        $query = "SELECT v.* FROM v_items_status v JOIN users u ON v.owner = u.id";
+        if ($category_id > 0) {
+            $query .= " JOIN item_categories ic ON v.id = ic.item AND ic.category = :category_id";
+        }
+        $query .= " WHERE v.owner = :user_id";
         $params = ["user_id" => $userId];
         if ($search_query !== "") {
             $query .= " AND (v.title LIKE :q OR v.description LIKE :q OR u.pseudo LIKE :q)";
             $params['q'] = "%" . $search_query . "%";
         }
+        if ($category_id > 0) {
+            $params['category_id'] = $category_id;
+        }
         $query .= " ORDER BY v.end_at DESC";
-
         return self::queryToItems($query, $params);
     }
 

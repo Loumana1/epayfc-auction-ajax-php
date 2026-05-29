@@ -84,3 +84,39 @@ SELECT
   -- direct sale not yet purchased
   ((i.starting_bid IS NULL OR i.starting_bid = 0) AND (SELECT COUNT(*) FROM bids b WHERE b.item = i.id) = 0) AS not_purchased_direct_sale
 FROM items i;
+
+-- IT3: categories
+CREATE TABLE IF NOT EXISTS `categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(25) NOT NULL,
+  `priority` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_categories_name` (`name`),
+  UNIQUE KEY `uq_categories_priority` (`priority`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+CREATE TABLE IF NOT EXISTS `item_categories` (
+  `item` int(11) NOT NULL,
+  `category` int(11) NOT NULL,
+  PRIMARY KEY (`item`,`category`),
+  FOREIGN KEY (`item`) REFERENCES `items` (`id`) ON DELETE RESTRICT,
+  FOREIGN KEY (`category`) REFERENCES `categories` (`id`) ON DELETE RESTRICT
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- IT3: categories
+CREATE TABLE IF NOT EXISTS `categories` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(25) NOT NULL,
+  `priority` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_categories_name` (`name`),
+  UNIQUE KEY `uq_categories_priority` (`priority`)
+);
+
+CREATE TABLE IF NOT EXISTS `item_categories` (
+  `item` int(11) NOT NULL,
+  `category` int(11) NOT NULL,
+  PRIMARY KEY (`item`,`category`),
+  FOREIGN KEY (`item`) REFERENCES `items` (`id`) ON DELETE RESTRICT,
+  FOREIGN KEY (`category`) REFERENCES `categories` (`id`) ON DELETE RESTRICT
+);

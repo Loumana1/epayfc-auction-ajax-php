@@ -179,11 +179,16 @@ class ControllerManageImages extends Controller
     public function delete(): void
     {
 
-        $current_user = $this->get_user_for_action();
-        if ($current_user === null) {
+        $current_user = $this->get_user_or_false();
+        if (!$current_user) {
+            if ($this->necessite_json_response()) {
+                $this->json_response(['error' => 'Not authenticated'], 401);
+                return;
+            }
+            $this->redirect("login");
             return;
         }
-   
+
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $search_state = $this->get_search_state();
@@ -222,12 +227,15 @@ class ControllerManageImages extends Controller
 
     public function move_left(): void
     {
-        $current_user = $this->get_user_for_action();
-        if ($current_user === null) {
+        $current_user = $this->get_user_or_false();
+        if (!$current_user) {
+            if ($this->necessite_json_response()) {
+                $this->json_response(['error' => 'Not authenticated'], 401);
+                return;
+            }
+            $this->redirect("login");
             return;
         }
-
-
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $search_state = $this->get_search_state();
@@ -271,10 +279,16 @@ class ControllerManageImages extends Controller
 
     public function move_right(): void
     {
-        $current_user =$this->get_user_for_action();
-        if ($current_user === null) {
+        $current_user = $this->get_user_or_false();
+        if (!$current_user) {
+            if ($this->necessite_json_response()) {
+                $this->json_response(['error' => 'Not authenticated'], 401);
+                return;
+            }
+            $this->redirect("login");
             return;
         }
+        
         $item_id = $_GET['param1'] ?? null;
         $priority = $_GET['param2'] ?? null;
         $search_state = $this->get_search_state();

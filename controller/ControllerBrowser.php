@@ -5,6 +5,7 @@ require_once 'utils/AppTime.php';
 require_once 'model/Item.php';
 require_once 'model/ItemPicture.php';
 require_once 'model/User.php';
+require_once 'model/Category.php';
 
 
 
@@ -133,12 +134,12 @@ class ControllerBrowser extends Controller
         
     private function get_participating_items(int $user_id, string $now, string $search_query = ""): array
     {
-        return Item::get_Item_Participating($user_id, $now, $search_query);
+        return Item::get_Item_Participating($user_id, $now, $search_query, $category_id);
     }
 
-    private function get_available_items(int $user_id, string $now, string $search_query = ""): array
+    private function get_available_items(int $user_id, string $now, string $search_query = "", int $category_id = 0): array
     {
-        return Item::get_Item_Available($user_id, $now, $search_query);
+        return Item::get_Item_Available($user_id, $now, $search_query, $category_id);
     }
 
 

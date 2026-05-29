@@ -5,6 +5,7 @@ require_once "framework/View.php";
 require_once "model/Item.php";
 require_once "utils/AppTime.php";
 require_once "model/ItemPicture.php";
+require_once "model/Category.php";
 
 
 class ControllerMyItems extends Controller

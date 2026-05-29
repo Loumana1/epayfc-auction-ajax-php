@@ -170,10 +170,6 @@ class ControllerItem extends Controller {
             return null;
         }
 
-    
-
-
-
         return $item;
     }
 
@@ -218,6 +214,8 @@ class ControllerItem extends Controller {
             $starting_bid
         );
 
+        $item -> category_ids = $_POST['categories'] ?? [];
+
         return [$item, [
             "item_id" => $item_id,
             "title" => $title,
@@ -226,6 +224,7 @@ class ControllerItem extends Controller {
             "starting_bid" => $starting_bid_raw,
             "buy_now_price" => $buy_now_raw,
             "sale_price" => $sale_price_raw,
+            "selected_categories" => $item -> category_ids
         ]];
     }
 
@@ -250,6 +249,12 @@ class ControllerItem extends Controller {
             } else {
                 $starting_bid = (float) $sb === 0.0 ? "" : (string) (float) $sb;
                 $buy_now_price = $bn !== null ? (string) (float) $bn : "";
+            }
+        }
+        $selected_cats = [];
+        if ($item !== null) {
+            foreach ($item->get_categories() as $c) {
+                $selected_cats[] = $c->id;
             }
         }
 

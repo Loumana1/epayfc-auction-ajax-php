@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const listOrigin = input.dataset.listOrigin || "browser";
     const noItemsMsg = document.getElementById("no-items-message");
 
+    const categorySelect = document.getElementById("category-select");
+
     const base = document.querySelector("base");
     const encodeUrl = (base ? base.getAttribute("href") : "") + "search_state/encode";
 
