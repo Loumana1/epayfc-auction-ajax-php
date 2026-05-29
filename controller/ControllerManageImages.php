@@ -333,22 +333,29 @@ class ControllerManageImages extends Controller
         echo json_encode($payload);
     }
     public function update_order(): void {
-        
-        $current_user = $this->get_user_or_false();
+
+
+        if (!$this->necessite_json_response()) {
+            $this->redirect('my_items');
+            return;
+        }
+
+            $current_user =  $this->get_user_or_json_error();
+
+            
         if (!$current_user) {
-            http_response_code(401);
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Not logged in']);
             return;
         }
 
         $item_id = $_POST['item_id'] ?? null;
         $order = isset($_POST['order']) ? json_decode($_POST['order'], true) : [];
 
-        if (!$item_id || !ctype_digit((string)$item_id) || empty($order)) {
-            http_response_code(400);
-            header('Content-Type: application/json');
-            echo json_encode(['error' => 'Invalid data']);
+        if (!is_array($order)) {
+            $order = [];
+        }
+
+        if (!$item_id || !ctype_digit(($item_id)) || empty($order)) {
+            $this->json_response(['success' => false, 'error' => 'Invalid data'], 400);
             return;
         }
         $item = $this->get_owner_item_or_json_error((int)$item_id, $current_user);
@@ -358,5 +365,26 @@ class ControllerManageImages extends Controller
         ItemPicture::reorder((int)$item_id, $order);
         header('Content-Type: application/json');
         echo json_encode(['success' => true]);
+    }
+
+
+
+        private function get_user_or_json_error(): ?User {
+
+        $user = $this->get_user_or_false();
+        if (!$user) {
+            $this->json_response(['success' => false, 'error' => 'Not logged in'], 401);
+            return null;
+        }
+        return $user;
+    }
+   
+    private function get_user_for_action(): ?User
+    {
+        if ($this->necessite_json_response()) {
+            return $this->get_user_or_json_error();
+        }
+        return $this->get_user_or_redirect_login();
     } 
+
 }

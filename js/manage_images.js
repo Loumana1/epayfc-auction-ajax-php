@@ -3,6 +3,23 @@ let baseUrl = '';
 let toDelete = null;
 let toDeleteEl = null;
 
+async function postManageImages(url) {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' }
+    });
+    let data = null;
+    try {
+        data = await response.json();
+    } catch (e) {
+
+    }
+    if (!response.ok || !data || data.success !== true) {
+        const msg = (data && data.error) ? data.error : 'Request failed';
+        throw new Error(msg);
+    }
+    return data;
+}
 document.addEventListener('DOMContentLoaded', () => {
     const managePage = document.querySelector('.manage-page');
     itemId = managePage ? managePage.dataset.itemId : null;
@@ -33,44 +50,47 @@ const stateSuffix = encodedState ? `/${encodeURIComponent(encodedState)}` : '';
 
             const oldPriority = btn.dataset.priority;
 
-            if (isLeft) {
-                container.insertBefore(current, target);
-            } else {
-                container.insertBefore(target, current);
-            }
+          
 
-            updatePriorities();
+
 
             try {
                 await fetch(baseUrl + `manage_images/${isLeft ? 'move_left' : 'move_right'}/${itemId}/${oldPriority}${stateSuffix}`, {
                     method: 'POST'
                 });
+
+                if (isLeft) {
+                    container.insertBefore(current, target);
+                } else {
+                    container.insertBefore(target, current);
+                }
+                updatePriorities();
+                updateArrows();
             } catch (e) {
-                console.error(e);
+         
             }
 
-            updateArrows();
+      
         });
     });
 
     /* =========================
        DELETE (MODAL)
     ========================= */
+    const deleteModalEl = document.getElementById('deleteModal');
+    const deleteModal = deleteModalEl ? new bootstrap.Modal(deleteModalEl) : null;
     document.querySelectorAll('.btn-delete').forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
-
             toDelete = btn.dataset.priority;
             toDeleteEl = btn.closest('.img-box');
-
-            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
-            modal.show();
+            if (deleteModal) {
+                deleteModal.show();
+            }
         });
     });
 
-    /* =========================
-       CONFIRM DELETE
-    ========================= */
+
     const confirmBtn = document.getElementById('confirmDelete');
 
     if (confirmBtn) {
@@ -79,20 +99,31 @@ const stateSuffix = encodedState ? `/${encodeURIComponent(encodedState)}` : '';
             if (!toDelete) return;
 
             try {
-                await fetch(baseUrl + `manage_images/delete/${itemId}/${toDelete}${stateSuffix}`, {
-                    method: 'POST'
-                });
+                await postManageImages(
+                    baseUrl + `manage_images/delete/${itemId}/${toDelete}${stateSuffix}`
+                );
+
+                if (toDeleteEl) toDeleteEl.remove();
+
+                updatePriorities();
+                updateArrows();
+    
+
+                if (deleteModal) {
+                    deleteModal.hide();
+                }
+
+
+
+
             } catch (e) {
+  
                 console.error(e);
+
             }
 
-            if (toDeleteEl) toDeleteEl.remove();
-
-            updatePriorities();
-            updateArrows();
-
-            const modal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
-            if (modal) modal.hide();
+            document.body.classList.remove('modal-open');
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
 
             toDelete = null;
             toDeleteEl = null;
@@ -169,14 +200,23 @@ $(function () {
             $.ajax({
                 url: $("base").attr("href") + "manage_images/update_order",
                 method: "POST",
-                data:{ item_id: itemId, order: JSON.stringify(order) },
-                success: function () {
-                    console.log("Order updated");
+                dataType: "json",
+                data: {
+                    item_id: itemId,
+                    order: order
+                },
+                contentType: "application/json",
+                data: JSON.stringify({ item_id: itemId, order: order }),
+                success: function(data) {
+                    if (!data || data.success !== true) {
+                        $grid.sortable("cancel");
+                        return;
+                    }
                     updatePriorities();
                     updateArrows();
                 },
                 error: function (xhr) {
-                    alert("Failed to update order.");
+                    
                     $grid.sortable("cancel");
                 }
             });
