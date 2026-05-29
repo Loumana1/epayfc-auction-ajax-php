@@ -4,14 +4,16 @@
 
     <script>window.APP_BASE = '<?= $web_root ?>';</script>
 
-    <?php $es_tail = !empty($encoded_state) ? '/' . rawurlencode($encoded_state) : ''; ?>
+    <?php
+    $ss_tail = !empty($search_state) ? '/' . rawurlencode($search_state) : '';
+    $id_tail = $item_id ? '/' . (int) $item_id : '';
+    ?>
     <form id="item-form"
           method="post"
-          action="item/add_edit_item<?= $item_id ? '/' . (int) $item_id : '' ?><?= $es_tail ?>"
+          action="item/add_edit_item<?= $id_tail ?><?= $ss_tail ?>"
           data-item-id="<?= $item_id ?? '' ?>">
-        <input type="hidden" name="from" value="<?= $from ?? 'my_items' ?>">
-        <input type="hidden" name="encoded_state" value="<?= htmlspecialchars($encoded_state ?? '', ENT_QUOTES, 'UTF-8') ?>">
-
+        <input type="hidden" name="search_state" value="<?= $search_state ?? '', ENT_QUOTES, 'UTF-8' ?>">
+        
         <section class="card">
             <h2>Basic Information</h2>
 

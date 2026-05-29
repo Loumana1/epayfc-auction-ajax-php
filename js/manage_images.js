@@ -23,8 +23,8 @@ async function postManageImages(url) {
 document.addEventListener('DOMContentLoaded', () => {
     const managePage = document.querySelector('.manage-page');
     itemId = managePage ? managePage.dataset.itemId : null;
-    const encodedState = managePage ? (managePage.dataset.encodedState || '') : '';
-const stateSuffix = encodedState ? `/${encodeURIComponent(encodedState)}` : '';
+    const searchState = managePage ? (managePage.dataset.searchState || '') : '';
+    const stateSuffix = searchState ? `/${encodeURIComponent(searchState)}` : '';
     const base = document.querySelector('base');
     baseUrl = base ? base.getAttribute('href') : '';
 
@@ -205,8 +205,6 @@ $(function () {
                     item_id: itemId,
                     order: order
                 },
-                contentType: "application/json",
-                data: JSON.stringify({ item_id: itemId, order: order }),
                 success: function(data) {
                     if (!data || data.success !== true) {
                         $grid.sortable("cancel");

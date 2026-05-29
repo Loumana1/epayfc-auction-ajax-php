@@ -34,6 +34,15 @@ class User extends Model {
     }
 
 
+    public static function get_all_users(): array {
+        $query = self::execute("SELECT * FROM users ORDER BY id", []);
+        $rows = $query->fetchAll();
+        return array_map(fn($row) => new User(
+            $row["id"], $row["full_name"], $row["pseudo"], $row["email"],
+            $row["role"], $row["picture_path"] ?? null, $row["iban"] ?? null, $row["password"] ?? null
+        ), $rows);
+    }
+
     public static function get_user_by_mail(string $email): ?User {
     $query = self::execute(
         "SELECT * FROM users WHERE email = :email",

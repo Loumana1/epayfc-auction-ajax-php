@@ -30,11 +30,40 @@ function time_left(?string $endAt): string
 
     <?php $nojs = Configuration::get("disable_js"); ?>
     <?php if (!$nojs): ?>
-    <div class="search-bar">
-        <input type="text" id="search-input" placeholder="Search item" class="search-input"
-            value="<?= $search_query ?? '' ?>">
+        <?php
+        $safe_categories = [];
+        foreach (($categories ?? []) as $cat) {
+            if (is_object($cat) && isset($cat->id) && isset($cat->name)) {
+                $safe_categories[] = $cat;
+            }
+        }
+        ?>
+        <div class="search-bar">
+        <input type="text"
+               id="search-input"
+               class="search-input"
+               placeholder="Search item"
+               value="<?= htmlspecialchars($initial_query ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               data-initial-query="<?= htmlspecialchars($initial_query ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               data-search-state="<?= htmlspecialchars($search_state ?? '', ENT_QUOTES, 'UTF-8') ?>"
+               data-list-origin="<?= htmlspecialchars($list_origin ?? 'my_items', ENT_QUOTES, 'UTF-8') ?>"
+               data-initial-category="<?= (int) ($category_id ?? 0) ?>">
         <i class="bi bi-search search-icon"></i>
+        <select id="category-select" class="category-select">
+            <option value="0" <?= ($category_id ?? 0) == 0 ? 'selected' : '' ?>>All categories</option>
+            <?php foreach ($safe_categories as $cat): ?>
+                <?php
+                $cat_data = is_object($cat) ? get_object_vars($cat) : [];
+                $cat_id = (int) ($cat_data['id'] ?? 0);
+                $cat_name = htmlspecialchars((string) ($cat_data['name'] ?? ''), ENT_QUOTES, 'UTF-8');
+                ?>
+                <option value="<?= $cat_id ?>" <?= ($category_id ?? 0) == $cat_id ? 'selected' : '' ?>>
+                    <?= $cat_name ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
     </div>
+    <p id="no-items-message" class="no-items-message" style="display:none;">No item found.</p>
     <?php endif ?>
 
     <!-- ACTIVE ITEMS -->
@@ -48,12 +77,13 @@ function time_left(?string $endAt): string
                     $pic = ItemPicture::get_main_picture($item->get_id());
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
-                    <div class="item-card" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'"
-                        data-title="<?= $item->get_title() ?? '' ?>"
-                        data-seller="<?= $item->get_seller()->get_Pseudo() ?? '' ?>"
-                        data-description="<?= $item->get_Description() ?? '' ?>">
-                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
+                        <div class="item-card" data-id="<?= $item->get_id() ?>"
+                         data-title="<?= strtolower($item->get_title() ?? '') ?>"
+                         data-seller="<?= strtolower($item->get_seller()->get_Pseudo() ?? '') ?>"
+                         data-description="<?= strtolower($item->get_Description() ?? '') ?>">
+                        <a href="open_item/index/<?= (int) $item->get_id() ?>/0">
+
+
 
                         <div class="image-wrapper">
                             <div class="item-labels">
@@ -112,8 +142,11 @@ function time_left(?string $endAt): string
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
                     <div class="item-card closed" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
-                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
+                    data-title="<?= strtolower($item->get_title() ?? '') ?>"
+                         data-seller="<?= strtolower($item->get_seller()->get_Pseudo() ?? '') ?>"
+                         data-description="<?= strtolower($item->get_Description() ?? '') ?>">
+                    <a href="open_item/index/<?= (int) $item->get_id() ?>/0">
+
 
                         <div class="image-wrapper">
                             <div class="item-labels">
@@ -166,8 +199,12 @@ function time_left(?string $endAt): string
                     $img = $pic ? $pic->picture_path : "assets/no-image.png";
                     ?>
                     <div class="item-card sold" data-id="<?= $item->get_id() ?>"
-                        onclick="window.location='open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0'">
-                        <a href="open_item/index/<?= $item->get_id() ?>/<?= $encoded_state ?>/0">
+                    data-title="<?= strtolower($item->get_title() ?? '') ?>"
+                         data-seller="<?= strtolower($item->get_seller()->get_Pseudo() ?? '') ?>"
+                         data-description="<?= strtolower($item->get_Description() ?? '') ?>">
+                    <a href="open_item/index/<?= (int) $item->get_id() ?>/0">
+
+
 
                         <div class="image-wrapper">
                             <div class="item-labels">

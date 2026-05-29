@@ -187,43 +187,49 @@ private function load_item_or_fail(): ?Item {
         $picture_data = $this->get_picture_data($item);
         $status_message = $this->get_status_message($item, $context);
         
-
-    
-        $param2_raw    = $_GET['param2'] ?? null;
-        $encoded_state = (is_string($param2_raw) && $param2_raw !== '' && $param2_raw !== '0')
-            ? $param2_raw
-            : null;
-        $back_url      = 'browser/index';
-        $from          = 'browser';
-
-        if ($param2_raw !== null && $param2_raw !== '' && $param2_raw !== '0') {
-            $state = Tools::url_safe_decode((string) $param2_raw);
-            if (is_array($state) && isset($state['from'])) {
-                $from     = (string) $state['from'];
-                $back_url = $from . '/index/' . $param2_raw;
-            } else {
-                $from     = (string) $param2_raw;
-                $back_url = in_array($param2_raw, ['sales', 'purchases'], true)
-                    ? $param2_raw . '/index'
-                    : (string) $param2_raw;
+        $raw_state = (string) ($_GET['param2'] ?? '');
+        if ($raw_state === '0') {
+            $raw_state = '';
+        }
+        $known_origins = ['browser', 'my_items', 'sales', 'purchases'];
+        $decoded = [];
+        $from = 'browser';
+        $search_state = '';
+        if ($raw_state !== '' && in_array($raw_state, $known_origins, true)) {
+            // literal origin passed in URL: /open_item/index/{id}/sales/0
+            $from = $raw_state;
+        } elseif ($raw_state !== '') {
+            // encoded state (browser/my_items search token)
+            $tmp = Tools::url_safe_decode($raw_state);
+            if (is_array($tmp)) {
+                $decoded = $tmp;
+                $from = (string) ($decoded['from'] ?? 'browser');
+                $search_state = $raw_state; // keep token for propagation
             }
         }
+        switch ($from) {
+            case 'my_items':
+                $back_url = 'my_items/index' . ($search_state !== '' ? '/' . $search_state : '');
+                break;
+            case 'sales':
+                $back_url = 'sales/index';
+                break;
+            case 'purchases':
+                $back_url = 'purchases/index';
+                break;
+            default:
+                $back_url = 'browser/index' . ($search_state !== '' ? '/' . $search_state : '');
+                break;
+        }
+        
+        $state_suffix = ($search_state !== '') ? '/' . urlencode($search_state) : '';
 
-        $is_open = $context['is_open'];
+         $is_open = $context['is_open'];
         $has_bids_time = $context['has_bids_time'];
         $is_sold = $context['is_sold'];
-        
-      
-        $is_direct_sale_only = $item->get_Is_Direct_Sale() && !$item->get_Is_Auction();
-        $btn_class = $is_direct_sale_only ? 'btn-place-bid' : 'btn-buy-now';
+         $is_direct_sale_only = $item->get_Is_Direct_Sale() && !$item->get_Is_Auction();
+         $btn_class = $is_direct_sale_only ? 'btn-place-bid' : 'btn-buy-now';
         $btn_text = $is_direct_sale_only ? 'BUY NOW' : 'Buy Now at ' . format_euro($item->get_Buy_Now_Price());
-
-        $item_id      = $item->get_Id();
-        $state_suffix = !empty($encoded_state) ? '/' . urlencode($encoded_state) : '';
-        $open_back    = 'open_item/index/' . (int) $item_id . '/' . (!empty($encoded_state) ? $encoded_state : '0') . '/0';
-        
-
-
 
 
         return [
@@ -248,6 +254,9 @@ private function load_item_or_fail(): ?Item {
             'seller_has_picture' => $item->get_seller()->has_Picture(),
             'bids' => $item->get_bids(),
 
+               'search_state' => $search_state,
+            'state_suffix' => $state_suffix,
+
             'is_owner' => $context['is_owner'],
             'current_user' => $context['current_user'],
             'is_highest_bidder' => $context['is_highest_bidder'],
@@ -270,12 +279,10 @@ private function load_item_or_fail(): ?Item {
 
             'buy_now_btn_class' => $btn_class,
             'buy_now_btn_text'  =>  $btn_text,
-            'from' => $from ?? '',
-            'encoded_state' => $encoded_state,
-            'state_suffix' => $state_suffix,
-            'open_back' => $open_back,
+     
+         
             'page_css' => ['open_item.css'],
-            'page_js' => ['open_item.js', 'bid.js']
+            'page_js' => ['open_item.js']
         ];
     }
 }

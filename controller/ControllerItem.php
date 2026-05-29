@@ -4,6 +4,7 @@ require_once "framework/Controller.php";
 require_once "framework/View.php";
 require_once "model/Item.php";
 require_once "framework/Configuration.php";
+require_once "model/Category.php";
 
 class ControllerItem extends Controller {
 
@@ -42,8 +43,8 @@ class ControllerItem extends Controller {
         $user = $this->get_user_or_redirect();
         $owner_id = $user->get_id();
 
-        $p2 = $_GET['param2'] ?? $_POST['encoded_state'] ?? null;
-        $encoded_state = (is_string($p2) && $p2 !== '' && $p2 !== '0') ? $p2 : null;
+        $p2 = $_GET['param2'] ?? $_POST['search_state'] ?? null;
+        $search_state = (is_string($p2) && $p2 !== '' && $p2 !== '0') ? $p2 : null;
 
         $param1 = $_GET['param1'] ?? null;
 
@@ -51,12 +52,14 @@ class ControllerItem extends Controller {
         if (is_string($param1) && $param1 !== '' && ctype_digit($param1)) {
             $item_id = (int) $param1;
         }
-        $item = $this->load_item_for_edit_or_redirect($item_id, $owner_id, $encoded_state);
+
+
+        $item = $this->load_item_for_edit_or_redirect($item_id, $owner_id, $search_state);
         if ($item_id !== null && $item === null) {
             return; 
         }
-        $from = $_GET['from'] ?? $_POST['from'] ?? 'my_items';
-        $back_url = $this->build_item_back_url($from, $encoded_state, $item_id);
+
+        $back_url = $this->build_item_back_url($search_state, $item_id);
 
         if (!empty($errors)) {
     
@@ -89,8 +92,8 @@ class ControllerItem extends Controller {
                 $view_data["current_page"]         = "add_item";
                 $view_data["header_title"]         = $item_id ? "Edit item" : "Add item";
                 $view_data["back_url"]             = $back_url;
-                $view_data["from"]                 = $from;
-                $view_data["encoded_state"]        = $encoded_state;
+
+                $view_data["search_state"]        = $search_state;
                 $view_data["header_right_icon"]    = "bi-floppy";
                 $view_data["header_right_form_id"] = "item-form";
                 $view_data["page_css"]             = ["add_edit_item.css"];
@@ -100,15 +103,15 @@ class ControllerItem extends Controller {
             }
 
             $is_edit = ($item_id !== null && $item_id > 0);
-            $from_post = (string) ($_POST['from'] ?? '');
+           
             $this->redirect_after_item_save(
                 $is_edit,
                 $item_id,
-                $from_post,
-                trim((string) ($_POST['encoded_state'] ?? '')) ?: $encoded_state
+                trim((string) ($_POST['search_state'] ?? '')) ?: $search_state
             );
             return;
         }
+
 
         $view_data = $this->get_add_edit_view_data($item, $item_id);
         $view_data["errors"]               = [];
@@ -116,8 +119,7 @@ class ControllerItem extends Controller {
         $view_data["current_page"]         = "add_item";
         $view_data["header_title"]         = $item_id ? "Edit item" : "Add item";
         $view_data["back_url"]             = $back_url;
-        $view_data["from"]                 = $from;
-        $view_data["encoded_state"]        = $encoded_state;
+        $view_data["search_state"]        = $search_state;
         $view_data["header_right_icon"]    = "bi-floppy";
         $view_data["header_right_form_id"] = "item-form";
         $view_data["page_css"]             = ["add_edit_item.css"];
@@ -156,7 +158,7 @@ class ControllerItem extends Controller {
 
 
 
-    private function load_item_for_edit_or_redirect(?int $item_id, int $owner_id,  ?string $encoded_state = null): ?Item {
+    private function load_item_for_edit_or_redirect(?int $item_id, int $owner_id,  ?string $search_state = null): ?Item {
 
         if ($item_id === null) {
             return null; 
@@ -171,10 +173,10 @@ class ControllerItem extends Controller {
 
        
         if ($item->has_bids_time()) {
-            if ($encoded_state) {
-                $this->redirect('open_item', 'index', (string) $item_id, $encoded_state, '0');
+            if ($search_state) {
+                $this->redirect('open_item', 'index', (string) $item_id, $search_state, '0');
             } else {
-                $this->redirect('open_item', 'index', (string) $item_id);
+                $this->redirect('open_item', 'index', (string) $item_id, '0', '0');
             }
             return null;
         }
@@ -220,7 +222,8 @@ class ControllerItem extends Controller {
             $created_at,
             $buy_now_price,
             $duration_days,
-            $starting_bid
+            $starting_bid,
+  
         );
 
         $item -> category_ids = $_POST['categories'] ?? [];
@@ -233,6 +236,7 @@ class ControllerItem extends Controller {
             "starting_bid" => $starting_bid_raw,
             "buy_now_price" => $buy_now_raw,
             "sale_price" => $sale_price_raw,
+            "all_categories" => Category::get_all(),
             "selected_categories" => $item -> category_ids
         ]];
     }
@@ -260,6 +264,7 @@ class ControllerItem extends Controller {
                 $buy_now_price = $bn !== null ? (string) (float) $bn : "";
             }
         }
+
         $selected_cats = [];
         if ($item !== null) {
             foreach ($item->get_categories() as $c) {
@@ -279,23 +284,19 @@ class ControllerItem extends Controller {
             "sale_price" => $sale_price,
             "all_categories" => Category::get_all(),
             "selected_categories" => $selected_cats
-        ]; 
+        ];
     }
-    private function build_item_back_url(string $from, ?string $encoded_state, ?int $item_id): string{
+    private function build_item_back_url( ?string $search_state, ?int $item_id): string{
 
-
-        if (strpos($from, 'open_item') !== false && $item_id !== null) {
-
-            if ($encoded_state) {
-                return 'open_item/index/' . $item_id . '/' . rawurlencode($encoded_state) . '/0';
-            }
-
-        
-            return 'open_item/index/' . $item_id . '/0/0';
+      
+        if ( $item_id !== null) {
+            $es = ($search_state !== null && $search_state !== '') ? $search_state : '0';
+            return 'open_item/index/' . $item_id . '/' . rawurlencode($es) . '/0';
         }
 
-        if ($encoded_state) {
-            return 'my_items/index/' . rawurlencode($encoded_state);
+   
+        if ($search_state) {
+            return 'my_items/index/' . rawurlencode($search_state);
         }
 
         return 'my_items/index';
@@ -305,10 +306,9 @@ class ControllerItem extends Controller {
     private function redirect_after_item_save(
         bool $is_edit,
         ?int $item_id,
-        string $from_post,
-        ?string $encoded_state
+        ?string $search_state
     ): void {
-        $es = ($encoded_state !== null && $encoded_state !== '') ? $encoded_state : '';
+        $es = ($search_state !== null && $search_state !== '') ? $search_state : '';
 
         // Nouveau item
         if (!$is_edit) {
@@ -321,7 +321,7 @@ class ControllerItem extends Controller {
         }
 
         // Edit depuis open_item
-        if (strpos($from_post, 'open_item') !== false) {
+        if ($is_edit && $item_id !== null) {
             if ($es !== '') {
                 $this->redirect('open_item', 'index', (string) $item_id, $es, '0');
             } else {
@@ -329,12 +329,13 @@ class ControllerItem extends Controller {
             }
             return;
         }
-
+/*
         // Edit depuis my_items 
         if ($es !== '') {
             $this->redirect('my_items', 'index', $es);
         } else {
             $this->redirect('my_items', 'index');
         }
+            */
     }
 }

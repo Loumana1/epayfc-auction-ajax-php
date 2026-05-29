@@ -11,19 +11,45 @@ class Bid extends Model {
     private int $owner_id;
     private float $amount;
     private string $created_at;
-    
+    private ?string $pseudo;
+    private ?string $picture_path;
+
     public function __construct(
         int $item_id,
         int $owner_id,
         float $amount,
         ?int $id = null,
-        ?string $created_at = null
+        ?string $created_at = null,
+        ?string $pseudo = null,
+        ?string $picture_path = null
     ) {
         $this->id = $id;
         $this->item_id = $item_id;
         $this->owner_id = $owner_id;
         $this->amount = $amount;
         $this->created_at = $created_at ?? AppTime::get_current_datetime();
+        $this->pseudo = $pseudo;
+        $this->picture_path = $picture_path;
+    }
+
+    public function get_amount(): float {
+        return $this->amount;
+    }
+
+    public function get_created_at(): string {
+        return $this->created_at;
+    }
+
+    public function get_owner_id(): int {
+        return $this->owner_id;
+    }
+
+    public function get_pseudo(): ?string {
+        return $this->pseudo;
+    }
+
+    public function get_picture_path(): ?string {
+        return $this->picture_path;
     }
     
 
@@ -104,7 +130,19 @@ class Bid extends Model {
              ORDER BY b.amount DESC, b.created_at DESC",
             ['item_id' => $item_id, 'now' => $now]
         );
-        return $query->fetchAll();
+        $bids = [];
+        foreach ($query->fetchAll() as $row) {
+            $bids[] = new Bid(
+                (int)$row['item'],
+                (int)$row['owner'],
+                (float)$row['amount'],
+                null,
+                $row['created_at'],
+                $row['pseudo'],
+                $row['picture_path']
+            );
+        }
+        return $bids;
     }
     
     public static function user_has_bid(int $user_id, int $item_id): bool {
