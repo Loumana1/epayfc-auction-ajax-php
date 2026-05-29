@@ -28,6 +28,7 @@ class ControllerBid extends Controller {
         $this->process_bid($item, $current_user, $params['amount'], $params['encoded_state'] ?? '');
     }
     
+    
     private function get_user_or_redirect_login(): ?object {
         $current_user = $this->get_user_or_false();
         if (!$current_user) {
