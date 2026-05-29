@@ -9,30 +9,36 @@
 
     <hr class="separator">
 
-    <?php if (!empty($errors)): ?>
-        <div class="error">
-            <?php foreach ($errors as $e): ?>
-                <?= $e ?><br>
-            <?php endforeach; ?>
-        </div>
-    <?php endif; ?>
-
     <form method="post" action="login/login">
 
-        <div class="input-group">
+        <div class="input-group <?= !empty($errors['mail']) ? 'input-error' : '' ?>">
             <span class="icon"><i class="bi bi-person"></i></span>
             <input type="text"
                    name="mail"
                    placeholder="Mail"
                    value="<?= $mail ?>">
         </div>
+        <?php if (!empty($errors['mail'])): ?>
+            <div class="field-error">
+                <?php foreach ($errors['mail'] as $e): ?>
+                    <?= $e ?><br>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
 
-        <div class="input-group">
+        <div class="input-group <?= !empty($errors['password']) ? 'input-error' : '' ?>">
             <span class="icon"><i class="bi bi-key"></i></span>
             <input type="password"
                    name="password"
                    placeholder="Password">
         </div>
+        <?php if (!empty($errors['password'])): ?>
+            <div class="field-error">
+                <?php foreach ($errors['password'] as $e): ?>
+                    <?= $e ?><br>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
 
         <button class="btn btn-login" type="submit">Login</button>
     </form>
@@ -49,10 +55,9 @@
         <div class="debug">
             <div class="debug-title">For Debug Purpose</div>
 
-            <a href="index.php?controller=login&action=login_as&param1=boverhaegen@epfc.eu">Login as boverhaegen@epfc.eu</a><br>
-            <a href="index.php?controller=login&action=login_as&param1=mamichel@epfc.eu">Login as mamichel@epfc.eu</a><br>
-            <a href="index.php?controller=login&action=login_as&param1=quhouben@epfc.eu">Login as quhouben@epfc.eu</a><br>
-            <a href="index.php?controller=login&action=login_as&param1=xapigeolet@epfc.eu">Login as xapigeolet@epfc.eu</a>
+            <?php foreach ($dev_users as $u): ?>
+                <a href="login/login_as/<?= $u->id ?>">Login as <?= $u->get_email() ?></a><br>
+            <?php endforeach; ?>
 
             <a href="setup/install" class="debug-action debug-ok">
                 Restore original data
