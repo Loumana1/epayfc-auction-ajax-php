@@ -12,6 +12,17 @@
     
     <p class="item-description"><?= $item_description ?? 'No description' ?></p>
     
+    <?php if (!empty($item_categories)): ?>
+    <div class="item-categories" style="margin: 15px 0;">
+        <strong>Categories:</strong>
+        <ul style="margin-top: 5px; padding-left: 20px;">
+            <?php foreach ($item_categories as $category): ?>
+                <li><?= $category->name ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php endif; ?>
+    
     <div class="item-dates">
         <p>start:
             <strong>

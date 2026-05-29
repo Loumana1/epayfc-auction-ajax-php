@@ -5,7 +5,7 @@ require_once "model/Bid.php";
 require_once "model/User.php";
 require_once "framework/Configuration.php";
 require_once "model/ItemPicture.php";
-
+require_once "model/Category.php";
 
 class Item extends Model{
 
@@ -17,8 +17,10 @@ class Item extends Model{
     private  $buy_now_price;
     private $duration_days;
     private ?float $starting_bid;
+    private ?array $_cached_categories = null;
 
-    private  ?array $_cached_bids = null;    public $end_at;
+    private  ?array $_cached_bids = null;    
+    public $end_at;
     private  $bid_count;
     private  $max_bid;
     private $is_direct_sale;
@@ -206,9 +208,12 @@ public function is_open(): bool {
         return new DateTime($this->end_at) > $now_dt && !$this->has_buy_now_reached_time();
     }
 
-   
-
-       
+    public function get_categories(): array {
+        if ($this->_cached_categories === null) {
+            $this->_cached_categories = Category::get_by_item($this->id);
+        }
+        return $this->_cached_categories;
+    }  
     
     public function get_bids(): array {
         if ($this->_cached_bids === null) {
