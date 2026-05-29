@@ -169,8 +169,7 @@ $(function () {
             $.ajax({
                 url: $("base").attr("href") + "manage_images/update_order",
                 method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ item_id: itemId, order: order }),
+                data:{ item_id: itemId, order: JSON.stringify(order) },
                 success: function () {
                     console.log("Order updated");
                     updatePriorities();

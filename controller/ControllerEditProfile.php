@@ -116,8 +116,14 @@ class ControllerEditProfile extends Controller
     }
 
     public function check_availability_service(): void {
-        $user = $this->get_user_or_redirect();
+        $user = $this->get_user_or_false();
         header('Content-Type: application/json');
+
+        if (!$user) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Not authenticated']);
+            return;
+        }
         
         $email = trim($_POST['email'] ?? '');
         $pseudo = trim($_POST['pseudo'] ?? '');

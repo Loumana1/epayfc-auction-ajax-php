@@ -312,8 +312,7 @@ class ControllerManageImages extends Controller
         echo json_encode($payload);
     }
     public function update_order(): void {
-        $input = json_decode(file_get_contents('php://input'), true);
-
+        
         $current_user = $this->get_user_or_false();
         if (!$current_user) {
             http_response_code(401);
@@ -322,8 +321,8 @@ class ControllerManageImages extends Controller
             return;
         }
 
-        $item_id = $input['item_id'] ?? null;
-        $order = $input['order'] ?? [];
+        $item_id = $_POST['item_id'] ?? null;
+        $order = isset($_POST['order']) ? json_decode($_POST['order'], true) : [];
 
         if (!$item_id || !ctype_digit((string)$item_id) || empty($order)) {
             http_response_code(400);
