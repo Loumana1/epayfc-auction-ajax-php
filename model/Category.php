@@ -34,4 +34,15 @@ class Category extends Model {
         } 
         return $categories;
     }
+    
+    public static function get_all(): array {
+        $query = self::execute("SELECT * FROM categories ORDER BY priority ASC" , []);
+        $data = $query -> fetchAll();
+
+        $categories = [];
+        foreach ($data  as $row) {
+            $categories[] = new Category($row['id'], $row['name'], $row['priority'] ?? 0);
+        }
+        return $categories;
+    }
 }

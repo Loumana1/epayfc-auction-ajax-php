@@ -81,6 +81,27 @@
             </div>
         </section>
 
+        <section class="card">
+                <h2>Categories</h2>
+                <div class="categories-checkbox-list">
+                    <?php foreach ($all_categories as $cat): ?>
+                    <div class = "form-check">
+                        <input 
+                        type="checkbox" 
+                        name="categories[]" 
+                        value="<?= $cat->id ?>" 
+                        class="form-check-input category-checkbox" 
+                        <?= in_array($cat->id, $selected_categories 
+                        ?? []) ? 'checked' : '' ?>>
+                    <label class="form-check-label"><?= $cat->name ?></label>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+                <?php if (isset($errors['categories'])): ?>
+                    <div class="text-danger mt-1"><?= $errors['categories'] ?></div>
+                <?php endif; ?>
+        </section>
+
     </form>
 
     <div id="unsavedModal" class="modal-overlay" style="display: none;">
