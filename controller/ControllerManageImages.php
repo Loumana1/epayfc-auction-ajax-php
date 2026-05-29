@@ -347,9 +347,9 @@ class ControllerManageImages extends Controller
             return;
         }
 
-        $item_id = $_POST['item_id'] ?? null;
+        $item_id = $input['item_id'] ?? null;
         $order = isset($_POST['order']) ? json_decode($_POST['order'], true) : [];
-
+       
         if (!is_array($order)) {
             $order = [];
         }
