@@ -13,6 +13,13 @@
             <i class="bi bi-plus-circle"></i>
             <span>Add Offer</span>
         </a>
+        <?php $__nav_user = $current_user ?? $currentUser ?? null; ?>
+        <?php if ($__nav_user && is_object($__nav_user) && $__nav_user->role === 'admin'): ?>
+        <a href="category/manage">
+            <i class="bi bi-tags"></i>
+            <span>Categories</span>
+        </a>
+        <?php endif; ?>
         <a href="profile">
             <i class="bi bi-gear"></i>
             <span>Profile</span>

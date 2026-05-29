@@ -68,10 +68,6 @@ class ControllerLogin extends Controller {
             $this->redirect("login");
         }
 
-        if ($this->user_logged()) {
-            $this->redirect("browser");
-        }
-
         $id = (int)($_GET['param1'] ?? 0);
 
         if ($id > 0) {
