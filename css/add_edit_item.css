@@ -228,6 +228,7 @@ textarea.is-valid:focus {
     border-radius: 14px;
 }
 
+
 .category-checkbox {
     margin: 4px;
     width: 4px;
@@ -330,4 +331,12 @@ textarea.is-valid:focus {
 
 .btn-confirm:hover {
     background-color: #2563eb;
+}
+.error-box-red {
+    background-color: #3a1515; 
+    border: 1px solid #b30000; 
+    color: #ff6666;
+    padding: 12px;
+    border-radius: 5px;
+    margin-bottom: 15px;
 }

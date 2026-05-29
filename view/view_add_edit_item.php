@@ -83,6 +83,9 @@
 
         <section class="card">
                 <h2>Categories</h2>
+                <?php if (isset($errors['categories'])): ?>
+                <div class="error error-box-red"><?= $errors['categories'] ?></div>
+                <?php endif; ?>
                 <div class="categories-checkbox-list">
                     <?php foreach ($all_categories as $cat): ?>
                     <div class = "form-check">
@@ -97,12 +100,26 @@
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <?php if (isset($errors['categories'])): ?>
-                    <div class="text-danger mt-1"><?= $errors['categories'] ?></div>
-                <?php endif; ?>
         </section>
 
     </form>
+
+    <div id="categoryModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Category Limit</h3>
+                <button type="button" class="close-modal" id="closeCategoryCross">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>You can select at most 3 catégories.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-confirm" id="okCategoryBtn">OK</button>
+            </div>
+        </div>
+    </div>
 
     <div id="unsavedModal" class="modal-overlay" style="display: none;">
         <div class="modal-content">

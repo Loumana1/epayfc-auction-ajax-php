@@ -58,6 +58,15 @@ class ControllerItem extends Controller {
         $from = $_GET['from'] ?? $_POST['from'] ?? 'my_items';
         $back_url = $this->build_item_back_url($from, $encoded_state, $item_id);
 
+        if (!empty($errors)) {
+    
+            $all_categories = Category::get_all_categories();
+            (new View("add_edit_item"))->show([
+            "errors" => $errors,
+            "all_categories" => $all_categories,
+        ]);
+    
+}
 
         if (!empty($_POST)) {
             [$new_item, $view_data] = $this->build_item_from_post($item, $item_id, $owner_id);
@@ -74,6 +83,7 @@ class ControllerItem extends Controller {
                 $errors = $new_item->persist();
             }
             if (!empty($errors)) {
+                $view_data["all_categories"]       = Category::get_all();
                 $view_data["errors"]               = $errors;
                 $view_data["currentUser"]          = $user;
                 $view_data["current_page"]         = "add_item";
