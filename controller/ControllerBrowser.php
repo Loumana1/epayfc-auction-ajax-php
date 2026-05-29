@@ -25,27 +25,11 @@ class ControllerBrowser extends Controller
             if (is_array($state) && isset($state['query'])) {
                 $search_query = $state['query'];
             }
-        } else {
-            $search_query = trim($_GET['query'] ?? "");
-        }
+        } 
+        
         $encoded_state = Tools::url_safe_encode(['from' => 'browser', 'query' => $search_query]);
 
-        if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
-            $participating_raw = $this->get_participating_items($current_user_id, $now, $search_query);
-            $available_raw = $this->get_available_items($current_user_id, $now, $search_query);
 
-            $matches = array_merge(
-                array_map(fn($i) => $i->get_id(), $participating_raw),
-                array_map(fn($i) => $i->get_id(), $available_raw)
-            );
-
-            header('Content-Type: application/json');
-            echo json_encode([
-                'encoded_state' => $encoded_state,
-                'matches' => $matches,
-            ]);
-            return;
-        }
         $participating_items_raw = $this->get_participating_items($current_user_id, $now, $search_query);
         $available_items_raw = $this->get_available_items($current_user_id, $now, $search_query);
 
@@ -140,6 +124,32 @@ class ControllerBrowser extends Controller
 
         return $days . "d " . $hours . "h";
     }
+
+    public function search_service(): void {
+        $current_user = $this->get_user_or_false();
+        $current_user_id = $current_user ? $current_user->get_Id() : -1;
+        $now = AppTime::get_current_datetime();
+
+        $search_query = trim($_POST['query'] ?? '');
+
+        $participating_raw = $this->get_participating_items($current_user_id, $now, $search_query);
+        $available_raw = $this->get_available_items($current_user_id, $now, $search_query);
+
+        $matches = array_merge(
+            array_map(fn($i) => $i->get_id(), $participating_raw),
+            array_map(fn($i) => $i->get_id(), $available_raw)
+        );
+
+        $encoded_state = Tools::url_safe_encode(['from' => 'browser', 'query' => $search_query]);
+
+        header('Content-Type: application/json');
+        echo json_encode([
+            'encoded_state' => $encoded_state,
+            'matches' => $matches,
+        ]);
+        }
+
+        
     private function get_participating_items(int $user_id, string $now, string $search_query = ""): array
     {
         return Item::get_Item_Participating($user_id, $now, $search_query);
