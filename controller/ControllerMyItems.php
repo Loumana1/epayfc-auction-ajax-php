@@ -22,24 +22,11 @@ class ControllerMyItems extends Controller
             $state = Tools::url_safe_decode($state_param);
             if (is_array($state) && array_key_exists('query', $state)) {
                 $search_query = (string) $state['query'];
-            } else {
-                $search_query = trim($_GET['query'] ?? "");
             }
-        } else {
-            $search_query = trim($_GET['query'] ?? "");
-        }
+        } 
+
         $encoded_state = Tools::url_safe_encode(['from' => 'my_items', 'query' => $search_query]);
 
-        if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
-            header('Content-Type: application/json');
-            $filtered = Item::get_items_by_owner($userid, $search_query);
-            $matches = array_map(fn($item) => $item->get_id(), $filtered);
-            echo json_encode([
-                'encoded_state' => $encoded_state,
-                'matches' => $matches,
-            ]);
-            return;
-        }
 
         $items = Item::get_items_by_owner($userid, $search_query);
 
@@ -103,5 +90,22 @@ class ControllerMyItems extends Controller
             return "0d 0h";
         $diff = $now->diff($end);
         return $diff->days . "d " . $diff->h . "h";
+    }
+
+
+    public function search_service(): void
+    {
+        $user = $this->get_user_or_redirect();
+        $search_query = trim($_POST['query'] ?? '');
+
+        $encoded_state = Tools::url_safe_encode(['from' => 'my_items', 'query' => $search_query]);
+        $filtered = Item::get_items_by_owner($user->get_id(), $search_query);
+        $matches = array_map(fn($item) => $item->get_id(), $filtered);
+        
+        header('Content-Type: application/json');
+        echo json_encode([
+            'encoded_state' => $encoded_state,
+            'matches' => $matches,
+        ]);
     }
 }
