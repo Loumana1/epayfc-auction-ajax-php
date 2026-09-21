@@ -1,53 +1,180 @@
-# Projet PRWB 2526 - Groupe c04 - EPayFC
+# EPayFC — Auction site AJAX/PHP
 
-## Installation sous MacOS ou Linux
+Plateforme web d’**enchères et de vente** développée dans le cadre du cours **PRWB** (Programmation Web) à l’EPFC.
 
-En développement, donnez les permissions d'écriture aux dossiers uploads et database :
+Les utilisateurs publient des offres, enchérissent, achètent immédiatement, gèrent leurs articles et consultent leurs ventes / achats.  
+Une partie de l’interface est dynamique via **AJAX** (`fetch`) : recherche/filtres, gestion d’images, catégories, validations.
 
-* `sudo chmod -R 777 uploads`
-* `sudo chmod -R 777 database`
+## Aperçu
 
-## Notes de version itération 1
-Le site web est complet et fcontionel, nous avons eu quelques soucis avec le fait de d'utiliser le css de maniere utniforme. 
+![Page Browse — offres et enchères EPayFC](docs/screenshots/browser.png)
 
-### Liste des utilisateurs et mots de passes
+---
 
-* boverhaegen@epfc.eu, password "Password1,", utilisateur
-* mamichel@epfc.eu, password "Password1,", utilisateur
-* quhouben@epfc.eu, password "Password1,", utilisateur
-* xapigeolet@epfc.eu, password "Password1,", utilisateur
-* A compléter...
+## Équipe
 
-### Liste des bugs connus
+| Membre |
+|--------|
+| Zié Traoré |
+| Hugo Castelain |
+| Sam Prophete Nsengimana |
 
-* bug 1
-* bug 2
-* ...
+Groupe **C04** — année académique **2025–2026**.
 
-### URLs deploiement
+---
 
-* étudiant Nom Prenom : Zie Traore 
-  * URL :http://infolab.epfc.eu:58327/EPayFC/
-  * Mot de passe : Y4M4L()u3a
+## Stack technique
 
-* étudiant Nom Prenom : Hugo Castelain
-  * URL :http://infolab.epfc.eu:58325/EPayFC/
-  * Mot de passe :MAUZ167/
+| Couche | Technologie |
+|--------|-------------|
+| Backend | **PHP** (MVC custom : `framework/` + `controller/` + `model/` + `view/`) |
+| Frontend | HTML / CSS / **JavaScript** + **AJAX** (`fetch`) |
+| UI | Bootstrap 5 (CDN) |
+| Base de données | **MySQL / MariaDB** |
+| Serveur | Apache (`.htaccess`, typiquement XAMPP) |
 
-* étudiant Nom Prénom :Sam Prophet NSENGIMANA
-  * URL : http://infolab.epfc.eu:58326/EPayFC/
-  * Mot de passe :Sknkstone21!
+---
 
-### Liste des fonctionnalités supplémentaires
+## Fonctionnalités
 
-### Divers
+### Visiteur / utilisateur
+- Inscription, connexion, profil (photo, IBAN, mot de passe)
+- Parcourir les offres (recherche / filtres AJAX)
+- Consulter une offre (images, historique d’enchères, vendeur)
+- Enchérir ou acheter immédiatement (`buy now`)
+- Vente directe (sans enchère de départ)
+- Gérer ses articles (création, édition, suppression, images)
+- Consulter ses achats et ses ventes
 
-## Notes de version itération 2
+### Admin
+- Gestion des catégories (ordre, CRUD, interactions AJAX)
 
-L'iteration 2 s'est deroulé de maniere fluide car nous maitrision mieu le language php. Nous avons fait le choix de d'integrer un layout commun dans le framework du projet -et pour ceux, nou nous somme permis de modifier le fichier framewor/tools afin de rediriger l'affichage de l'erreur vers notre layout. 
+### Technique
+- Date/heure système simulée pour les scénarios de test
+- Uploads d’images (articles + profil)
+- Règles métier côté PHP + validations JS
 
-modification du framework : Utilisation de l'erreur stylisé. 
+---
 
-## Notes de version itération 3
+## Structure du dépôt
 
-...
+```
+prwb_2526_c04/
+├── index.php              # Point d’entrée
+├── framework/             # Router, Controller, Model, View, Tools
+├── controller/            # Contrôleurs métier
+├── model/                 # Entités (User, Item, Bid, Category…)
+├── view/                  # Vues PHP + partials
+├── js/                    # Scripts AJAX / validation
+├── css/                   # Styles
+├── database/              # Scripts SQL
+├── docs/
+│   └── screenshots/       # Captures d’écran
+├── config/                # Configuration locale (dev.ini)
+├── uploads/               # Images uploadées (non versionnées)
+└── utils/                 # Helpers (temps simulé, images, format)
+```
+
+---
+
+## Prérequis
+
+- **PHP 8+** (selon l’environnement du cours)
+- **MySQL / MariaDB**
+- **Apache** avec `mod_rewrite` (XAMPP recommandé)
+- Droits d’écriture sur `uploads/` (et éventuellement `database/` en dev)
+
+---
+
+## Installation
+
+### 1. Cloner et placer sous le DocumentRoot
+
+Exemple XAMPP / macOS :
+
+```bash
+# le dossier doit être accessible via le web_root configuré
+```
+
+### 2. Base de données
+
+Importez le script SQL :
+
+```bash
+mysql -u root -p < database/prwb_2526_c04.sql
+```
+
+(Adaptez avec `prwb_2526_c04_dump.sql` si vous voulez des données de démo.)
+
+### 3. Configuration
+
+Éditez `config/dev.ini` :
+
+```ini
+[DB]
+dbtype = mysql
+dbhost = 127.0.0.1
+dbname = prwb_2526_c04
+dbuser = root
+dbpassword = VOTRE_MOT_DE_PASSE
+mysql_path = "/Applications/XAMPP/xamppfiles/bin/"
+
+[Controllers]
+default_controller = browser
+
+[Web]
+web_root = "/prwb_2526_c04/"
+```
+
+Ajustez `web_root` selon l’URL locale (ex. `http://localhost/prwb_2526_c04/`).
+
+### 4. Permissions (dev)
+
+```bash
+chmod -R 777 uploads
+```
+
+### 5. Lancer
+
+Démarrez Apache + MySQL (XAMPP), puis ouvrez l’URL correspondant à `web_root`.
+
+---
+
+## Déploiement (serveur école)
+
+Le projet a été **déployé en production** sur l’infrastructure de l’EPFC (**Infolab**) :
+
+1. Création d’un **VPS** étudiant sur le serveur de l’école  
+2. Configuration du serveur web (Apache) + PHP + base MySQL  
+3. Déploiement de l’application pour la rendre **accessible publiquement** via Internet  
+
+Exemple d’URL utilisée pendant l’année du cours :
+
+```text
+http://infolab.epfc.eu:58327
+```
+
+Cette instance **n’est plus accessible** aujourd’hui (environnement de l’année précédente / VPS éteint ou réattribué).  
+Le dépôt GitHub sert désormais de référence pour le code et l’installation en local.
+
+---
+
+## Comptes de démonstration
+
+Mot de passe commun (données de cours) : `Password1,`
+
+| Email | Rôle typique |
+|-------|----------------|
+| `boverhaegen@epfc.eu` | utilisateur |
+| `mamichel@epfc.eu` | utilisateur |
+| `quhouben@epfc.eu` | utilisateur |
+| `xapigeolet@epfc.eu` | utilisateur |
+
+---
+
+## Remarques pour une publication publique
+
+- Ne committez **pas** de dumps privés, ni le contenu de `uploads/` (déjà couvert par `.gitignore`).
+- Ne publiez **pas** les mots de passe du VPS / Infolab.
+- `config/dev.ini` contient des identifiants locaux : pour un dépôt public, préférez un `dev.ini.example` sans secrets et ignorez votre `dev.ini` personnel.
+- Projet pédagogique : les comptes de démo sont intentionnellement simples.
