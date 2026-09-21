@@ -9,6 +9,8 @@ Une partie de l’interface est dynamique via **AJAX** (`fetch`) : recherche/fil
 
 ![Page Browse — offres et enchères EPayFC](docs/screenshots/browser.png)
 
+![Fiche article — enchère, images et gestion](docs/screenshots/open-item.jpg)
+
 ---
 
 ## Équipe
