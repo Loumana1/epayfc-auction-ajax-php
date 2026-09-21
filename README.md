@@ -79,104 +79,27 @@ prwb_2526_c04/
 
 ---
 
-## Prérequis
+## Architecture
 
-- **PHP 8+** (selon l’environnement du cours)
-- **MySQL / MariaDB**
-- **Apache** avec `mod_rewrite` (XAMPP recommandé)
-- Droits d’écriture sur `uploads/` (et éventuellement `database/` en dev)
+L’application suit un **MVC maison** :
 
----
+1. **`index.php`** — point d’entrée, délègue au `Router`
+2. **Controller** — actions métier (browse, offre, enchère, profil, ventes, admin…)
+3. **Model** — entités `User`, `Item`, `Bid`, `Category`, `ItemPicture`
+4. **View** — pages PHP + partials (layout commun, navbar, fiche article)
 
-## Installation
+Le JavaScript n’est pas un front séparé : il enrichit les pages déjà rendues côté serveur. Les appels **AJAX** (`fetch`) servent surtout à la recherche/filtres, à la gestion d’images, aux catégories et aux validations, sans recharger toute la page.
 
-### 1. Cloner et placer sous le DocumentRoot
-
-Exemple XAMPP / macOS :
-
-```bash
-# le dossier doit être accessible via le web_root configuré
-```
-
-### 2. Base de données
-
-Importez le script SQL :
-
-```bash
-mysql -u root -p < database/prwb_2526_c04.sql
-```
-
-(Adaptez avec `prwb_2526_c04_dump.sql` si vous voulez des données de démo.)
-
-### 3. Configuration
-
-Éditez `config/dev.ini` :
-
-```ini
-[DB]
-dbtype = mysql
-dbhost = 127.0.0.1
-dbname = prwb_2526_c04
-dbuser = root
-dbpassword = VOTRE_MOT_DE_PASSE
-mysql_path = "/Applications/XAMPP/xamppfiles/bin/"
-
-[Controllers]
-default_controller = browser
-
-[Web]
-web_root = "/prwb_2526_c04/"
-```
-
-Ajustez `web_root` selon l’URL locale (ex. `http://localhost/prwb_2526_c04/`).
-
-### 4. Permissions (dev)
-
-```bash
-chmod -R 777 uploads
-```
-
-### 5. Lancer
-
-Démarrez Apache + MySQL (XAMPP), puis ouvrez l’URL correspondant à `web_root`.
+Côté métier, une offre peut être une **enchère**, un **achat immédiat**, ou une **vente directe**. Une **date/heure simulée** permet de tester les fins d’enchère et les scénarios de cours sans dépendre de l’horloge réelle.
 
 ---
 
-## Déploiement (serveur école)
+## Déploiement
 
-Le projet a été **déployé en production** sur l’infrastructure de l’EPFC (**Infolab**) :
-
-1. Création d’un **VPS** étudiant sur le serveur de l’école  
-2. Configuration du serveur web (Apache) + PHP + base MySQL  
-3. Déploiement de l’application pour la rendre **accessible publiquement** via Internet  
-
-Exemple d’URL utilisée pendant l’année du cours :
+Le site a été mis en production sur l’infrastructure **Infolab** de l’EPFC : un **VPS** étudiant (Apache, PHP, MySQL), exposé publiquement pendant l’année du cours, par exemple :
 
 ```text
 http://infolab.epfc.eu:58327
 ```
 
-Cette instance **n’est plus accessible** aujourd’hui (environnement de l’année précédente / VPS éteint ou réattribué).  
-Le dépôt GitHub sert désormais de référence pour le code et l’installation en local.
-
----
-
-## Comptes de démonstration
-
-Mot de passe commun (données de cours) : `Password1,`
-
-| Email | Rôle typique |
-|-------|----------------|
-| `boverhaegen@epfc.eu` | utilisateur |
-| `mamichel@epfc.eu` | utilisateur |
-| `quhouben@epfc.eu` | utilisateur |
-| `xapigeolet@epfc.eu` | utilisateur |
-
----
-
-## Remarques pour une publication publique
-
-- Ne committez **pas** de dumps privés, ni le contenu de `uploads/` (déjà couvert par `.gitignore`).
-- Ne publiez **pas** les mots de passe du VPS / Infolab.
-- `config/dev.ini` contient des identifiants locaux : pour un dépôt public, préférez un `dev.ini.example` sans secrets et ignorez votre `dev.ini` personnel.
-- Projet pédagogique : les comptes de démo sont intentionnellement simples.
+Cette instance n’est plus accessible (VPS de l’année précédente éteint ou réattribué). Le dépôt GitHub reste la référence du projet.
